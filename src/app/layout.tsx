@@ -1,5 +1,14 @@
 import { ThemeProvider } from "@/components/provider/theme-provider";
 import "./globals.css";
+import localFont from "next/font/local";
+import Header from "@/components/common/header/Header";
+
+const pretendard = localFont({
+  src: "../lib/assets/fonts/PretendardVariable.woff2",
+  display: "swap",
+  weight: "45 920",
+  variable: "--font-pretendard",
+});
 
 export default function RootLayout({
   children,
@@ -7,15 +16,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className="prose dark:prose-invert">
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${pretendard.variable} font-pretendard font-normal`}
+    >
+      <body>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <Header />
+          <main>{children}</main>
         </ThemeProvider>
       </body>
     </html>
