@@ -1,9 +1,5 @@
-import { Button } from "@/components/ui/button";
+import { redirect } from "next/navigation";
 
 export default function Home() {
-  return (
-    <div>
-      <Button className="bg-foreground">Click me</Button>
-    </div>
-  );
+  redirect("/blog/posts");
 }
