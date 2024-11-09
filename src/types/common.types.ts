@@ -1,7 +1,7 @@
 export interface CompileMdxTypes {
   title: string;
-  date: string;
-  dateString: string;
+  createdAt: string;
   thumbnail: string;
-  desc: string;
+  description: string;
+  tags: string[];
 }
