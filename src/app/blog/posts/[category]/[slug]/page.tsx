@@ -1,5 +1,5 @@
 interface Params {
-  params: Promise<{ category: string; id: string }>;
+  params: Promise<{ category: string; slug: string }>;
 }
 
 const PostPage = async ({ params }: Params) => {
