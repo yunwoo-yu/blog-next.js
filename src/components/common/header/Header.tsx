@@ -35,8 +35,8 @@ const Header = () => {
   const pathname = usePathname();
 
   return (
-    <header className="p-5 border-b border-gray-300 ">
-      <NavigationMenu className="max-w-none justify-between">
+    <header className="p-5 border-b border-gray-300">
+      <NavigationMenu className="justify-between max-w-7xl mx-auto">
         <NavigationMenuList>
           {NAVIGATION_LIST.map((item) => (
             <NavigationMenuItem
