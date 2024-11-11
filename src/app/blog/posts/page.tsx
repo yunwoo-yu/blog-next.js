@@ -1,32 +1,22 @@
-import PostCard from "@/components/posts/PostCard";
+import PostListCard from "@/components/posts/PostListCard";
 import { getAllPosts, getAllPostsPath } from "@/lib/post-utils";
 
 const BlogPostsPage = async () => {
   const postsPaths = getAllPostsPath();
   const posts = await getAllPosts(postsPaths);
-  // const post = await readFile(
-  //   `src/posts/${categoryList[0]}/created_blog.mdx`,
-  //   "utf-8"
-  // );
 
-  // const { content, frontmatter } = await compileMDX<{
-  //   title: string;
-  //   date: string;
-  // }>({
-  //   source: post,
-  //   components: useMDXComponents,
-  //   options: {
-  //     parseFrontmatter: true,
-  //   },
-  // });
-
-  // console.log(content);
+  console.log(posts);
 
   return (
-    <section>
-      <ul>
+    <section className="px-5">
+      <ul className="flex flex-col mt-10 max-w-5xl mx-auto">
         {posts.map((post) => (
-          <PostCard data={post.frontmatter} key={post.frontmatter.title} />
+          <PostListCard
+            data={post.frontmatter}
+            category={post.category}
+            slug={post.slug}
+            key={post.frontmatter.title}
+          />
         ))}
       </ul>
     </section>
