@@ -1,4 +1,5 @@
 import PostListCard from "@/components/posts/PostListCard";
+
 import { getAllPosts, getAllPostsPath } from "@/lib/post-utils";
 
 const BlogPostsPage = async () => {
@@ -9,7 +10,7 @@ const BlogPostsPage = async () => {
 
   return (
     <section className="px-5">
-      <ul className="flex flex-col mt-10 max-w-5xl mx-auto">
+      <ul className="flex flex-col pt-10 max-w-5xl mx-auto">
         {posts.map((post) => (
           <PostListCard
             data={post.frontmatter}

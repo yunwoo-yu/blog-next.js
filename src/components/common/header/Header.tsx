@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { GitHubIcon, LinkedInIcon } from "../../icons/icons";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import useScrollDirection from "@/hooks/useScrollDirection";
 
 const NAVIGATION_LIST = [
   {
@@ -33,9 +34,15 @@ const NAVIGATION_LIST = [
 
 const Header = () => {
   const pathname = usePathname();
+  const showHeader = useScrollDirection();
 
   return (
-    <header className="p-5 border-b border-gray-300">
+    <header
+      className={cn(
+        showHeader ? "translate-y-[0px]" : "translate-y-[-77px]",
+        "fixed top-0 left-0 w-full p-5 border-b border-gray-300 transition-transform duration-200 ease-in-out dark:bg-[rgba(0,0,0,0.5)] bg-[rgba(255,255,255,0.5)] backdrop-blur-sm"
+      )}
+    >
       <NavigationMenu className="justify-between max-w-7xl mx-auto">
         <NavigationMenuList>
           {NAVIGATION_LIST.map((item) => (
