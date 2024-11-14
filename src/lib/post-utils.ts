@@ -6,11 +6,25 @@ import { compileMDX } from "next-mdx-remote/rsc";
 
 const PATH = process.cwd() + "/src/posts";
 
-export function getAllPostsPath(category?: string) {
+export const getAllPostsPath = (category?: string) => {
   return globSync(`${PATH}/${category ? category : "**"}/**/*.mdx`);
-}
+};
 
-export async function getAllPosts(postPaths: string[]) {
+export const getPostDetail = async (category: string, slug: string) => {
+  const postPath = globSync(`${PATH}/${category}/${slug}/*.mdx`);
+  const source = readFileSync(postPath[0]);
+  const { content, frontmatter } = await compileMDX<CompileMdxTypes>({
+    source,
+    components: useMDXComponents,
+    options: {
+      parseFrontmatter: true,
+    },
+  });
+
+  return { content, frontmatter };
+};
+
+export const getAllPosts = async (postPaths: string[]) => {
   const ParsingPosts = postPaths.map(async (post) => {
     const source = readFileSync(post, "utf-8");
     const { content, frontmatter } = await compileMDX<CompileMdxTypes>({
@@ -29,4 +43,4 @@ export async function getAllPosts(postPaths: string[]) {
   return posts.sort((a, b) =>
     a.frontmatter.createdAt > b.frontmatter.createdAt ? -1 : 1
   );
-}
+};
