@@ -9,9 +9,9 @@ import {
 
 import Link from "next/link";
 import React from "react";
-import { ModeToggle } from "../mode-toggle/ModeToggle";
+import { ModeToggle } from "./ModeToggle";
 import { Button } from "@/components/ui/button";
-import { GitHubIcon, LinkedInIcon } from "../../icons/icons";
+import { GitHubIcon, LinkedInIcon } from "../icons/icons";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import useScrollDirection from "@/hooks/useScrollDirection";
