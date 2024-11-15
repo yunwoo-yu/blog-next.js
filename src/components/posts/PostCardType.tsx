@@ -1,12 +1,12 @@
 import { CompileMdxTypes } from "@/types/common.types";
-import Link from "next/link";
-import React from "react";
 
-interface PostCardProps {
+interface PostCardTypeProps {
   data: CompileMdxTypes;
+  category: string;
+  slug: string;
 }
 
-const PostCard = ({ data }: PostCardProps) => {
+const PostCardType = ({ data }: PostCardTypeProps) => {
   return (
     <li>
       {/* <Link></Link> */}
@@ -15,4 +15,4 @@ const PostCard = ({ data }: PostCardProps) => {
   );
 };
 
-export default PostCard;
+export default PostCardType;

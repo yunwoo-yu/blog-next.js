@@ -1,4 +1,4 @@
-import PostListCard from "@/components/posts/PostListCard";
+import PostList from "@/components/posts/PostList";
 
 import { getAllPosts, getAllPostsPath } from "@/lib/post-utils";
 
@@ -6,20 +6,9 @@ const BlogPostsPage = async () => {
   const postsPaths = getAllPostsPath();
   const posts = await getAllPosts(postsPaths);
 
-  console.log(posts);
-
   return (
-    <section className="px-5">
-      <ul className="flex flex-col pt-10 max-w-5xl mx-auto">
-        {posts.map((post) => (
-          <PostListCard
-            data={post.frontmatter}
-            category={post.category}
-            slug={post.slug}
-            key={post.frontmatter.title}
-          />
-        ))}
-      </ul>
+    <section className="px-5 pt-5 max-w-5xl mx-auto">
+      <PostList posts={posts} />
     </section>
   );
 };
