@@ -1,24 +1,22 @@
+"use client";
+
 import { PostListTypes } from "@/types/common.types";
 import PostListType from "./PostListType";
+import useViewTypesTab from "@/hooks/useViewTypesTab";
+import ViewToggle from "../common/ViewToggle";
+import PostCardType from "./PostCardType";
 
 interface PostListProps {
   posts: PostListTypes[];
 }
 
 const PostList = ({ posts }: PostListProps) => {
+  const { viewType, onChangeViewType } = useViewTypesTab();
+
   return (
     <>
-      {posts.map((post) => (
-        <PostListType
-          data={post.frontmatter}
-          category={post.category}
-          slug={post.slug}
-          key={post.frontmatter.title}
-        />
-      ))}
-
-      {/* View Type 잠시 보류 */}
-      {/* {viewType && (
+      {/* View Type 로컬스토리지 사용 시 깜빡임 이슈 해결 필요 */}
+      {viewType && (
         <>
           <ViewToggle viewType={viewType} onChangeViewType={onChangeViewType} />
           <ul className="flex flex-col pt-5">
@@ -41,7 +39,7 @@ const PostList = ({ posts }: PostListProps) => {
                 ))}
           </ul>
         </>
-      )} */}
+      )}
     </>
   );
 };
