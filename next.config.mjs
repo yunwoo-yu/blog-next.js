@@ -1,9 +1,4 @@
 import createMDX from "@next/mdx";
-import remarkGfm from "remark-gfm";
-import remarkA11yEmoji from "@fec/remark-a11y-emoji";
-import remarkBreaks from "remark-breaks";
-import rehypePrettyCode from "rehype-pretty-code";
-import rehypeSlug from "rehype-slug";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -15,16 +10,6 @@ const nextConfig = {
 const withMDX = createMDX({
   // Add markdown plugins here, as desired
   extension: /\.mdx?$/,
-  options: {
-    remarkPlugins: [remarkGfm, remarkA11yEmoji, remarkBreaks],
-    rehypePlugins: [
-      [
-        rehypePrettyCode,
-        { theme: { dark: "github-dark-dimmed", light: "github-light" } },
-      ],
-      rehypeSlug,
-    ],
-  },
 });
 
 // Merge MDX config with Next.js config
