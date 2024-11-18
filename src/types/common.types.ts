@@ -9,7 +9,6 @@ export interface CompileMdxTypes {
 }
 
 export interface PostListTypes {
-  content: ReactElement<unknown, string | JSXElementConstructor<unknown>>;
   frontmatter: CompileMdxTypes;
   category: string;
   slug: string;
