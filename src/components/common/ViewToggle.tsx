@@ -1,5 +1,5 @@
 import { ViewType } from "@/hooks/useViewTypesTab";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/utils";
 import { AlignLeft, Grid2x2 } from "lucide-react";
 
 interface ViewToggleProps {
@@ -25,8 +25,8 @@ const ViewToggle = ({ viewType, onChangeViewType }: ViewToggleProps) => {
             <AlignLeft
               className={
                 viewType === "list"
-                  ? "dark:stroke-white stroke-black"
-                  : "dark:stroke-black stroke-white"
+                  ? "dark:stroke-foreground stroke-background"
+                  : "dark:stroke-background stroke-foreground"
               }
             />
           </span>
@@ -34,8 +34,8 @@ const ViewToggle = ({ viewType, onChangeViewType }: ViewToggleProps) => {
             <Grid2x2
               className={
                 viewType === "card"
-                  ? "dark:stroke-white stroke-black"
-                  : "dark:stroke-black stroke-white"
+                  ? "dark:stroke-foreground stroke-background"
+                  : "dark:stroke-background stroke-foreground"
               }
             />
           </span>

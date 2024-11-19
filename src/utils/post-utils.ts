@@ -3,7 +3,7 @@ import { readFileSync } from "fs";
 import { globSync } from "glob";
 import { compileMDX } from "next-mdx-remote/rsc";
 
-const PATH = process.cwd() + "/src/posts";
+const PATH = process.cwd() + "/src/mdx";
 
 export const getAllPostsPath = (category?: string) => {
   return globSync(`${PATH}/${category ? category : "**"}/**/*.mdx`);
