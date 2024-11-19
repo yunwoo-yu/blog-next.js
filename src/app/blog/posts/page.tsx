@@ -1,6 +1,6 @@
 import PostList from "@/components/posts/PostList";
 
-import { getAllPosts, getAllPostsPath } from "@/lib/post-utils";
+import { getAllPosts, getAllPostsPath } from "@/utils/post-utils";
 
 const BlogPostsPage = async () => {
   const postsPaths = getAllPostsPath();

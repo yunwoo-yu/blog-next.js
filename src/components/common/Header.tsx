@@ -13,7 +13,7 @@ import { ModeToggle } from "./ModeToggle";
 import { Button } from "@/components/ui/button";
 import { GitHubIcon, LinkedInIcon } from "../icons/icons";
 import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/utils";
 import useScrollDirection from "@/hooks/useScrollDirection";
 
 const NAVIGATION_LIST = [
