@@ -29,7 +29,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <Header />
-          <main className="mt-[77px]">{children}</main>
+          <main className="mt-[97px]">{children}</main>
         </ThemeProvider>
       </body>
     </html>
