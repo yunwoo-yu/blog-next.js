@@ -1,35 +1,35 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 const useScrollDirection = () => {
-  const [showHeader, setShowHeader] = useState<boolean>(true);
-  const lastScrollYRef = useRef<number>(0);
+	const [showHeader, setShowHeader] = useState<boolean>(true);
+	const lastScrollYRef = useRef<number>(0);
 
-  const scrollThreshold = 5; // 작은 변화 허용 한계
+	const scrollThreshold = 5; // 작은 변화 허용 한계
 
-  const handleScroll = useCallback(() => {
-    const currentScrollY = window.scrollY;
-    const lastScrollY = lastScrollYRef.current;
+	const handleScroll = useCallback(() => {
+		const currentScrollY = window.scrollY;
+		const lastScrollY = lastScrollYRef.current;
 
-    if (Math.abs(currentScrollY - lastScrollY) >= scrollThreshold) {
-      if (currentScrollY > lastScrollY) {
-        setShowHeader(false);
-      } else {
-        setShowHeader(true);
-      }
+		if (Math.abs(currentScrollY - lastScrollY) >= scrollThreshold) {
+			if (currentScrollY > lastScrollY) {
+				setShowHeader(false);
+			} else {
+				setShowHeader(true);
+			}
 
-      lastScrollYRef.current = currentScrollY;
-    }
-  }, [lastScrollYRef, scrollThreshold]);
+			lastScrollYRef.current = currentScrollY;
+		}
+	}, [lastScrollYRef, scrollThreshold]);
 
-  useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
+	useEffect(() => {
+		window.addEventListener('scroll', handleScroll);
 
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, [handleScroll]);
+		return () => {
+			window.removeEventListener('scroll', handleScroll);
+		};
+	}, [handleScroll]);
 
-  return showHeader;
+	return showHeader;
 };
 
 export default useScrollDirection;

@@ -1,15 +1,15 @@
-import React from "react";
+import React from 'react';
 
 interface Params {
-  params: Promise<{ category: string }>;
+	params: Promise<{ category: string }>;
 }
 
 const PostsPageWithCategory = async ({ params }: Params) => {
-  const { category } = await params;
+	const { category } = await params;
 
-  console.log(category);
+	console.log(category);
 
-  return <div>PostsPageWithCategory</div>;
+	return <div>PostsPageWithCategory</div>;
 };
 
 export default PostsPageWithCategory;

@@ -1,36 +1,36 @@
-"use client";
+'use client';
 
-import { useState } from "react";
+import { useState } from 'react';
 
-export type ViewType = "list" | "card";
+export type ViewType = 'list' | 'card';
 
 const useViewTypesTab = () => {
-  const [viewType, setViewType] = useState<ViewType>("list");
+	const [viewType, setViewType] = useState<ViewType>('list');
 
-  const onChangeViewType = () => {
-    setViewType((prev) => {
-      const nextViewType = prev === "list" ? "card" : "list";
+	const onChangeViewType = () => {
+		setViewType(prev => {
+			const nextViewType = prev === 'list' ? 'card' : 'list';
 
-      // localStorage.setItem("viewType", nextViewType);
+			// localStorage.setItem("viewType", nextViewType);
 
-      return nextViewType;
-    });
-  };
+			return nextViewType;
+		});
+	};
 
-  // useEffect(() => {
-  //   if (typeof window !== "undefined") {
-  //     const storedViewType = localStorage.getItem("viewType");
+	// useEffect(() => {
+	//   if (typeof window !== "undefined") {
+	//     const storedViewType = localStorage.getItem("viewType");
 
-  //     if (storedViewType === "list" || storedViewType === "card") {
-  //       setViewType(storedViewType);
-  //     } else {
-  //       setViewType("list");
-  //       localStorage.setItem("viewType", "list");
-  //     }
-  //   }
-  // }, []);
+	//     if (storedViewType === "list" || storedViewType === "card") {
+	//       setViewType(storedViewType);
+	//     } else {
+	//       setViewType("list");
+	//       localStorage.setItem("viewType", "list");
+	//     }
+	//   }
+	// }, []);
 
-  return { viewType, onChangeViewType };
+	return { viewType, onChangeViewType };
 };
 
 export default useViewTypesTab;
