@@ -1,0 +1,143 @@
+---
+title: "github GPG, DCO란? (OSSCA ArgoWorkflows)"
+createdAt: 2023-07-12
+description: 오픈소스 기여를 위한 Verified 딱지를 달아보자
+thumbnail: /images/activities/argo_workflows_gpg/thumbnail.png
+tags: [GPG, Contributing, ArgoWorkflows]
+---
+
+> 오픈소스 컨트리뷰션에 멘티로 참여했습니다. 제 목표 오픈소스는 ArgoWorkflows.
+멘티로 첫번째 활동에 대한 기록입니다.
+
+멘티로 첫번째 활동에 대해 지령을 받았습니다. 오픈소스 기여에 필요한 내용들을 연습하기 위해 멘토님이 레포지토리를 하나 만들어 주셨는데 해당 레포지토리를 fork해서 주어진 이슈 템플릿을 골라 생성하고 목표를 이뤄야 했는데 목표는 간단했습니다.
+
+1. docs/users/[이름].md 문서 추가하기
+2. docs/users/users.md 에 내 md문서 링크 걸기
+
+**단! PR컨벤션 지키기,커밋 메시지 컨벤션 적용해보기(optional), DCO 봇의 체크 통과하기, GPG를 이용해 서명된 커밋 작성하기**
+다른건 몰라도 GPG, DCO봇은 처음 들어보는거였는데 친절하게 참고링크도 다 걸어주셔서 금방 이해했습니다👍
+
+### GPG란? (GNU Privacy Guard)
+![](/images/activities/argo_workflows_gpg/1.png)
+GPG란 PGP 라는 전자우편 암호화 도구를 기반으로 만든 소프트웨어로 여러가지의 암호화를 지원하며 디폴트로 RSA 알고리즘을 사용합니다.
+
+### 사용 이유
+![](/images/activities/argo_workflows_gpg/2.png)
+
+깃허브에서 이 GPG 키를 등록하면 커밋, 태그에 로컬로 서명하여 사람들에게 **변경 내용에 출처에 대한 신뢰**를 줄 수 있습니다. 검증된 커밋이라고 위에 보이는 사진처럼 Verified 태그도 달아주죠! 무엇보다 ArgoWorkflows 프로젝트에는 검증된 커밋을 사용해 커밋을 올리라는 조건이 존재했습니다.
+
+### GPG 설치 및 설정
+저는 맥os 사용자이기에 brew를 이용했습니다.
+```
+brew install gpg //gpg 설치
+
+gpg --gen-key
+```
+`gpg --gen-key`를 입력하면 이름, 이메일을 입력하라고 나오는데 사용하실 이름과 이메일을 입력하시면 됩니다. (이메일은 깃허브에 등록해야하니 깃허브에 등록된 이메일과 통일하시면 편해요!) 그리고 다 입력했다면 O 를 입력해주면 프롬프트가 나오는데 앞으로 커밋을 보낼 때 등등 사용할 암호를 설정해주시면 됩니다. 계속 사용하니 잊지않는걸로 설정하세요!
+
+```
+We need to generate a lot of random bytes. It is a good idea to perform
+some other action (type on the keyboard, move the mouse, utilize the
+disks) during the prime generation; this gives the random number
+generator a better chance to gain enough entropy.
+We need to generate a lot of random bytes. It is a good idea to perform
+some other action (type on the keyboard, move the mouse, utilize the
+disks) during the prime generation; this gives the random number
+generator a better chance to gain enough entropy.
+gpg: key E15D651143742DAD marked as ultimately trusted
+gpg: directory '/Users/jeyraof/.gnupg/openpgp-revocs.d' created
+gpg: revocation certificate stored as '/Users/jeyraof/.gnupg/openpgp-revocs.d/85B5FA0A8A67AA1A20FA7D4BE15D651143742DAD.rev'
+public and secret key created and signed.
+
+pub   rsa3072 2021-02-08 [SC] [expires: 2023-02-08]
+      85B5FA0A8A67AA1A20FA7D4BE15D651143742DAD //여기가 key
+uid                      Test RealName <test@email.com>
+sub   rsa3072 2021-02-08 [E] [expires: 2023-02-08]
+```
+완료되면 해당 메세지가 보일텐데 여기 보이는 key는 나중에 필요하니 따로 메모장같은곳에 적어두시는걸 추천합니다! RSA3072 암호화 알고리즘을 적용했다고 합니다.
+
+```
+$ git config --global user.email test@email.com
+$ git config --global user.name "Test RealName"
+$ git config --global user.signingkey 85B5FA0A8A67AA1A20FA7D4BE15D651143742DAD
+$ git config --global commit.gpgsign true
+$ git config --global gpg.program gpg
+```
+그리고 위처럼 깃 설정을 변경 해주시면 됩니다! email, name, signingkey에는 위에서 입력한 이메일과 이름 그리고 키를 입력하시면 됩니다.
+
+![](/images/activities/argo_workflows_gpg/3.png)
+
+그리고 다른 프로젝트에서 커밋 메세지를 작성해 보시면 비밀번호 입력하는 창이 나올겁니다! 커밋을 추가하시고 `git log`를 확인하면 gpg 서명이 되어있는걸 확인하실 수 있습니다.
+암호를 묻는 창이 나오지 않고 에러가 나온다면 `export GPG_TTY=$(tty)` 을 입력후에 다시 시도해보세요.
+
+저는 IDE를 껐다가 프로젝트 킬때마다 에러가 생겨서 고정했는데 만약 고정하고 싶으시다면 맥os에 root폴더에서 숨김파일을 해제하신 후 .zshrc 파일에 하단에 저 코드를 입력해두시면 다시 입력해주지 않아도 괜찮습니다👍
+
+### 깃허브에 GPG키 등록해주기
+아까 말씀드린것처럼 이메일을 등록해줘야 하는데 이미 등록되어 있으시다면 이메일 등록은 넘어가시면 됩니다.
+GPG키를 이제 github에 등록해줘야하는데 프로필을 눌러 Settings에 들어가신 후 SSH and GPG Keys 를 클릭하시면 new GPG key를 눌러 등록하시면 됩니다.
+
+
+```
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+
+mQGNBGAhCUkBDADppPlF2hOAxPzlfgIFaMROdu62EAj9y3pn+FKI+A1ckWRzDkib
+2JwN1017zUqdAkKan2H4k4fAlcfJ+1TZLlU4gvxJahHj88CswY3RWd9yZt1faE2g
+Kt4yk/pWc7TH+TRfcLvAu37eCo+Z7OEuktu836e1A0ySreWtNtFZuXGPf7z69jFx
+2N+/0YjyCXx2g+ViP4QyXnmLNv9vp3gPuEfZ9i+wOoDzFM6MHn7EAnjKmQOjEm93
+mu2g4XCLc3S05vsGN2DHD7pqFhkj7GFx5k8gAd5kCY+ULHfXBVVHdYvO151YqbX7
+eimxImOtNjVJEtoMCY8khjjg0QZEf8ImYjpwrjRMthT1Tp1pNOvuYMZVxTNVcff0
+8KFgcj7gzw1dAR4khq/k6yrJQ9Nnu+cDx8HBmsqcGUGAM2vfM4Nsrfgj0oGjv6pP
+U6She8iPIs6XYend7BhcN0Ik+E6d7kSzDEpMfEws7MUbVFB1a/cRdaBXmDr8XHUK
+nBfd/L2mAKn5kc0AEQEAAbQeVGVzdCBSZWFsTmFtZSA8dGVzdEBlbWFpbC5jb20+
+iQHUBBMBCAA+FiEEhbX6Copnqhog+n1L4V1lEUN0La0FAmAhCUkCGwMFCQPCZwAF
+CwkIBwIGFQoJCAsCBBYCAwECHgECF4AACgkQ4V1lEUN0La3vaAwA18271LHSqxOZ
+zNlxEBV77fmA3drJQtS7I4evex2AcEjr7DC5R1mOxe1CzLlWbjwXjw2yzbng/I6O
+hlajur5Vejl6y/FtWyobaOIY8tYvkP8OVLvGN4yK13ZIY6N9DJKUCr1CudkjuSVR
+RjtKw5aIN0nUFnKUio48B3G74tTLJq/SnXoVFyHnOHDHXWt/KnOraAiFb7rMSlYG
+wr51FxAPh8cPsk2Q1S9nkQbj+1mMx/RoGdKrOm1z/CCkVODaFZ3GTff8CK+xukfl
+R82ai2uq8D7AxSufZIppLmkr8ntPvRPITzAPrWH32LiehZcGxYt+DPLqOAgTAyej
+47iZNOUZ7IPRCjNO3U6L3CI675SGWdYCfi/Y9r2aaHLsS+N1sy2VeseNEgjq1WWb
+aBbycdR0BGQyIuK3SUO2xPZFLmquI7pKiOaIk0nugWf48Im/EPMaSPr2gRHPmOMk
+nl+v9boRzNaJ1Y3grUkquX4q3dmklKAniRLoZzLP0TZvElA3A789uQGNBGAhCUkB
+DADuocMHyiHLOM4AsNLNHv/e+uf7xMx9kk+Ih0GJxoTEKsBAfzz3FaSpuy9Km02F
+fs587KlaZgP8VEodOoAHH4O9L6dH+PqybrJTSDN9nnHi8DC2qEQaepD59Pkmi8G/
+aCAG0vlR+xRD1Y9dRif4KokbFMHFUiXeWSYpwDPTlBtBRvlFs2ITcra+XCqa5M9b
+a49/4/5kurGU4laMPwBHCsNRHXEmRAdCxMlyzNkuhQL48pH/bLSfwDZyv7H4+3kn
+pCLio9ihNXlm3IilvBz1OXiVGS7bkiIE28xFD1FZ3o7VK5kcbxm1dV5tyhaUAUE2
+8yLMMaf0/mYeGCVNOON6+zYKcurdq1fNiH9V6UKB4rlGxDIl95vFxquIEXYSuivL
++H0IA75zLB1NJjEnKpg6lvXgvp7VD6/UvkkowmfJelreP9KjnIGTjQgRGD0F9eut
+zw+DLAeSHvS+7ByfG7knDOxDILxG4P5OjgPTrwesCu+xaQZDsDaJRsuX4GT0F8h0
+uFkAEQEAAYkBvAQYAQgAJhYhBIW1+gqKZ6oaIPp9S+FdZRFDdC2tBQJgIQlJAhsM
+BQkDwmcAAAoJEOFdZRFDdC2thtUL/1r3i9E1QIw06rObUZxIlj1Y/BXDTNb17DqC
+2sMAoETwowCqLubR65Ushj1quGBkXfDO6zE/gpBr6pFY0VFtnmkOh7jLdnbKYn7S
+dMbYZrDL/xBCoB1Pb6Q1xu6Q+Ys23kbXTYeYZFXcxjiX8eZz8VEw9B5CBQR/ydzQ
+0FPwEEgqRiIjio4VlMz4OL3eJDN2cpSt7cX2J0xER8ExsdtqIdnpyMSiprxBEcFQ
+Aa4Q+k8Z4466PjtCPwM3oFU6RCO0z1mGLfsXkD0Y6d+xq+Ck0bKMVBdUr1+DUw3L
+9pDAg815reeptv3pl5Tg8G66tSC+NBOYq8eKDGyf1WFbPstyiDl6eHn1Vw1XMzal
+dKdMCMSjZ9ZAqUCRGirxXNg+hhs132BVa3/bVBhnNjTkagSW2aWlRHLmpGr9qWHj
+shry2e3S4fu2EwQmv8kx12lKOOvyAFQa5o6ptWOFHFKtT8EuAm9E/O1xWhI01Ypj
+gCrQ7YWLfhewIewqujWAeWR/9j7gbg==
+=Lu+o
+-----END PGP PUBLIC KEY BLOCK-----
+```
+넣어줘야할 내용은 터미널로 돌아가셔서 `gpg --armor --export [아까 등록할때 받은 키]`를 입력하시면 이런 내용을 받을 수 있는데 절취선까지 모두 복사해서 깃허브에 넣어주시면 됩니다. 그럼 키까지 등록 완료! 이후에 커밋을 올려보시면 Verified 태그가 달린걸 확인할 수 있습니다.
+
+### github DCO(Developer Certificate of Origin) 통과하기
+![](/images/activities/argo_workflows_gpg/5.png)
+DCO는 오픈소스 프로젝트에 컨트리뷰터가 PR 등 코드에 자신의 기여를 인증하는 방법입니다. 모든 커밋 메시지에 작성자와 일치하는 이메일 주소가 포함되어야 합니다.
+DCO봇 체크를 하는 방법은 간단합니다!
+```
+git commit -s -m 'feat: DCO봇 넘어가기'
+```
+이런식으로 -s 옵션을 걸어주면 커밋 하단에 이미지 처럼 자동으로 Signed-off-by: [이름] [이메일]이 들어가게 되고 DCO봇의 체크를 넘어가게 됩니다.
+
+### 후기
+> [리액트쿼리 튜토리얼](https://github.com/ssi02014/react-query-tutorial)에 기여하며 그냥 fork 후에 PR을 올리면 끝인 줄 알았는데 이런 절차들이 있는 줄 꿈에도 몰랐습니다.. 아직 오픈소스에 기여하기 위한 준비단계 이지만 이름있는 프로젝트에 기여할 생각하니 벌써부터 재밌는거 같아요 남은 활동도 열심히 해보겠습니다🔥
+
+### 참고 자료
+해당 자료들은 저희 멘토님이 참고하라고 주신 레퍼런스 사이트들입니다.🙇‍♂️
+- [키워드를 활용한 issue 연결](https://docs.github.com/ko/issues/tracking-your-work-with-issues/linking-a-pull-request-to-an-issue#linking-a-pull-request-to-an-issue-using-a-keyword)
+- [PR 네이밍 컨벤션](https://flank.github.io/flank/pr_titles/)
+- [DCO](https://github.com/apps/dco)
+- [GPG](https://www.44bits.io/ko/post/add-signing-key-to-git-commit-by-gpg)
+- [커밋 컨벤션](https://www.conventionalcommits.org/en/v1.0.0/)

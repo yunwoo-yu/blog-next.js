@@ -21,10 +21,6 @@ import { ModeToggle } from './ModeToggle';
 
 const NAVIGATION_LIST = [
 	{
-		href: '/blog/posts',
-		label: 'Posting',
-	},
-	{
 		href: '/about',
 		label: 'About',
 	},
@@ -38,12 +34,12 @@ const Header = () => {
 		<header
 			className={cn(
 				showHeader ? 'translate-y-[0px]' : 'translate-y-[-97px]',
-				'fixed left-0 top-0 w-full border-b border-gray-300 bg-[rgba(255,255,255,0.5)] px-5 py-2 backdrop-blur-sm transition-transform duration-300 ease-in-out dark:bg-[rgba(0,0,0,0.5)]',
+				'fixed left-0 top-0 z-50 w-full border-b border-gray-300 bg-[rgba(255,255,255,0.5)] px-5 py-2 backdrop-blur-sm transition-transform duration-300 ease-in-out dark:bg-[rgba(0,0,0,0.5)]',
 			)}>
 			<NavigationMenu className="mx-auto max-w-7xl justify-between">
 				<NavigationMenuList>
 					<NavigationMenuItem>
-						<Link href="/blog/posts" className="mr-10 flex max-w-20">
+						<Link href="/blog/posts" className="mr-10 flex min-w-10 max-w-20">
 							<Image src={logoSrc} alt="blog logo" />
 						</Link>
 					</NavigationMenuItem>
