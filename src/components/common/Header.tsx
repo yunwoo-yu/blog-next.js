@@ -18,6 +18,7 @@ import { cn } from '@/utils/utils';
 import logoSrc from '../../lib/images/logo.png';
 import { GitHubIcon, LinkedInIcon } from '../icons/Icons';
 import { ModeToggle } from './ModeToggle';
+import { GITHUB_URL, LINKEDIN_URL } from '@/constant';
 
 const NAVIGATION_LIST = [
 	{
@@ -57,14 +58,14 @@ const Header = () => {
 					</li>
 					<li>
 						<Button variant="outline" size="icon">
-							<Link href={'https://github.com/yunwoo-yu'} target="_blank">
+							<Link href={GITHUB_URL} target="_blank">
 								<GitHubIcon />
 							</Link>
 						</Button>
 					</li>
 					<li>
 						<Button variant="outline" size="icon">
-							<Link href={'https://www.linkedin.com/in/yunwoo-yu-65095b263'} target="_blank">
+							<Link href={LINKEDIN_URL} target="_blank">
 								<LinkedInIcon />
 							</Link>
 						</Button>
