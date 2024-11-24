@@ -10,8 +10,8 @@ interface ViewToggleProps {
 
 const ViewToggle = ({ viewType, onChangeViewType }: ViewToggleProps) => {
 	return (
-		<section className="flex justify-end">
-			<article className="flex h-8 w-16 cursor-pointer rounded bg-foreground" onClick={onChangeViewType}>
+		<article className="flex justify-end">
+			<div className="flex h-8 w-16 cursor-pointer rounded bg-foreground" onClick={onChangeViewType}>
 				<div className="relative flex w-full p-1">
 					<div
 						className={cn(
@@ -40,8 +40,8 @@ const ViewToggle = ({ viewType, onChangeViewType }: ViewToggleProps) => {
 						/>
 					</span>
 				</div>
-			</article>
-		</section>
+			</div>
+		</article>
 	);
 };
 
