@@ -14,7 +14,7 @@ const PostDetailPage = async ({ params }: Params) => {
 
 	return (
 		<>
-			<section className="mx-auto max-w-5xl border-b border-border py-10">
+			<section className="mx-auto max-w-5xl border-b border-border px-5 py-10">
 				<h1 className="text-3xl text-primary">{frontmatter.title}</h1>
 				<div className="mt-2 flex justify-between text-sm text-gray-400">
 					<span>{frontmatter.description}</span>
@@ -31,7 +31,7 @@ const PostDetailPage = async ({ params }: Params) => {
 					))}
 				</div>
 			</section>
-			<section className="prose mx-auto max-w-4xl py-10 dark:prose-invert">
+			<section className="prose mx-auto max-w-4xl px-5 py-10 dark:prose-invert">
 				<CustomMDXRemote source={source} />
 			</section>
 		</>
