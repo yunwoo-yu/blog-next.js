@@ -1,4 +1,5 @@
 import { readFileSync } from 'fs';
+import { readdir } from 'fs/promises';
 import { globSync } from 'glob';
 import { compileMDX } from 'next-mdx-remote/rsc';
 
@@ -40,4 +41,18 @@ export const getAllPosts = async (postPaths: string[]) => {
 	const posts = await Promise.all(ParsingPosts);
 
 	return posts.sort((a, b) => (a.frontmatter.createdAt > b.frontmatter.createdAt ? -1 : 1));
+};
+
+export const getCategoryList = async () => {
+	let allCount = 0;
+	const dirCategory = await readdir(PATH, { withFileTypes: true });
+	const categoryNameList = dirCategory.map(category => {
+		const postLength = getAllPostsPath(category.name).length;
+
+		allCount += postLength;
+
+		return { label: category.name, count: postLength };
+	});
+
+	return { categoryNameList, allCount };
 };

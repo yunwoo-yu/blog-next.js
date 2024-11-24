@@ -11,3 +11,8 @@ export interface PostListTypes {
 	category: string;
 	slug: string;
 }
+
+export interface CategoryDataTypes {
+	categoryNameList: { label: string; count: number }[];
+	allCount: number;
+}
