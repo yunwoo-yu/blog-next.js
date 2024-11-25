@@ -1,15 +1,17 @@
 import CategoryVerticalList from '@/components/common/CategoryVerticalList';
-import PostList from '@/components/posts/PostList';
-import { getAllPosts, getAllPostsPath } from '@/utils/post-utils';
+import BlogPosts from '@/components/posts/BlogPosts';
+import { getAllPosts, getAllPostsPath, getCategoryList } from '@/utils/post-utils';
 
 const BlogPostsPage = async () => {
 	const postsPaths = getAllPostsPath();
 	const posts = await getAllPosts(postsPaths);
+	const categoryData = await getCategoryList();
 
 	return (
-		<section className="mx-auto flex max-w-5xl px-5 pt-5">
-			<CategoryVerticalList />
-			<PostList posts={posts} />
+		<section className="relative mx-auto flex max-w-6xl gap-5 px-5 py-20">
+			<h1 className="sr-only">Ycow Blog</h1>
+			<CategoryVerticalList categoryData={categoryData} />
+			<BlogPosts posts={posts} />
 		</section>
 	);
 };
