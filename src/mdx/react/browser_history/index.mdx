@@ -20,7 +20,7 @@ tags: [React, Browser, 트러블 슈팅]
 ### 뒤로가기 이벤트 막기
 뒤로가기 이벤트를 막는 방법은 꽤 여러가지 방법이 있습니다! react-router v5의 경우에는 useHistory 훅을 이용했지만 저는 v6를 사용하기에 전역 history객체를 사용했습니다. (v6에서는 useHistory 훅이 없어졌습니다. 페이지 이동 시 useNavigate 사용)
 
-```js
+```js showLineNumbers
 history.pushState(null,"","");
 ```
 router 이동 시 발생하는 popstate의 기본 이벤트를 막을 수는 없습니다. `history.pushState`를 이용해 페이지 이동없이 현재 히스토리 스택을 추가하고 뒤로가기 버튼으로 인해 뒤로 이동해서 현재의 페이지를 유지시키는 방법입니다. 만약 홈 -> 로그인 -> 게시판으로 이동했고 게시판에서 뒤로가기 이벤트를 막아준다면 이런형태가 됩니다. (pushState와 replaceState 는 popstate 이벤트를 발생시키지 않습니다.)
@@ -31,7 +31,7 @@ router 이동 시 발생하는 popstate의 기본 이벤트를 막을 수는 없
 
 ### React 적용(버그 존재 ❗️)
 진행한 사전과제로 예시를 들수는 없으므로 cra로 간단하게 프로젝트를 만든 후 홈, 로그인, 게시판 페이지를 router로 연결해 줍니다! 문제만 보여주기 위해 useEffect의 로직만 보여드리겠습니다.
-```js
+```js showLineNumbers
 // notice.tsx
   useEffect(() => {
     history.pushState(null, "", window.location.href);
@@ -58,7 +58,7 @@ router 이동 시 발생하는 popstate의 기본 이벤트를 막을 수는 없
 
 ### React 적용(버그 해결)
 이걸 어떻게 해결해야할지 이것저것 많은 시도를 해보았더니 첫번째로 알게된건 세번째 인자에 빈 문자열을 넣어주면 됩니다! [mdn](https://developer.mozilla.org/ko/docs/Web/API/History/pushState) 문서에 따르면 빈 문자열을 넣게되면 알아서 현재 document의 url로 설정이 됩니다. 굳이 적어주지 않아도 된다는거죠. 그리고 내가 원하는건 뒤로가기니까 `navigate(-1)` 형태로 주었어요.
-```js
+```js showLineNumbers
   useEffect(() => {
     history.pushState(null, "", "");
     console.log("스택쌓음");
@@ -89,6 +89,5 @@ router 이동 시 발생하는 popstate의 기본 이벤트를 막을 수는 없
 sessionStorage와 쿼리스트링을 이용한 방법도 가능하겠다는 생각이 드네요. sessionStorage는 동일하게 뒤로가기 이벤트를 막는 pushState가 필요할 것 같고 쿼리스트링을 이용하면 가장 깔끔하게 될거 같습니다! 
 
 > 브라우저의 기본적인 이벤트를 막고 진행을 해야한다는 점이 어떤 에러를 일으킬지 몰라 사실 historyAPI는 지양하는게 좋다지만.. 2일을 붙잡아도 다른 방법이 떠오르지 않네요 😅 추후 기회가 된다면 쿼리스트링으로 업데이트 해보겠습니다!
-
 ***
 ❗️ (2024-11-25) **정말 꼭 사용해야 하는게 아니라면 쿼리스트링을 이용하세요!**

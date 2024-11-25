@@ -28,14 +28,13 @@ GPG란 PGP 라는 전자우편 암호화 도구를 기반으로 만든 소프트
 
 ### GPG 설치 및 설정
 저는 맥os 사용자이기에 brew를 이용했습니다.
-```
+```bash showLineNumbers
 brew install gpg //gpg 설치
 
 gpg --gen-key
 ```
 `gpg --gen-key`를 입력하면 이름, 이메일을 입력하라고 나오는데 사용하실 이름과 이메일을 입력하시면 됩니다. (이메일은 깃허브에 등록해야하니 깃허브에 등록된 이메일과 통일하시면 편해요!) 그리고 다 입력했다면 O 를 입력해주면 프롬프트가 나오는데 앞으로 커밋을 보낼 때 등등 사용할 암호를 설정해주시면 됩니다. 계속 사용하니 잊지않는걸로 설정하세요!
-
-```
+```bash showLineNumbers
 We need to generate a lot of random bytes. It is a good idea to perform
 some other action (type on the keyboard, move the mouse, utilize the
 disks) during the prime generation; this gives the random number
@@ -56,7 +55,7 @@ sub   rsa3072 2021-02-08 [E] [expires: 2023-02-08]
 ```
 완료되면 해당 메세지가 보일텐데 여기 보이는 key는 나중에 필요하니 따로 메모장같은곳에 적어두시는걸 추천합니다! RSA3072 암호화 알고리즘을 적용했다고 합니다.
 
-```
+```bash showLineNumbers
 $ git config --global user.email test@email.com
 $ git config --global user.name "Test RealName"
 $ git config --global user.signingkey 85B5FA0A8A67AA1A20FA7D4BE15D651143742DAD
@@ -77,9 +76,8 @@ $ git config --global gpg.program gpg
 GPG키를 이제 github에 등록해줘야하는데 프로필을 눌러 Settings에 들어가신 후 SSH and GPG Keys 를 클릭하시면 new GPG key를 눌러 등록하시면 됩니다.
 
 
-```
+```bash showLineNumbers
 -----BEGIN PGP PUBLIC KEY BLOCK-----
-
 mQGNBGAhCUkBDADppPlF2hOAxPzlfgIFaMROdu62EAj9y3pn+FKI+A1ckWRzDkib
 2JwN1017zUqdAkKan2H4k4fAlcfJ+1TZLlU4gvxJahHj88CswY3RWd9yZt1faE2g
 Kt4yk/pWc7TH+TRfcLvAu37eCo+Z7OEuktu836e1A0ySreWtNtFZuXGPf7z69jFx
@@ -126,7 +124,7 @@ gCrQ7YWLfhewIewqujWAeWR/9j7gbg==
 ![](/images/activities/argo_workflows_gpg/5.png)
 DCO는 오픈소스 프로젝트에 컨트리뷰터가 PR 등 코드에 자신의 기여를 인증하는 방법입니다. 모든 커밋 메시지에 작성자와 일치하는 이메일 주소가 포함되어야 합니다.
 DCO봇 체크를 하는 방법은 간단합니다!
-```
+```bash showLineNumbers
 git commit -s -m 'feat: DCO봇 넘어가기'
 ```
 이런식으로 -s 옵션을 걸어주면 커밋 하단에 이미지 처럼 자동으로 Signed-off-by: [이름] [이메일]이 들어가게 되고 DCO봇의 체크를 넘어가게 됩니다.
