@@ -1,5 +1,5 @@
 import type { Config } from 'tailwindcss';
-const colors = require('tailwindcss/colors');
+import colors from 'tailwindcss/colors';
 
 // rehype-pretty-code 플러그인 css 추가 후 수정함 원본 참고 https://github.com/rehype-pretty/rehype-pretty-code/blob/master/examples/next/src/app/globals.css
 
@@ -79,7 +79,7 @@ const config: Config = {
 				DEFAULT: {
 					css: {
 						pre: {
-							background: '#1f2937',
+							background: 'var(--shiki-dark-bg)',
 							code: {
 								fontSize: '1rem',
 							},
