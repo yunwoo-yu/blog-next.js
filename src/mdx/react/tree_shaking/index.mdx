@@ -1,0 +1,59 @@
+---
+title: "Tree Shaking(lodash)"
+createdAt: 2023-07-03
+description: 뭣? lodash가 CJS라이브러리?
+thumbnail: /images/react/tree_shaking/thumbnail.png
+tags: [React, lodash, TreeShaking]
+---
+
+![](/images/react/tree_shaking/1.png)
+> 테오의 스프린트가 끝나고 코드 리팩토링 PR을 올렸는데 PL분의 코멘트를 받고 충격먹어 기록해두는 lodash의 tree shaking 🦊
+
+### tree shaking
+트리 쉐이킹은 **사용하지 않는 코드를 제거**하는 방법입니다. 번들링 사이즈를 줄이기 위해 사용하는 방법으로 webpack 등에서 번들러에 포함이 되어 있는 기능입니다.
+
+평소에 라이브러리를 불러와 사용할 때 다른 곳에서 사용할 때 두개의 방법을 사용하게 되는데
+
+```ts showLineNumbers
+import ${name} from '경로'
+const name = require('경로')
+``` 
+
+`import`는 ES6에 새롭게 추가된 방식이고 `require`는 주로 node에서 사용하는 방법 이였습니다. (현재는 node에서도 ES모듈 사용 가능)
+
+### lodash
+
+```ts showLineNumbers
+import { debounce } from 'lodash'
+import { WheelEvent, useRef } from 'react'
+
+const useHorizontalWheel = () => {
+  const wheelRef = useRef<null | HTMLDivElement>(null)
+  const onWheelHandler = debounce((e: WheelEvent<HTMLDivElement>) => {
+    if (wheelRef.current) {
+      wheelRef.current.scrollLeft +=
+        e.deltaY > 0 ? wheelRef.current.clientWidth + 10 : -wheelRef.current.clientWidth + -10
+    }
+  }, 100)
+
+  return { wheelRef, onWheelHandler }
+}
+
+export default useHorizontalWheel
+```
+
+![](/images/react/tree_shaking/2.png)
+
+
+스프린트 프로젝트 진행 중 마우스 휠을 이용한 가로 슬라이드를 만드는 구간에 debounce 기술을 적용하기 위해 lodash 라이브러리를 설치했고 평소와 똑같이 사용했습니다. 해당 훅은 업로드 페이지에서 사용했고 PL분께 코멘트를 듣고 빌드하여 확인해보니 다른페이지 보다 확실히 큰 사이즈.. 관련된 내용을 찾아보니 이미 많이 이슈가 됐던 사항인지 많은 레퍼런스가 나왔고 결과는 이렇습니다.
+> lodash 라이브러리는 **CommonJS 형식으로 (module.exports 방식의 내보내기)** 작성되어 있어 해당 코드는 트리 쉐이킹을 할 수 없다. Webpack은 ES6 모듈 형식으로 의존성을 관리하는 모듈만 Tree-Shaking을 진행한다. [웹팩 Tree Shaking](https://webpack.kr/guides/tree-shaking/)
+
+### 해결 방법
+관련 내용을 찾아보고 플러그인을 설치하는 방법도 있었지만 간단하게 import 내용을 변경하는 방법을 사용했다. 2가지의 방법 중 하나를 채택하여 사용하면 될거 같다.
+```ts showLineNumbers
+import debounce from 'lodash/debounce' // 또는
+import { debounce } from 'lodash-es' // npm i lodash-es 설치 필요
+```
+### 적용 후
+![](images/react/tree_shaking/3.png) 무려 24kB나 줄어 드는걸 볼 수 있다. 번들 크기를 더 줄일 방법이  있는지 빨리 더 찾아봐야겠다. (성능 관련 최적화 작업은 성공 시 성취감이 너무 좋다..)
+해당 내용을 몰랐다면 lodash 사용 페이지마다 번들 사이즈를 줄이지 못했을지도 몰랐는데 앞으로 라이브러리 사용 시 해당 라이브러리의 export 방식이 ES 모듈이 맞는지 체크 해야겠다! 완전 좋은 정보 공유 감사합니다 PL,,👍
