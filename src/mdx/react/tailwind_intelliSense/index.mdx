@@ -1,0 +1,81 @@
+---
+title: "Tailwind 자동완성 조금 더 편하게 쓰는 방법"
+createdAt: 2023-11-03
+description: 인텔리센스가 조금 더 편리하고 똑똑해지는 마법
+thumbnail: /images/react/tailwind_intelliSense/thumbnail.png
+tags: [React, Tailwind]
+---
+
+> 요즘 Next.js를 사용하며 CSS-IN-JS 대응이 안되는 문제로 Tailwind CSS를 자주 사용하고 있다.
+> VScode 에서 Tailwind CSS IntelliSense 라는 확장 프로그램을 제공해 Tailwind에서 정해진 포맷을 보여주지만 약간의 불편함이 있다. 설정을 통해 해결해보자!
+
+### Tailwind
+- Tailwind는 CSS 프레임워크로 엄청나게 많은 utility class로 이루어진 프레임워크다.
+- 만들어져 있는 utility class를 class에 넣어주기만 하면 해당 스타일링이 적용된다.
+
+### 사용법
+
+설치방법은 공식페이지를 참고하자. [공식페이지](https://tailwindcss.com/docs/installation/using-postcss)를 따라 설치했다면 사용법은 별거 없다.
+
+```js showLineNumbers
+function App() {
+  return (
+    <div className=" flex items-center justify-center gap-4 w-full h-screen">
+      <div className=" w-12 h-12 bg-red-300" />
+      <div className=" w-12 h-12 bg-blue-300" />
+    </div>
+  );
+}
+
+export default App;
+```
+
+- 정해진 utility class를 className에 적용해주면 된다.
+- 근데 뭔가 이상하지 않은가? className 첫글자에 공백!!! 바로 저게 이 포스트를 작성하는 이유고 왜 저렇게 되었는지 어떻게 해결하는지 알아보자.
+
+### Tailwind CSS IntelliSense
+
+개발시에 무료 에디터로 VScode를 많이들 사용한다. 이 VScode의 장점으로는 많은 확장프로그램이 있다는 것인데 이 수많은 utility class를 공식 문서를 뒤져가며 찾기는 힘들기에 자동 완성 확장 프로그램인 Tailwind CSS IntelliSense가 존재한다.
+
+![](/images/react/tailwind_intelliSense/1.png)
+
+![](/images/react/tailwind_intelliSense/2.png)
+
+- 확장 프로그램을 설치하고 나면 내가 입력한 텍스트에 따라 자동완성 utility class와 해당 class가 어떤 스타일링을 제공하는지 알 수 있다.
+
+### Tailwind CSS IntelliSense 문제점
+
+![](/images/react/tailwind_intelliSense/3.gif)
+
+- 사용해 본 사람들은 다 알겠지만 저 확장프로그램은 띄어쓰기를 해줘야 나온다,, 후.. 첫칸에 빈 공백이 생기게 되고 이게 싫다면 className -> Tab을 입력했을 때 나오는 흰 배경을 esc로 제거하고 문자열 ""을 다시 입력해줘야한다.
+- 물론 그냥 쓴다음에 공백을 지우면 되긴한다. 근데 Tailwind를 사용한다면 모든 태그에 className을 넣어줄텐데 그때마다 공백을 지우러 뒤로가야 한다면 이것도 은근히(굉장히) 귀찮은 작업이 아닐 수 없다. 다행히 해결 방법이 있다.
+
+### 해결 방법
+
+![](/images/react/tailwind_intelliSense/4.png)
+
+- 우선 VScode에서 Alt(window는 control) + Shift + P 를 눌러 해당 검색창을 켠 후 settings 를 입력해주자.
+- JSON 파일을 열면 뭐가 써있을 건데 신경쓰지 말자. 해당 파일은 VScode에 대한 사용자의 설정 파일이다.
+
+```ts showLineNumbers
+ "editor.quickSuggestions": {
+   "strings": true
+ },
+```
+
+- json 안에 해당 문구를 복사해 그대로 넣어주면 된다.
+- 이건 editor에서 빠른 제안을 주는 옵션인데 string에 대한 모든 걸 빠르게 제안해준다. strings에 대한걸 빠르게 제안해주는데 className도 string이니 당근 제안을 준다.
+
+```ts showLineNumbers
+"files.associations": {
+  "*.js": "javascript",
+  "*.css": "tailwindcss"
+},
+```
+- 이건 다른글 보고 혹시나 해서 적어놓는건데 확장자를 인식 안할 경우 명시해주는 옵션이다. css파일이 아니니 의미 없다고 생각하는데 이게 필요하다는 글을 봐서 혹시나 적어놓는다. 첫번째걸 적용하고 VScode 리로딩 후 안된다면 적용해보자.
+- 일단 저는 없어도 잘됐읍니다 희희
+
+![](/images/react/tailwind_intelliSense/5.gif)
+
+- 적용한 후에 사용해보면 띄어쓰기 같은거 없이 내가 입력한 텍스트에 맞는 자동완성을 바로 추천해준다 👍
+- 서버 컴포넌트에 대해 아직 마땅한 대안이 없어 Tailwind를 다들 많이 사용하는데 다른 개발자에게 도움이 됐으면 한다. 🙌
