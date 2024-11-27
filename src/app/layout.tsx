@@ -1,10 +1,10 @@
 import './globals.css';
 
+import { Metadata } from 'next';
 import localFont from 'next/font/local';
 
 import Header from '@/components/common/Header';
-import { ThemeProvider } from '@/components/provider/ThemeProvider';
-import { Metadata } from 'next';
+import { ThemeProvider } from '@/components/common/provider/ThemeProvider';
 import { ROOT_META_DATA } from '@/constant';
 
 const pretendard = localFont({

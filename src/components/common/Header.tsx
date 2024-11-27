@@ -12,13 +12,13 @@ import {
 	NavigationMenuList,
 	navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu';
+import { GITHUB_URL, LINKEDIN_URL } from '@/constant';
 import useScrollDirection from '@/hooks/useScrollDirection';
 import { cn } from '@/utils/utils';
 
 import logoSrc from '../../lib/images/logo.png';
-import { GitHubIcon, LinkedInIcon } from '../icons/Icons';
+import { GitHubIcon, LinkedInIcon } from './Icons';
 import { ModeToggle } from './ModeToggle';
-import { GITHUB_URL, LINKEDIN_URL } from '@/constant';
 
 const NAVIGATION_LIST = [
 	{
