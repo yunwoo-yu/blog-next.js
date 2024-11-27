@@ -6,11 +6,20 @@ interface Params {
 	params: Promise<{ category: string }>;
 }
 
-export async function generateStaticParams() {
+export const generateMetadata = async ({ params }: Params) => {
+	const { category } = await params;
+
+	return {
+		title: `Ycow Blog - ${category}`,
+		description: `Ycow Blog ${category} 카테고리 글 목록`,
+	};
+};
+
+export const generateStaticParams = async () => {
 	const category = await getCategoryList();
 
 	return category.categoryNameList.map(categoryName => ({ category: categoryName.label }));
-}
+};
 
 const PostsPageWithCategory = async ({ params }: Params) => {
 	const { category } = await params;
