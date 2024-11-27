@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@fec/remark-a11y-emoji": "^4.0.2",
+    "@giscus/react": "^3.0.0",
     "@mdx-js/loader": "^3.1.0",
     "@mdx-js/react": "^3.1.0",
     "@next/mdx": "^15.0.3",
