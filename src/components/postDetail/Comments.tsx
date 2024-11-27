@@ -8,20 +8,22 @@ const Comments = () => {
 	const theme = resolvedTheme === 'dark' ? 'dark' : 'light';
 
 	return (
-		<Giscus
-			id="comment"
-			repo="yunwoo-yu/blog-next.js"
-			repoId="R_kgDONDDR6w"
-			category="✨ Comment ✨"
-			categoryId="DIC_kwDONDDR684CkppG"
-			mapping="pathname"
-			term="Welcome to @giscus/react component!"
-			reactionsEnabled="1"
-			emitMetadata="0"
-			inputPosition="top"
-			theme={theme}
-			lang="ko"
-		/>
+		<article className="mt-10">
+			<Giscus
+				id="comment"
+				repo="yunwoo-yu/blog-next.js"
+				repoId="R_kgDONDDR6w"
+				category="✨ Comment ✨"
+				categoryId="DIC_kwDONDDR684CkppG"
+				mapping="pathname"
+				term="Welcome to @giscus/react component!"
+				reactionsEnabled="1"
+				emitMetadata="0"
+				inputPosition="top"
+				theme={theme}
+				lang="ko"
+			/>
+		</article>
 	);
 };
 

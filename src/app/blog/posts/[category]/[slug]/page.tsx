@@ -14,7 +14,7 @@ const PostDetailPage = async ({ params }: Params) => {
 	return (
 		<>
 			<PostDetailHeader frontmatter={frontmatter} />
-			<section className="prose mx-auto max-w-4xl px-5 py-10 dark:prose-invert">
+			<section className="prose mx-auto max-w-4xl px-5 pb-20 pt-10 dark:prose-invert">
 				<CustomMDXRemote source={source} />
 				<Comments />
 			</section>
