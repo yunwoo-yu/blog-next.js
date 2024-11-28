@@ -20,8 +20,8 @@ jobs:
    
       - name: deploy
         env:
-          AWS_ACCESS_KEY: '$'
-          AWS_SECRET_KEY: '$'
+          AWS_ACCESS_KEY: '${{secrets.AWS_ACCESS_KEY}}'
+          AWS_SECRET_KEY: '${{secrets.AWS_SECRET_KEY}}'
         run:
           aws s3 cp --recursive --region ap-northeast-2 out s3://blog-ycow
    
