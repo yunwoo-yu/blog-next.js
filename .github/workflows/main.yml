@@ -7,21 +7,37 @@ on:
    
 jobs:
   build-and-deploy:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY: '${{secrets.AWS_ACCESS_KEY}}'
+      AWS_SECRET_KEY: '${{secrets.AWS_SECRET_KEY}}'
+      BUCKET: 'blog-ycow'
+      DIST: 'out'
+      REGION: 'ap-northeast-2'
+
     steps:
       - name: git clone
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{secrets.AWS_ACCESS_KEY}} 
+          aws-secret-access-key: ${{secrets.AWS_SECRET_KEY}}
+          aws-region: ${{env.REGION}}
+
+      - name: install node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'latest'
    
-      - name: yarn install
+      - name: Install dependencies
         run: yarn install
    
       - name: yarn build
-        run: yarn run build
+        run: yarn build
    
-      - name: deploy
-        env:
-          AWS_ACCESS_KEY: '${{secrets.AWS_ACCESS_KEY}}'
-          AWS_SECRET_KEY: '${{secrets.AWS_SECRET_KEY}}'
+      - name: Copy to S3
         run:
-          aws s3 cp --recursive --region ap-northeast-2 out s3://blog-ycow
+          aws s3 sync --delete ${{env.DIST}} s3://${{env.BUCKET}}
    
