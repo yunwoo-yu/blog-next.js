@@ -16,7 +16,6 @@ import { GITHUB_URL, LINKEDIN_URL } from '@/constant';
 import useScrollDirection from '@/hooks/useScrollDirection';
 import { cn } from '@/utils/utils';
 
-import logoSrc from '../../lib/images/logo.png';
 import { GitHubIcon, LinkedInIcon } from './Icons';
 import { ModeToggle } from './ModeToggle';
 
@@ -34,14 +33,14 @@ const Header = () => {
 	return (
 		<header
 			className={cn(
-				showHeader ? 'translate-y-[0px]' : 'translate-y-[-97px]',
-				'fixed left-0 top-0 z-50 w-full border-b border-gray-300 bg-[rgba(255,255,255,0.5)] px-5 py-2 backdrop-blur-sm transition-transform duration-300 ease-in-out dark:bg-[rgba(0,0,0,0.5)]',
+				showHeader ? 'translate-y-[0px]' : 'translate-y-[-98px]',
+				'fixed left-0 top-0 z-50 w-full border-b border-gray-300 bg-[rgba(255,255,255,0.5)] px-5 py-[26px] backdrop-blur-sm transition-transform duration-300 ease-in-out dark:bg-[rgba(0,0,0,0.5)]',
 			)}>
 			<NavigationMenu className="mx-auto max-w-7xl justify-between">
 				<NavigationMenuList>
 					<NavigationMenuItem>
-						<Link href="/blog/posts" className="mr-10 flex min-w-10 max-w-20">
-							<Image src={logoSrc} alt="blog logo" />
+						<Link href="/blog/posts" className="relative mr-10 flex aspect-video w-full min-w-10 max-w-20">
+							<Image src="/images/logo.png" fill alt="blog logo" className="object-cover" />
 						</Link>
 					</NavigationMenuItem>
 					{NAVIGATION_LIST.map(item => (
