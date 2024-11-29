@@ -8,7 +8,6 @@ const nextConfig = {
 	unoptimized: true,
 	trailingSlash: true,
 	// skipTrailingSlashRedirect: true,
-	assetPrefix: '.',
 	// Optionally, add any other Next.js config below
 };
 
