@@ -6,6 +6,7 @@ const nextConfig = {
 	pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
 	output: 'export',
 	unoptimized: true,
+	trailingSlash: true,
 	// Optionally, add any other Next.js config below
 };
 

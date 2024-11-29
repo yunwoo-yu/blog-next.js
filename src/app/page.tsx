@@ -7,6 +7,6 @@ export default function Home() {
 	const route = useRouter();
 
 	useEffect(() => {
-		route.push('/blog/posts');
+		route.replace('/blog/posts');
 	}, [route]);
 }
