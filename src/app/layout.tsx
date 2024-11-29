@@ -1,18 +1,11 @@
 import './globals.css';
 
 import { Metadata } from 'next';
-import localFont from 'next/font/local';
 
 import Header from '@/components/common/Header';
 import { ThemeProvider } from '@/components/common/provider/ThemeProvider';
 import { ROOT_META_DATA } from '@/constant';
-
-const pretendard = localFont({
-	src: '../lib/fonts/PretendardVariable.woff2',
-	display: 'swap',
-	weight: '45 920',
-	variable: '--font-pretendard',
-});
+import { pretendard } from '@/lib/fonts/fonts';
 
 export const metadata: Metadata = {
 	...ROOT_META_DATA,
