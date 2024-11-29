@@ -1,12 +1,5 @@
-'use client';
-
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { redirect } from 'next/navigation';
 
 export default function Home() {
-	const route = useRouter();
-
-	useEffect(() => {
-		route.replace('/blog/posts');
-	}, [route]);
+	redirect('/blog/posts');
 }
