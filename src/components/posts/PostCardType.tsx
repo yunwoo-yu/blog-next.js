@@ -1,5 +1,4 @@
 import { CalendarDays } from 'lucide-react';
-import Image from 'next/image';
 import Link from 'next/link';
 
 import { CompileMdxTypes } from '@/types/common.types';
@@ -15,7 +14,7 @@ const PostCardType = ({ data, category, slug }: PostCardTypeProps) => {
 		<li className="border border-border transition dark:hover:border-destructive">
 			<Link href={`/blog/posts/${category}/${slug}`}>
 				<div className="relative aspect-video w-full">
-					<Image src={data.thumbnail} alt="post thumbnail" fill className="object-cover" />
+					<img src={data.thumbnail} alt="post thumbnail" className="w-full object-cover" />
 				</div>
 				<div className="p-4">
 					<p className="text-xl">
