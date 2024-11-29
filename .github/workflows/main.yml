@@ -1,46 +1,46 @@
-name: Main CI
+# name: Main CI
    
-on:
-  push:
-    branches:
-      - main
+# on:
+#   push:
+#     branches:
+#       - main
    
-jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
-    env:
-      AWS_ACCESS_KEY: '${{secrets.AWS_ACCESS_KEY}}'
-      AWS_SECRET_KEY: '${{secrets.AWS_SECRET_KEY}}'
-      BUCKET: 'blog-ycow'
-      DIST: 'out'
-      REGION: 'ap-northeast-2'
+# jobs:
+#   build-and-deploy:
+#     runs-on: ubuntu-latest
+#     env:
+#       AWS_ACCESS_KEY: '${{secrets.AWS_ACCESS_KEY}}'
+#       AWS_SECRET_KEY: '${{secrets.AWS_SECRET_KEY}}'
+#       BUCKET: 'blog-ycow'
+#       DIST: 'out'
+#       REGION: 'ap-northeast-2'
 
-    steps:
-      - name: git clone
-        uses: actions/checkout@v4
+#     steps:
+#       - name: git clone
+#         uses: actions/checkout@v4
 
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{secrets.AWS_ACCESS_KEY}} 
-          aws-secret-access-key: ${{secrets.AWS_SECRET_KEY}}
-          aws-region: ${{env.REGION}}
+#       - name: Configure AWS Credentials
+#         uses: aws-actions/configure-aws-credentials@v4
+#         with:
+#           aws-access-key-id: ${{secrets.AWS_ACCESS_KEY}} 
+#           aws-secret-access-key: ${{secrets.AWS_SECRET_KEY}}
+#           aws-region: ${{env.REGION}}
 
-      - name: install node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 'latest'
+#       - name: install node
+#         uses: actions/setup-node@v4
+#         with:
+#           node-version: 'latest'
    
-      - name: Install dependencies
-        run: yarn install
+#       - name: Install dependencies
+#         run: yarn install
    
-      - name: yarn build
-        run: yarn build
+#       - name: yarn build
+#         run: yarn build
    
-      - name: Copy to S3
-        run:
-          aws s3 sync --delete ${{env.DIST}} s3://${{env.BUCKET}}
+#       - name: Copy to S3
+#         run:
+#           aws s3 sync --delete ${{env.DIST}} s3://${{env.BUCKET}}
 
-      - name: Invalidate CloudFront
-        run: aws cloudfront create-invalidation --distribution-id ${{secrets.AWS_DISTRIBUTION_ID}} --paths "/*"
+#       - name: Invalidate CloudFront
+#         run: aws cloudfront create-invalidation --distribution-id ${{secrets.AWS_DISTRIBUTION_ID}} --paths "/*"
    
