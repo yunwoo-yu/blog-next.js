@@ -7,7 +7,7 @@ const nextConfig = {
 	output: 'export',
 	unoptimized: true,
 	trailingSlash: true,
-	skipTrailingSlashRedirect: true,
+	// skipTrailingSlashRedirect: true,
 	assetPrefix: '.',
 	// Optionally, add any other Next.js config below
 };
