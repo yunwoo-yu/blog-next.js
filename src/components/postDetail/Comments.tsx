@@ -16,12 +16,13 @@ const Comments = () => {
 				category="✨ Comment ✨"
 				categoryId="DIC_kwDONDDR684CkppG"
 				mapping="pathname"
-				term="Welcome to @giscus/react component!"
+				term="Welcome"
 				reactionsEnabled="1"
 				emitMetadata="0"
 				inputPosition="top"
 				theme={theme}
 				lang="ko"
+				loading="eager"
 			/>
 		</article>
 	);
