@@ -4,9 +4,10 @@ import createMDX from '@next/mdx';
 const nextConfig = {
 	// Configure `pageExtensions` to include markdown and MDX files
 	pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
-	output: 'export',
-	unoptimized: true,
-	trailingSlash: true,
+	// output: 'export',
+	// unoptimized: true,
+	// trailingSlash: true,
+	// skipTrailingSlashRedirect: true,
 	// Optionally, add any other Next.js config below
 };
 

@@ -20,7 +20,11 @@ const BlogPosts = ({ posts }: BlogPostsProps) => {
 	return (
 		<section className="flex-1">
 			<ViewToggle viewType={viewType} onChangeViewType={onChangeViewType} />
-			<ul className={cn('pt-5', viewType === 'list' ? 'flex flex-col' : 'grid gap-5 sm:grid-cols-1 md:grid-cols-2')}>
+			<ul
+				className={cn(
+					'w-full pt-5',
+					viewType === 'list' ? 'flex flex-col' : 'grid gap-5 sm:grid-cols-1 md:grid-cols-2',
+				)}>
 				{posts.map(post => (
 					<Fragment key={post.frontmatter.title}>
 						{viewType === 'list' ? (

@@ -11,8 +11,8 @@ interface PostCardTypeProps {
 
 const PostCardType = ({ data, category, slug }: PostCardTypeProps) => {
 	return (
-		<li className="border border-border transition dark:hover:border-destructive">
-			<Link href={`/blog/posts/${category}/${slug}`}>
+		<li className="w-full border border-border transition dark:hover:border-destructive">
+			<Link href={`/blog/posts/${category}/${slug}`} className="flex flex-col">
 				<div
 					className="relative aspect-video h-full max-h-60 w-full bg-cover bg-center bg-no-repeat"
 					style={{
@@ -20,10 +20,7 @@ const PostCardType = ({ data, category, slug }: PostCardTypeProps) => {
 					}}
 				/>
 				<div className="p-4">
-					<p className="text-xl">
-						{data.title}
-						<span></span>
-					</p>
+					<p className="text-xl">{data.title}</p>
 					<p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{data.description}</p>
 					<p className="mt-2 flex items-center text-xs text-gray-400">
 						<CalendarDays className="mr-1 size-4" />
