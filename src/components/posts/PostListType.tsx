@@ -27,9 +27,12 @@ const PostListType = ({ data, category, slug }: PostListTypeProps) => {
 						</div>
 					</div>
 				</div>
-				<div className="relative hidden aspect-video w-full max-w-36 sm:block">
-					<img src={data.thumbnail} alt="post thumbnail" className="w-full object-cover" />
-				</div>
+				<div
+					className="relative hidden aspect-video h-full max-h-[81px] w-full max-w-36 bg-cover bg-center bg-no-repeat sm:block"
+					style={{
+						backgroundImage: `url(${data.thumbnail})`,
+					}}
+				/>
 			</Link>
 		</li>
 	);
