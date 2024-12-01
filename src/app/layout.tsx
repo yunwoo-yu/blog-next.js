@@ -3,6 +3,7 @@ import './globals.css';
 import { Analytics } from '@vercel/analytics/react';
 import { Metadata } from 'next';
 
+import Footer from '@/components/common/Footer';
 import Header from '@/components/common/Header';
 import { ThemeProvider } from '@/components/common/provider/ThemeProvider';
 import { ROOT_META_DATA } from '@/constant';
@@ -23,6 +24,7 @@ export default function RootLayout({
 				<ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
 					<Header />
 					<main className="mt-[97px]">{children}</main>
+					<Footer />
 				</ThemeProvider>
 				<Analytics />
 			</body>
