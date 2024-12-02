@@ -37,8 +37,8 @@ const Header = () => {
 			)}>
 			<NavigationMenu className="mx-auto max-w-7xl justify-between">
 				<NavigationMenuList>
-					<NavigationMenuItem>
-						<Link href="/blog/posts" className="relative mr-10 flex h-20 w-full min-w-10">
+					<NavigationMenuItem className="mr-10">
+						<Link href="/blog/posts" className="relative flex h-20 w-20">
 							<Image src="/images/logo.png" alt="blog logo" className="object-cover" fill sizes="80x80" />
 						</Link>
 					</NavigationMenuItem>
