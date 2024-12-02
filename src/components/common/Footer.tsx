@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import Link from 'next/link';
 
 import { GITHUB_URL, LINKEDIN_URL } from '@/constant';
@@ -20,7 +21,7 @@ const Footer = () => {
 					</Link>
 				</Button>
 			</article>
-			<p className="text-sm">Ycow &bull; &copy; 2015. All rights reserved</p>
+			<p className="text-sm">Ycow &bull; &copy; {dayjs().format('YYYY')}. All rights reserved</p>
 		</footer>
 	);
 };
