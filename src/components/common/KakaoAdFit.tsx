@@ -15,7 +15,7 @@ const KakaoAdFit = ({ unit, width, height, disabled = true }: KakaoAdFitProps) =
 	useEffect(() => {
 		if (!disabled) {
 			const script = document.createElement('script');
-			script.setAttribute('src', 'https://t1.daumcdn.net/kas/static/ba.min.js');
+			script.setAttribute('src', '//t1.daumcdn.net/kas/static/ba.min.js');
 			script.setAttribute('async', 'true');
 			scriptElementWrapper.current?.appendChild(script);
 
@@ -27,7 +27,10 @@ const KakaoAdFit = ({ unit, width, height, disabled = true }: KakaoAdFitProps) =
 	}, [disabled]);
 
 	return (
-		<aside ref={scriptElementWrapper} style={{ width: `${width}px`, height: `${height}px` }}>
+		<aside
+			className="hidden lg:block"
+			ref={scriptElementWrapper}
+			style={{ width: `${width}px`, height: `${height}px` }}>
 			<ins
 				className="kakao_ad_area"
 				style={{ display: 'none' }}
