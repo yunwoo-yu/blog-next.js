@@ -90,6 +90,10 @@ code {
   @apply text-sm md:text-base !leading-loose;
 }
 
+html {
+  scroll-behavior: smooth
+}
+
 pre > code {
   counter-reset: line;
 }
