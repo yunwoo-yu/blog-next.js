@@ -3,7 +3,8 @@ import markdownToTxt from 'markdown-to-txt';
 import CustomMDXRemote from '@/components/common/CustomMDXRemote';
 import Comments from '@/components/postDetail/Comments';
 import PostDetailHeader from '@/components/postDetail/PostDetailHeader';
-import { getAllPosts, getAllPostsPath, getPostDetail } from '@/utils/post-utils';
+import TitleIndex from '@/components/postDetail/TitleIndex';
+import { getAllPosts, getAllPostsPath, getHeaderNavigationList, getPostDetail } from '@/utils/post-utils';
 interface Params {
 	params: Promise<{ category: string; slug: string }>;
 }
@@ -33,10 +34,12 @@ export const generateMetadata = async ({ params }: Params) => {
 const PostDetailPage = async ({ params }: Params) => {
 	const { category, slug } = await params;
 	const { source, frontmatter } = await getPostDetail(category, slug);
+	const headerNavigationList = getHeaderNavigationList(source);
 
 	return (
 		<>
 			<PostDetailHeader frontmatter={frontmatter} />
+			<TitleIndex headerNavigationList={headerNavigationList} />
 			<section className="prose mx-auto max-w-4xl px-5 pb-20 pt-10 dark:prose-invert">
 				<CustomMDXRemote source={source} />
 				<Comments />

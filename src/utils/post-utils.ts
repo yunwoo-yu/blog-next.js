@@ -56,3 +56,25 @@ export const getCategoryList = async () => {
 
 	return { categoryNameList, allCount };
 };
+
+export const getHeaderNavigationList = (source: string) => {
+	const regex = /^(###) (.*$)/gim;
+	const headingList = source.match(regex);
+
+	const convertedHeader = headingList?.map(heading => {
+		const regex = /### /gim;
+		const text = heading.replace(regex, '');
+
+		return {
+			text,
+			href:
+				'#' +
+				text
+					.replace(/ /g, '-')
+					.replace(/[\[\]:!@#$/%^&*()+=,.]/g, '')
+					.toLowerCase(),
+		};
+	});
+
+	return convertedHeader;
+};
