@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -37,8 +38,8 @@ const Header = () => {
 			<NavigationMenu className="mx-auto max-w-7xl justify-between">
 				<NavigationMenuList>
 					<NavigationMenuItem>
-						<Link href="/blog/posts" className="relative mr-10 flex w-full min-w-10 max-w-20">
-							<img src="/images/logo.png" alt="blog logo" className="w-full object-cover" />
+						<Link href="/blog/posts" className="relative mr-10 flex h-20 w-full min-w-10">
+							<Image src="/images/logo.png" alt="blog logo" className="object-cover" fill sizes="80x80" />
 						</Link>
 					</NavigationMenuItem>
 					{NAVIGATION_LIST.map(item => (
