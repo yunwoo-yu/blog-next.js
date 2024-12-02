@@ -1,4 +1,5 @@
 import CategoryVerticalList from '@/components/common/CategoryVerticalList';
+import KakaoAdFit from '@/components/common/KakaoAdFit';
 import BlogPosts from '@/components/posts/BlogPosts';
 import { getAllPosts, getAllPostsPath, getCategoryList } from '@/utils/post-utils';
 
@@ -12,6 +13,7 @@ const BlogPostsPage = async () => {
 			<h1 className="sr-only">Ycow Blog</h1>
 			<CategoryVerticalList categoryData={categoryData} />
 			<BlogPosts posts={posts} />
+			<KakaoAdFit unit="DAN-Cj5MxJWs7glmj6ft" width="160" height="600" />
 		</section>
 	);
 };
