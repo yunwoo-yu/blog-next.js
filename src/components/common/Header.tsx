@@ -20,8 +20,8 @@ import { ModeToggle } from './ModeToggle';
 
 const NAVIGATION_LIST = [
 	{
-		href: '/about',
-		label: 'About',
+		href: '/blog/posts',
+		label: 'Posts',
 	},
 ];
 
@@ -39,7 +39,13 @@ const Header = () => {
 				<NavigationMenuList>
 					<NavigationMenuItem className="mr-10">
 						<Link href="/blog/posts" className="relative flex h-20 w-20">
-							<Image src="/images/logo.png" alt="blog logo" className="object-cover" fill sizes="80x80" />
+							<Image
+								src="/images/logo.png"
+								alt="blog logo"
+								className="object-cover"
+								fill
+								sizes="(max-width: 1900px) 160px"
+							/>
 						</Link>
 					</NavigationMenuItem>
 					{NAVIGATION_LIST.map(item => (
