@@ -36,4 +36,11 @@ export const ROOT_META_DATA: Metadata = {
 		siteName: META_APPLICATION_NAME,
 		images: ['/images/og_thumbnail.png'],
 	},
+	twitter: {
+		card: 'summary_large_image',
+		title: META_TITLE,
+		description: META_DESCRIPTION,
+		creator: '@Ycow',
+		images: ['/images/og_thumbnail.png'],
+	},
 };
