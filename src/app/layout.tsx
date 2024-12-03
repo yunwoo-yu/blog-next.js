@@ -20,10 +20,10 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en" suppressHydrationWarning className={`${pretendard.variable} font-pretendard font-normal`}>
-			<body>
+			<body className="flex min-h-screen flex-col">
 				<ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
 					<Header />
-					<main className="mt-[97px]">{children}</main>
+					<main className="mt-[97px] flex-1">{children}</main>
 					<Footer />
 				</ThemeProvider>
 				<Analytics />
