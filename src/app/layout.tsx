@@ -20,6 +20,9 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en" suppressHydrationWarning className={`${pretendard.variable} font-pretendard font-normal`}>
+			<head>
+				<link rel="icon" href="/favicon.ico" sizes="any" />
+			</head>
 			<body className="flex min-h-screen flex-col">
 				<ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
 					<Header />
