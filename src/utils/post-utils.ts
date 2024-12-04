@@ -70,8 +70,9 @@ export const getHeaderNavigationList = (source: string) => {
 			href:
 				'#' +
 				text
-					.replace(/ /g, '-')
 					.replace(/[\[\]:!@#$/%^&*()+=,.]/g, '')
+					.replace(/ /g, '-')
+					.replace('?', '')
 					.toLowerCase(),
 		};
 	});
