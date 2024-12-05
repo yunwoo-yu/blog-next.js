@@ -7,9 +7,22 @@ interface KakaoAdFitProps {
 	width: string;
 	height: string;
 	disabled?: boolean;
+	className?: string;
 }
 
-const KakaoAdFit = ({ unit, width, height, disabled = true }: KakaoAdFitProps) => {
+interface Adfit {
+	display: (unit: string) => void;
+	destroy: (unit: string) => void;
+	refresh: (unit: string) => void;
+}
+
+declare global {
+	interface Window {
+		adfit?: Adfit;
+	}
+}
+
+const KakaoAdFit = ({ unit, width, height, className, disabled = false }: KakaoAdFitProps) => {
 	const scriptElementWrapper = useRef<HTMLElement | null>(null);
 
 	useEffect(() => {
@@ -20,25 +33,27 @@ const KakaoAdFit = ({ unit, width, height, disabled = true }: KakaoAdFitProps) =
 			scriptElementWrapper.current?.appendChild(script);
 
 			return () => {
-				// const globalAdfit = 'adfit' in window ? window.adfit : null;
-				// if (globalAdfit) globalAdfit.destroy(unit);
+				const globalAdfit = 'adfit' in window ? window.adfit : null;
+
+				if (globalAdfit) {
+					globalAdfit.destroy(unit);
+				}
 			};
 		}
-	}, [disabled]);
+	}, [disabled, unit]);
 
 	return (
-		<aside
-			className="hidden lg:block"
-			ref={scriptElementWrapper}
-			style={{ width: `${width}px`, height: `${height}px` }}>
-			<ins
-				className="kakao_ad_area"
-				style={{ display: 'none' }}
-				data-ad-unit={unit}
-				data-ad-width={width}
-				data-ad-height={height}
-			/>
-		</aside>
+		<div className={className}>
+			<aside ref={scriptElementWrapper} style={{ width: `${width}px`, height: `${height}px` }}>
+				<ins
+					className="kakao_ad_area"
+					style={{ display: 'none' }}
+					data-ad-unit={unit}
+					data-ad-width={width}
+					data-ad-height={height}
+				/>
+			</aside>
+		</div>
 	);
 };
 

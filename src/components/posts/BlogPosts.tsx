@@ -6,6 +6,7 @@ import useViewTypesTab from '@/hooks/useViewTypesTab';
 import { PostListTypes } from '@/types/common.types';
 import { cn } from '@/utils/utils';
 
+import KakaoAdFit from '../common/KakaoAdFit';
 import PostCardType from './PostCardType';
 import PostListType from './PostListType';
 import ViewToggle from './ViewToggle';
@@ -35,6 +36,7 @@ const BlogPosts = ({ posts }: BlogPostsProps) => {
 					</Fragment>
 				))}
 			</ul>
+			<KakaoAdFit unit="DAN-CjB92EFr1OIV22WH" width="728" height="90" className="mt-20 hidden xl:block" />
 		</section>
 	);
 };
