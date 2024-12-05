@@ -28,6 +28,12 @@ export const ROOT_META_DATA: Metadata = {
 	creator: META_CREATOR,
 	publisher: META_PUBLISHER,
 	category: META_CATEGORY,
+	verification: {
+		google: 'ax_0fwy0VtSqLoetzvw8ap6chPh_IIt5WbYLSKJYlCA',
+		other: {
+			'naver-site-verification': 'e38c31efbed18a8c733106f790f2a1bc92fdda3b',
+		},
+	},
 	openGraph: {
 		title: META_TITLE,
 		description: META_DESCRIPTION,
