@@ -36,7 +36,12 @@ const BlogPosts = ({ posts }: BlogPostsProps) => {
 					</Fragment>
 				))}
 			</ul>
-			<KakaoAdFit unit="DAN-CjB92EFr1OIV22WH" width="728" height="90" className="mt-20 hidden xl:block" />
+			<KakaoAdFit
+				unit="DAN-CjB92EFr1OIV22WH"
+				width="728"
+				height="90"
+				className="mx-auto mt-20 hidden xl:flex xl:justify-center"
+			/>
 		</section>
 	);
 };
