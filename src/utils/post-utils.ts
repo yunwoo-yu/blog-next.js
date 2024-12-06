@@ -70,6 +70,8 @@ export const getHeaderNavigationList = (source: string) => {
 			href:
 				'#' +
 				text
+					.replace(/[\u{1F600}-\u{1F6FF}]/gu, '')
+					.replace(/\p{Emoji_Presentation}/gu, '')
 					.replace(/[\[\]:!@#$/%^&*()+=,.]/g, '')
 					.replace(/ /g, '-')
 					.replace('?', '')
