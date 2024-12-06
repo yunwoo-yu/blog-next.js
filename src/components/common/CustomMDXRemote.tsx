@@ -22,16 +22,18 @@ const options: Options = {
 
 const CustomMDXRemote = ({ source }: CustomMDXRemoteProps) => {
 	return (
-		<MDXRemote
-			source={source}
-			options={{
-				mdxOptions: {
-					remarkPlugins: [remarkGfm, remarkA11yEmoji, remarkBreaks],
-					rehypePlugins: [[rehypePrettyCode, options], rehypeSlug],
-				},
-			}}
-			components={useMDXComponents}
-		/>
+		<section className="prose max-w-4xl dark:prose-invert">
+			<MDXRemote
+				source={source}
+				options={{
+					mdxOptions: {
+						remarkPlugins: [remarkGfm, remarkA11yEmoji, remarkBreaks],
+						rehypePlugins: [[rehypePrettyCode, options], rehypeSlug],
+					},
+				}}
+				components={useMDXComponents}
+			/>
+		</section>
 	);
 };
 
