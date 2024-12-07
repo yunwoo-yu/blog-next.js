@@ -50,10 +50,15 @@ export default useHorizontalWheel
 
 ### 해결 방법
 관련 내용을 찾아보고 플러그인을 설치하는 방법도 있었지만 간단하게 import 내용을 변경하는 방법을 사용했다. 2가지의 방법 중 하나를 채택하여 사용하면 될거 같다.
+
 ```ts showLineNumbers
 import debounce from 'lodash/debounce' // 또는
 import { debounce } from 'lodash-es' // npm i lodash-es 설치 필요
 ```
+
 ### 적용 후
-![](images/react/tree_shaking/3.png) 무려 24kB나 줄어 드는걸 볼 수 있다. 번들 크기를 더 줄일 방법이  있는지 빨리 더 찾아봐야겠다. (성능 관련 최적화 작업은 성공 시 성취감이 너무 좋다..)
+
+![](/images/react/tree_shaking/3.png)
+
+무려 24kB나 줄어 드는걸 볼 수 있다. 번들 크기를 더 줄일 방법이  있는지 빨리 더 찾아봐야겠다. (성능 관련 최적화 작업은 성공 시 성취감이 너무 좋다..)
 해당 내용을 몰랐다면 lodash 사용 페이지마다 번들 사이즈를 줄이지 못했을지도 몰랐는데 앞으로 라이브러리 사용 시 해당 라이브러리의 export 방식이 ES 모듈이 맞는지 체크 해야겠다! 완전 좋은 정보 공유 감사합니다 PL,,👍
