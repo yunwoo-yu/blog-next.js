@@ -29,6 +29,15 @@ export const generateMetadata = async ({ params }: Params) => {
 	return {
 		title: `${post.frontmatter.title}`,
 		description: `${description}`,
+		openGraph: {
+			title: `${post.frontmatter.title}`,
+			description: `${description}`,
+			images: [
+				{
+					url: `/images/${category}/${slug}/thumbnail.png`,
+				},
+			],
+		},
 	};
 };
 
