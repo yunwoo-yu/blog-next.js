@@ -1,6 +1,8 @@
 import { Metadata } from 'next';
 import { Author } from 'next/dist/lib/metadata/types/metadata-types';
 
+export const BASE_URL = 'https://ycow-dev.com';
+
 export const LINKEDIN_URL = 'https://www.linkedin.com/in/yunwoo-yu-65095b263';
 
 export const GITHUB_URL = 'https://github.com/yunwoo-yu';
