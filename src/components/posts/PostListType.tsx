@@ -29,7 +29,7 @@ const PostListType = ({ data, category, slug }: PostListTypeProps) => {
 					</div>
 				</div>
 				<div className="relative hidden aspect-video w-full max-w-36 sm:block">
-					<Image src={data.thumbnail} alt="post thumbnail" fill className="object-cover" />
+					<Image src={data.thumbnail} alt="post thumbnail" fill className="object-cover" sizes="144px" priority />
 				</div>
 			</Link>
 		</li>

@@ -15,7 +15,13 @@ const PostCardType = ({ data, category, slug }: PostCardTypeProps) => {
 		<li className="w-full border border-border transition dark:hover:border-destructive">
 			<Link href={`/blog/posts/${category}/${slug}`} className="relative flex flex-col">
 				<div className="relative hidden aspect-video w-full sm:block">
-					<Image src={data.thumbnail} alt="post thumbnail" fill className="object-cover" />
+					<Image
+						src={data.thumbnail}
+						alt="post thumbnail"
+						fill
+						className="object-cover"
+						sizes="(max-width: 768px) 725px (max-width: 1900px) 500px"
+					/>
 				</div>
 				<div className="p-4">
 					<h2 className="text-xl">{data.title}</h2>
