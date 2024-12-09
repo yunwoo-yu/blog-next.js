@@ -65,7 +65,7 @@ const Header = () => {
 							href={GITHUB_URL}
 							target="_blank"
 							aria-label="github link button"
-							className="flex size-9 items-center justify-center rounded-md border border-input">
+							className="flex size-9 items-center justify-center rounded-md border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground">
 							<GitHubIcon width={16} height={16} />
 						</Link>
 					</li>
@@ -74,7 +74,7 @@ const Header = () => {
 							href={LINKEDIN_URL}
 							target="_blank"
 							aria-label="linkedin link button"
-							className="flex size-9 items-center justify-center rounded-md border border-input">
+							className="flex size-9 items-center justify-center rounded-md border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground">
 							<LinkedInIcon width={16} height={16} />
 						</Link>
 					</li>
