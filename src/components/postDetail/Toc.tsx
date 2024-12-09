@@ -3,8 +3,8 @@
 import Link from 'next/link';
 
 import useObserverToc from '@/hooks/useObserverToc';
-import { cn } from '@/utils/utils';
 import { HeadingTypes } from '@/types/common.types';
+import { cn } from '@/utils/utils';
 
 interface TitleIndexProps {
 	headerNavigationList?: HeadingTypes[];
