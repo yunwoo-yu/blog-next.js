@@ -13,7 +13,7 @@ const CategoryVerticalList = async ({ categoryData, category }: CategoryVertical
 
 	return (
 		<aside className="hidden w-full max-w-[150px] pt-[52px] md:block">
-			<h3 className="border-b border-border pb-1 text-base font-bold text-foreground">카테고리 목록</h3>
+			<p className="border-b border-border pb-1 text-base font-bold text-foreground">카테고리 목록</p>
 			<ul className="pt-2 text-sm">
 				<li className={'mb-2'}>
 					<Link
