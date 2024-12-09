@@ -46,10 +46,10 @@ const PostDetailPage = async ({ params }: Params) => {
 	return (
 		<>
 			<PostDetailHeader frontmatter={frontmatter} />
-			<article className="mx-auto max-w-3xl px-5 transition xl:sticky xl:left-[80%] xl:top-60 xl:mx-0 xl:max-w-72">
+			<article className="mx-auto max-w-3xl px-5 transition xl:fixed xl:left-[80%] xl:top-64 xl:mx-0 xl:max-w-72">
 				<Toc headerNavigationList={headerNavigationList} />
 			</article>
-			<section className="mx-auto max-w-3xl px-5 pb-20 pt-10 xl:-mt-60">
+			<section className="mx-auto max-w-3xl px-5 pb-20 pt-10">
 				<CustomMDXRemote source={source} />
 				<Comments />
 			</section>
