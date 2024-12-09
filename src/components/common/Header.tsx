@@ -45,6 +45,7 @@ const Header = () => {
 								className="object-cover"
 								fill
 								sizes="(max-width: 1900px) 160px"
+								priority
 							/>
 						</Link>
 					</NavigationMenuItem>
@@ -61,15 +62,23 @@ const Header = () => {
 						<ModeToggle />
 					</li>
 					<li>
-						<Button variant="outline" size="icon">
-							<Link href={GITHUB_URL} target="_blank">
+						<Button variant="outline" size="icon" aria-label="github link button">
+							<Link
+								href={GITHUB_URL}
+								target="_blank"
+								aria-label="github link button"
+								className="flex h-full w-full items-center justify-center">
 								<GitHubIcon />
 							</Link>
 						</Button>
 					</li>
 					<li>
-						<Button variant="outline" size="icon">
-							<Link href={LINKEDIN_URL} target="_blank">
+						<Button variant="outline" size="icon" aria-label="linkedin link button">
+							<Link
+								href={LINKEDIN_URL}
+								target="_blank"
+								aria-label="linkedin link button"
+								className="flex h-full w-full items-center justify-center">
 								<LinkedInIcon />
 							</Link>
 						</Button>
