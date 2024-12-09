@@ -4,7 +4,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-import { Button } from '@/components/ui/button';
 import {
 	NavigationMenu,
 	NavigationMenuItem,
@@ -57,31 +56,27 @@ const Header = () => {
 						</NavigationMenuItem>
 					))}
 				</NavigationMenuList>
-				<ul className="flex gap-4">
+				<ul className="flex gap-5">
 					<li>
 						<ModeToggle />
 					</li>
 					<li>
-						<Button variant="outline" size="icon" aria-label="github link button">
-							<Link
-								href={GITHUB_URL}
-								target="_blank"
-								aria-label="github link button"
-								className="flex h-full w-full items-center justify-center">
-								<GitHubIcon />
-							</Link>
-						</Button>
+						<Link
+							href={GITHUB_URL}
+							target="_blank"
+							aria-label="github link button"
+							className="flex size-9 items-center justify-center rounded-md border border-input">
+							<GitHubIcon width={16} height={16} />
+						</Link>
 					</li>
 					<li>
-						<Button variant="outline" size="icon" aria-label="linkedin link button">
-							<Link
-								href={LINKEDIN_URL}
-								target="_blank"
-								aria-label="linkedin link button"
-								className="flex h-full w-full items-center justify-center">
-								<LinkedInIcon />
-							</Link>
-						</Button>
+						<Link
+							href={LINKEDIN_URL}
+							target="_blank"
+							aria-label="linkedin link button"
+							className="flex size-9 items-center justify-center rounded-md border border-input">
+							<LinkedInIcon width={16} height={16} />
+						</Link>
 					</li>
 				</ul>
 			</NavigationMenu>
