@@ -20,7 +20,7 @@ const PostDetailHeader = ({ frontmatter }: PostDetailHeaderProps) => {
 			</div>
 			<div className="mt-2">
 				{frontmatter.tags.map((tag, idx) => (
-					<span className={cn('text-sm text-gray-500', idx && 'ml-1')} key={tag}>
+					<span className={cn('text-sm text-destructive', idx && 'ml-1')} key={tag}>
 						#{tag}
 					</span>
 				))}

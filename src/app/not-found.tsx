@@ -8,7 +8,14 @@ const NotFound = () => {
 	return (
 		<section className="flex flex-col items-center justify-center py-20">
 			<div className="relative h-28 w-28">
-				<Image src="/images/logo.png" alt="logo" className="object-cover" fill sizes="(max-width: 1900px) 224px" />
+				<Image
+					src="/images/logo.png"
+					alt="logo"
+					className="object-cover"
+					fill
+					sizes="(max-width: 1900px) 224px"
+					priority
+				/>
 			</div>
 			<h2 className="prose mt-10 text-5xl font-bold dark:prose-invert">404 ERROR</h2>
 			<div className="mt-10 flex flex-col gap-3 text-center dark:prose-invert">
