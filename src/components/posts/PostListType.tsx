@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 
 import { CompileMdxTypes } from '@/types/common.types';
@@ -27,12 +28,9 @@ const PostListType = ({ data, category, slug }: PostListTypeProps) => {
 						</div>
 					</div>
 				</div>
-				<div
-					className="relative hidden aspect-video h-full max-h-[81px] w-full max-w-36 bg-cover bg-center bg-no-repeat sm:block"
-					style={{
-						backgroundImage: `url(${data.thumbnail})`,
-					}}
-				/>
+				<div className="relative hidden aspect-video w-full max-w-36 sm:block">
+					<Image src={data.thumbnail} alt="post thumbnail" fill className="object-cover" />
+				</div>
 			</Link>
 		</li>
 	);
