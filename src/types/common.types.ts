@@ -16,3 +16,8 @@ export interface CategoryDataTypes {
 	categoryNameList: { label: string; count: number }[];
 	allCount: number;
 }
+export interface HeadingTypes {
+	text: string;
+	href: string;
+	children?: HeadingTypes[];
+}

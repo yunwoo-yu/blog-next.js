@@ -19,9 +19,15 @@ const useObserverToc = () => {
 			{ rootMargin: '-97px 0px -40% 0px', threshold: [0.1, 0.9] },
 		);
 
-		const titles = document.querySelectorAll('h3');
+		const titlesH2 = document.querySelectorAll('h2');
+		const titlesH3 = document.querySelectorAll('h3');
 
-		titles.forEach(title => {
+		titlesH2.forEach(title => {
+			observerRef.current?.observe(title);
+			title.style.scrollMargin = '100px';
+		});
+
+		titlesH3.forEach(title => {
 			observerRef.current?.observe(title);
 			title.style.scrollMargin = '100px';
 		});

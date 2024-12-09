@@ -3,7 +3,7 @@ import { readdir } from 'fs/promises';
 import { globSync } from 'glob';
 import { compileMDX } from 'next-mdx-remote/rsc';
 
-import { CompileMdxTypes } from '@/types/common.types';
+import { CompileMdxTypes, HeadingTypes } from '@/types/common.types';
 
 const PATH = process.cwd() + '/src/mdx';
 
@@ -58,26 +58,50 @@ export const getCategoryList = async () => {
 };
 
 export const getHeaderNavigationList = (source: string) => {
-	const regex = /^(###) (.*$)/gim;
+	const regex = /^(##|###) (.*$)/gim;
 	const headingList = source.match(regex);
+	const result: HeadingTypes[] = [];
+	let currentSection: null | HeadingTypes = null;
 
-	const convertedHeader = headingList?.map(heading => {
-		const regex = /### /gim;
-		const text = heading.replace(regex, '');
+	const parseHref = (text: string) => {
+		return text
+			.replace(/[\u{1F600}-\u{1F6FF}]/gu, '')
+			.replace(/\p{Emoji_Presentation}/gu, '')
+			.replace(/[\[\]:!@#$/%^&*()+=,.]/g, '')
+			.replace(/ /g, '-')
+			.replace('?', '')
+			.toLowerCase();
+	};
 
-		return {
-			text,
-			href:
-				'#' +
-				text
-					.replace(/[\u{1F600}-\u{1F6FF}]/gu, '')
-					.replace(/\p{Emoji_Presentation}/gu, '')
-					.replace(/[\[\]:!@#$/%^&*()+=,.]/g, '')
-					.replace(/ /g, '-')
-					.replace('?', '')
-					.toLowerCase(),
-		};
+	headingList?.forEach(heading => {
+		if (heading.startsWith('## ')) {
+			const textH2 = heading.replace('## ', '');
+
+			currentSection = {
+				text: textH2,
+				href: '#' + parseHref(textH2),
+				children: [],
+			};
+
+			result.push(currentSection);
+		}
+
+		if (heading.startsWith('### ')) {
+			const textH3 = heading.replace('### ', '');
+
+			if (currentSection?.children) {
+				currentSection.children.push({
+					text: textH3,
+					href: '#' + parseHref(textH3),
+				});
+			} else {
+				result.push({
+					text: textH3,
+					href: '#' + parseHref(textH3),
+				});
+			}
+		}
 	});
 
-	return convertedHeader;
+	return result;
 };
