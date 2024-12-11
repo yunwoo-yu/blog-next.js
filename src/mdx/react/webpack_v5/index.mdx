@@ -220,10 +220,10 @@ npm i -D ts-node
   },
   "ts-node": {
     "compilerOptions": {
-      "module": "CommonJS",
-      "moduleResolution": "Node",
-      "target": "ES5",
-      "esModuleInterop": true
+      "module": "CommonJS", // 컴파일 된 파일에 적용할 방식
+      "moduleResolution": "nodenext", // 최신버전의 노드로 해석
+      "target": "ES6", // 컴파일 된 JavaScript 환경 설정 보통 ES6
+      "esModuleInterop": true // cjs 등의 모듈을 ESM과 유사한 방식으로 처리함
     }
   }
 }
