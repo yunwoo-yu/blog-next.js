@@ -3,11 +3,11 @@ import './globals.css';
 import { Analytics } from '@vercel/analytics/react';
 import { Metadata } from 'next';
 
+import { pretendard } from '@/assets/fonts/fonts';
 import Footer from '@/components/common/Footer';
 import Header from '@/components/common/Header';
 import { ThemeProvider } from '@/components/common/provider/ThemeProvider';
 import { ROOT_META_DATA } from '@/constant';
-import { pretendard } from '@/lib/fonts/fonts';
 
 export const metadata: Metadata = {
 	...ROOT_META_DATA,

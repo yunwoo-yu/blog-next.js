@@ -15,6 +15,7 @@ export const getPostDetail = async (category: string, slug: string) => {
 	const postPath = `${PATH}/${category}/${slug}/index.mdx`;
 	const source = readFileSync(postPath, 'utf-8');
 	const deleteFrontmatterSource = source.replace(/---[\s\S]*?---/, '');
+
 	const { frontmatter } = await compileMDX<CompileMdxTypes>({
 		source,
 		options: {
@@ -28,6 +29,7 @@ export const getPostDetail = async (category: string, slug: string) => {
 export const getAllPosts = async (postPaths: string[]) => {
 	const ParsingPosts = postPaths.map(async post => {
 		const source = readFileSync(post, 'utf-8');
+
 		const { frontmatter } = await compileMDX<CompileMdxTypes>({
 			source,
 			options: {
@@ -38,14 +40,16 @@ export const getAllPosts = async (postPaths: string[]) => {
 
 		return { frontmatter, category, slug };
 	});
+
 	const posts = await Promise.all(ParsingPosts);
 
 	return posts.sort((a, b) => (a.frontmatter.createdAt > b.frontmatter.createdAt ? -1 : 1));
 };
 
 export const getCategoryList = async () => {
-	let allCount = 0;
 	const dirCategory = await readdir(PATH, { withFileTypes: true });
+	let allCount = 0;
+
 	const categoryNameList = dirCategory.map(category => {
 		const postLength = getAllPostsPath(category.name).length;
 

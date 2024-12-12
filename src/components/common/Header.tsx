@@ -36,7 +36,7 @@ const Header = () => {
 			)}>
 			<NavigationMenu className="mx-auto max-w-7xl justify-between">
 				<NavigationMenuList>
-					<NavigationMenuItem className="mr-10">
+					<NavigationMenuItem className="mr-5">
 						<Link href="/blog/posts" className="relative flex h-20 w-20">
 							<Image
 								src="/images/logo.png"
@@ -56,7 +56,7 @@ const Header = () => {
 						</NavigationMenuItem>
 					))}
 				</NavigationMenuList>
-				<ul className="flex gap-5">
+				<ul className="flex gap-3">
 					<li>
 						<ModeToggle />
 					</li>

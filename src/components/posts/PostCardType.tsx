@@ -14,7 +14,7 @@ const PostCardType = ({ data, category, slug }: PostCardTypeProps) => {
 	return (
 		<li className="w-full border border-border transition dark:hover:border-destructive">
 			<Link href={`/blog/posts/${category}/${slug}`} className="relative flex flex-col">
-				<div className="relative hidden aspect-video w-full sm:block">
+				<div className="relative aspect-video w-full">
 					<Image
 						src={data.thumbnail}
 						alt="post thumbnail"
