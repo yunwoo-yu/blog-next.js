@@ -22,7 +22,7 @@ const options: Options = {
 
 const CustomMDXRemote = ({ source }: CustomMDXRemoteProps) => {
 	return (
-		<section className="prose max-w-4xl dark:prose-invert">
+		<div className="prose max-w-4xl dark:prose-invert">
 			<MDXRemote
 				source={source}
 				options={{
@@ -33,7 +33,7 @@ const CustomMDXRemote = ({ source }: CustomMDXRemoteProps) => {
 				}}
 				components={useMDXComponents}
 			/>
-		</section>
+		</div>
 	);
 };
 

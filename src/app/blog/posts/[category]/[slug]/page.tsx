@@ -1,4 +1,5 @@
 import markdownToTxt from 'markdown-to-txt';
+import { Metadata } from 'next';
 
 import CustomMDXRemote from '@/components/common/CustomMDXRemote';
 import Comments from '@/components/postDetail/Comments';
@@ -26,7 +27,7 @@ export const generateMetadata = async ({ params }: Params) => {
 			.slice(0, 160)
 			.trim() + '...';
 
-	return {
+	const dynamicMetadata: Metadata = {
 		title: `${post.frontmatter.title}`,
 		description: `${description}`,
 		openGraph: {
@@ -35,6 +36,8 @@ export const generateMetadata = async ({ params }: Params) => {
 			images: [`/images/${category}/${slug}/thumbnail.png`],
 		},
 	};
+
+	return dynamicMetadata;
 };
 
 const PostDetailPage = async ({ params }: Params) => {
