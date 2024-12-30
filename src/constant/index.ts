@@ -16,8 +16,8 @@ const META_GENERATOR = 'Next.js + Typescript';
 const META_KEYWORDS = ['Front-End', 'Developer', 'Blog', 'Next.js', 'React.js', 'Typescript'];
 const META_REFERRER = 'origin';
 const META_CREATOR = '유윤우';
-const META_PUBLISHER = 'AWS';
-const META_CATEGORY = 'Front-End Development Blog';
+const META_PUBLISHER = '유윤우';
+const META_CATEGORY = 'Blog';
 
 export const ROOT_META_DATA: Metadata = {
 	title: META_TITLE,
