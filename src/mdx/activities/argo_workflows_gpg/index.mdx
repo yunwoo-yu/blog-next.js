@@ -18,11 +18,14 @@ tags: [GPG, Contributing, ArgoWorkflows]
 다른건 몰라도 GPG, DCO봇은 처음 들어보는거였는데 친절하게 참고링크도 다 걸어주셔서 금방 이해했습니다👍
 
 ### GPG란? (GNU Privacy Guard)
-![](/images/activities/argo_workflows_gpg/1.png)
+
+<img src="/images/activities/argo_workflows_gpg/1.png" width="100%" alt="post image" className='post-image' />
+
 GPG란 PGP 라는 전자우편 암호화 도구를 기반으로 만든 소프트웨어로 여러가지의 암호화를 지원하며 디폴트로 RSA 알고리즘을 사용합니다.
 
 ### 사용 이유
-![](/images/activities/argo_workflows_gpg/2.png)
+
+<img src="/images/activities/argo_workflows_gpg/2.png" width="100%" alt="post image" className='post-image' />
 
 깃허브에서 이 GPG 키를 등록하면 커밋, 태그에 로컬로 서명하여 사람들에게 **변경 내용에 출처에 대한 신뢰**를 줄 수 있습니다. 검증된 커밋이라고 위에 보이는 사진처럼 Verified 태그도 달아주죠! 무엇보다 ArgoWorkflows 프로젝트에는 검증된 커밋을 사용해 커밋을 올리라는 조건이 존재했습니다.
 
@@ -64,7 +67,7 @@ $ git config --global gpg.program gpg
 ```
 그리고 위처럼 깃 설정을 변경 해주시면 됩니다! email, name, signingkey에는 위에서 입력한 이메일과 이름 그리고 키를 입력하시면 됩니다.
 
-![](/images/activities/argo_workflows_gpg/3.png)
+<img src="/images/activities/argo_workflows_gpg/3.png" width="100%" alt="post image" className='post-image' />
 
 그리고 다른 프로젝트에서 커밋 메세지를 작성해 보시면 비밀번호 입력하는 창이 나올겁니다! 커밋을 추가하시고 `git log`를 확인하면 gpg 서명이 되어있는걸 확인하실 수 있습니다.
 암호를 묻는 창이 나오지 않고 에러가 나온다면 `export GPG_TTY=$(tty)` 을 입력후에 다시 시도해보세요.
@@ -121,7 +124,9 @@ gCrQ7YWLfhewIewqujWAeWR/9j7gbg==
 넣어줘야할 내용은 터미널로 돌아가셔서 `gpg --armor --export [아까 등록할때 받은 키]`를 입력하시면 이런 내용을 받을 수 있는데 절취선까지 모두 복사해서 깃허브에 넣어주시면 됩니다. 그럼 키까지 등록 완료! 이후에 커밋을 올려보시면 Verified 태그가 달린걸 확인할 수 있습니다.
 
 ### github DCO(Developer Certificate of Origin) 통과하기
-![](/images/activities/argo_workflows_gpg/5.png)
+
+<img src="/images/activities/argo_workflows_gpg/4.png" width="100%" alt="post image" className='post-image' />
+
 DCO는 오픈소스 프로젝트에 컨트리뷰터가 PR 등 코드에 자신의 기여를 인증하는 방법입니다. 모든 커밋 메시지에 작성자와 일치하는 이메일 주소가 포함되어야 합니다.
 DCO봇 체크를 하는 방법은 간단합니다!
 ```bash showLineNumbers
