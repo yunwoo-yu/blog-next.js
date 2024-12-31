@@ -37,22 +37,22 @@ export default App;
 
 개발시에 무료 에디터로 VScode를 많이들 사용한다. 이 VScode의 장점으로는 많은 확장프로그램이 있다는 것인데 이 수많은 utility class를 공식 문서를 뒤져가며 찾기는 힘들기에 자동 완성 확장 프로그램인 Tailwind CSS IntelliSense가 존재한다.
 
-![](/images/react/tailwind_intelliSense/1.png)
+<img src="/images/react/tailwind_intelliSense/1.png" width="100%" alt="post image" className='post-image' />
 
-![](/images/react/tailwind_intelliSense/2.png)
+<img src="/images/react/tailwind_intelliSense/2.png" width="100%" alt="post image" className='post-image' />
 
 - 확장 프로그램을 설치하고 나면 내가 입력한 텍스트에 따라 자동완성 utility class와 해당 class가 어떤 스타일링을 제공하는지 알 수 있다.
 
 ### Tailwind CSS IntelliSense 문제점
 
-![](/images/react/tailwind_intelliSense/3.gif)
+<img src="/images/react/tailwind_intelliSense/3.gif" width="100%" alt="post image" className='post-image' />
 
 - 사용해 본 사람들은 다 알겠지만 저 확장프로그램은 띄어쓰기를 해줘야 나온다,, 후.. 첫칸에 빈 공백이 생기게 되고 이게 싫다면 className -> Tab을 입력했을 때 나오는 흰 배경을 esc로 제거하고 문자열 ""을 다시 입력해줘야한다.
 - 물론 그냥 쓴다음에 공백을 지우면 되긴한다. 근데 Tailwind를 사용한다면 모든 태그에 className을 넣어줄텐데 그때마다 공백을 지우러 뒤로가야 한다면 이것도 은근히(굉장히) 귀찮은 작업이 아닐 수 없다. 다행히 해결 방법이 있다.
 
 ### 해결 방법
 
-![](/images/react/tailwind_intelliSense/4.png)
+<img src="/images/react/tailwind_intelliSense/4.png" width="100%" alt="post image" className='post-image' />
 
 - 우선 VScode에서 Alt(window는 control) + Shift + P 를 눌러 해당 검색창을 켠 후 settings 를 입력해주자.
 - JSON 파일을 열면 뭐가 써있을 건데 신경쓰지 말자. 해당 파일은 VScode에 대한 사용자의 설정 파일이다.
@@ -75,7 +75,7 @@ export default App;
 - 이건 다른글 보고 혹시나 해서 적어놓는건데 확장자를 인식 안할 경우 명시해주는 옵션이다. css파일이 아니니 의미 없다고 생각하는데 이게 필요하다는 글을 봐서 혹시나 적어놓는다. 첫번째걸 적용하고 VScode 리로딩 후 안된다면 적용해보자.
 - 일단 저는 없어도 잘됐읍니다 희희
 
-![](/images/react/tailwind_intelliSense/5.gif)
+<img src="/images/react/tailwind_intelliSense/5.gif" width="100%" alt="post image" className='post-image' />
 
 - 적용한 후에 사용해보면 띄어쓰기 같은거 없이 내가 입력한 텍스트에 맞는 자동완성을 바로 추천해준다 👍
 - 서버 컴포넌트에 대해 아직 마땅한 대안이 없어 Tailwind를 다들 많이 사용하는데 다른 개발자에게 도움이 됐으면 한다. 🙌
