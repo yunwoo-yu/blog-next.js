@@ -24,43 +24,43 @@ Lighthouse는 구글에서 오픈소스로 제공하는 웹 품질 개선을 위
 
 저는 Vercel에 도메인을 연결해 배포하고 있으므로 기본으로 제공되었던 vercel.app 도메인을 dev Branch에 연결하여 개선 전 배포환경을 구성했습니다.
 
-<img src="/images/next/lighthouse/1.png" width="100%" alt="post image" />
-<img src="/images/next/lighthouse/2.png" width="100%" alt="post image" />
-<img src="/images/next/lighthouse/3.png" width="100%" alt="post image" />
+<img src="/images/next/lighthouse/1.png" width="100%" alt="post image" className='post-image' />
+<img src="/images/next/lighthouse/2.png" width="100%" alt="post image" className='post-image' />
+<img src="/images/next/lighthouse/3.png" width="100%" alt="post image" className='post-image' />
 
 접근성 부분을 제외하고 썩 나쁘지않아보입니다. LCP 부분이 위험해보이듯이 빨간색이지만 공식홈페이지에 2.5초면 녹색(빠름)이라 되어있는데 왜 그런지는 모르겠네요.. 🤔
 
-<img src="/images/next/lighthouse/4.png" width="100%" alt="post image" />
+<img src="/images/next/lighthouse/4.png" width="100%" alt="post image" className='post-image' />
 
 제 블로그는 3가지 문제가 나왔는데요. 순서대로 보자면 LCP 속도, image format 최적화, 정적 리소스 캐시가 문제인거 같습니다.
 
 ### Largest Contentful Paint element (LCP)
 
-<img src="/images/next/lighthouse/5.png" width="100%" alt="post image" />
+<img src="/images/next/lighthouse/5.png" width="100%" alt="post image" className='post-image' />
 
 현재 NextLocalFont로 Pretendard를 쓰고 있는데 큰 텍스트를 불러올 때 문제가 되는거 같네요. tailwind 기준 text-xl -> text-lg로 줄여줬습니다. 이미 제가 사용중인 폰트는 woff2 확장자로 최적화 된 폰트였는데도 에러가 나길래 서칭해보니 레딧에서는 Next.js Route와 LocalFont의 문제라는 글들을 다수 보았습니다.
 
 ### Serve images in next-gen formats
 > Image formats like WebP and AVIF often provide better compression than PNG or JPEG, which means faster downloads and less data consumption
 
-<img src="/images/next/lighthouse/6.png" width="100%" alt="post image" />
+<img src="/images/next/lighthouse/6.png" width="100%" alt="post image" className='post-image' />
 
 <center>
 ⬇️
 </center>
 
-<img src="/images/next/lighthouse/7.png" width="100%" alt="post image" />
+<img src="/images/next/lighthouse/7.png" width="100%" alt="post image" className='post-image' />
 
 이미지를 웹 최적화로 확장자로 사용하라는 권고네요. 이건 이전에 AWS 배포를 진행하면서 Next에서 제공하는 Image 컴포넌트 사용이 어려워 BackgrounImage로 변경해놨던 List의 썸네일 부분을 다시 Image 컴포넌트를 활용해 최적화를 적용해줬습니다.
 추가로 메인 홈 진입 시 보여지는 `PostListType` 은 priority 속성을 추가해 LCP를 조금 더 줄일 수 있도록 해주었습니다. (Next의 Image 컴포넌트는 기본이 Lazy loading) 
 
-<img src="/images/next/lighthouse/8.png" width="100%" alt="post image" />
+<img src="/images/next/lighthouse/8.png" width="100%" alt="post image" className='post-image' />
 
 마지막으로 Image 사용 시 적용되는 webp 보다 더 압축률이 높은 avif 를 우선적으로 적용해줬다. (무엇이 더 나은가에 대한건 장단점이 있다. avif -> 압축률 우세 webp -> 최적화 속도 우세)
 
 ### Serve static assets with an efficient cache policy 
 
-<img src="/images/next/lighthouse/9.png" width="100%" alt="post image" />
+<img src="/images/next/lighthouse/9.png" width="100%" alt="post image" className='post-image' />
 
 마지막은 정적 리소스 캐시인데,, 경로를 살펴보니 _vercel/insights/script.js, 소스탭에 들어가 확인해보니 vercel에서 제공하는 analytics로 확인됩니다. 외부 라이브러리이기에 제가 할수있는건 없어보이네요. 패스하겠습니다!
 
@@ -70,45 +70,45 @@ Lighthouse는 구글에서 오픈소스로 제공하는 웹 품질 개선을 위
 
 ### Buttons do not have an accessible name & Links do not have a discernible name
 
-<img src="/images/next/lighthouse/10.png" width="100%" alt="post image" />
-<img src="/images/next/lighthouse/11.png" width="20%" alt="post image" />
+<img src="/images/next/lighthouse/10.png" width="100%" alt="post image" className='post-image' />
+<img src="/images/next/lighthouse/11.png" width="20%" alt="post image" className='post-image' />
 
 제 블로그 Header와 Footer에는 내부에 아이콘만 있는 버튼들이 존재하는데요. 이 버튼들이 스크린 리더에서 읽을 수 있는 컨텐츠가 없음에 대한 경고였습니다. 텍스트가 없는게 문제였고 아래와 같이 Button + Link를 사용해 두개의 문제가 생겼어요.
 
-<img src="/images/next/lighthouse/12.png" width="100%" alt="post image" />
+<img src="/images/next/lighthouse/12.png" width="100%" alt="post image" className='post-image' />
 
 <center>
 ⬇️
 </center>
 
-<img src="/images/next/lighthouse/13.png" width="100%" alt="post image" />
+<img src="/images/next/lighthouse/13.png" width="100%" alt="post image" className='post-image' />
 
 원래는 shadcn/ui 에서 제공하는 컬러 theme과 버튼을 맞추기 위해 Button태그 안에 Link를 넣어뒀었는데요.
 Button 태그만 남기고 sr-only 텍스트를 넣은 후 Router를 쓸까 고민하다가 링크 이동 목적에 맞게 Link 태그만 남겨두고 디자인을 동일하게 맞춰주었습니다. **스크린 리더에 대한 부분은 aria-label** 을 추가로 넣어주었습니다.
 
 ### Background and foreground colors do not have a sufficient contrast ratio.
 
-<img src="/images/next/lighthouse/14.png" width="100%" alt="post image" />
+<img src="/images/next/lighthouse/14.png" width="100%" alt="post image" className='post-image' />
 
-<img src="/images/next/lighthouse/15.png" width="100%" alt="post image" />
+<img src="/images/next/lighthouse/15.png" width="100%" alt="post image" className='post-image' />
 
 배경색과의 명암비가 충분하지 않아 잘 보이지 않는다네요. 이런거까지 분석하다니,, 대단한거같습니다! 해당 부분 태그는 간단하게 메인 컬러로 변경해 해결했습니다!
 
 ### Touch targets do not have sufficient size or spacing.
 
-<img src="/images/next/lighthouse/16.png" width="100%" alt="post image" />
+<img src="/images/next/lighthouse/16.png" width="100%" alt="post image" className='post-image' />
 
 Button과 Link를 겹쳐둔곳에서 또 문제가 생겼네요ㅎㅎ.. Touch가 되는 target간의 간격이 충분하지 않다는 메세지입니다. 이건 위에서 Link태그 하나로 변경했으므로 자동적으로 해결!
 
 ### Heading elements are not in a sequentially-descending order
 
-<img src="/images/next/lighthouse/17.png" width="100%" alt="post image" />
+<img src="/images/next/lighthouse/17.png" width="100%" alt="post image" className='post-image' />
 
 마지막이네요. 제가 `aside` 태그와 `section` 태그로 메인 컨텐츠를 분리했는데 게시글 타이틀은 **h2** 카테고리 목록은 **h3** 를 써서 생긴 문제네요. 둘 다 같은레벨에 있는 자식요소인데 h2를 건너뛰고 h3를 써버렸더니 순서를 건너뛰지 말라고 하는겁니다! 하지만 **카테고리 목록 이라는 메세지가 h2로 들어가기엔 좋지 않다고 생각해 p태그로 변경** 해줬습니다.
 
 ## 마무리
 
-<img src="/images/next/lighthouse/18.png" width="100%" alt="post image" />
-<img src="/images/next/lighthouse/19.png" width="100%" alt="post image" />
+<img src="/images/next/lighthouse/18.png" width="100%" alt="post image" className='post-image' />
+<img src="/images/next/lighthouse/19.png" width="100%" alt="post image" className='post-image' />
 
 폰트에 대한 LCP 최적화를 완벽하게 끝내지 못한게 찝찝하긴 하지만.. 그래도 올 100점 받았습니다!! 폭죽도 터트려주네요ㅋㅋㅋ 아직 경고문이 조금 남아있긴한데.. 추후에 레퍼런스들을 찾아보고 최적화하게 되면 추가해놓겠습니다 :)
