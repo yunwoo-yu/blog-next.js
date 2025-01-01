@@ -176,3 +176,8 @@ figure {
 article p {
   @apply leading-9;
 }
+
+.post-image {
+  aspect-ratio: 16/9;
+  object-fit: contain;
+}
