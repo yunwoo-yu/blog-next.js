@@ -73,7 +73,7 @@ npm i react react-dom react-router-dom
 npm i -D @types/react @types/react-dom @types/node typescript
 ```
 
-![](/images/react/webpack_v5/1.png)
+<img src="/images/react/webpack_v5/1.png" width="100%" alt="post image" className='post-image' />
 
 - 웹팩 설정에 앞서 이 글의 요지인 Webpack을 통한 React 구성이 핵심이므로 React 관련 라이브러리를 설치하자.
 - 그리고 이미지와 같이 scripts에 빌드 명령어를 추가해준다. --mode는 development와 production이 있는데 추후 config 파일에서 다시 설정해 줄 예정이므로 일단은 테스트를 위해 production으로 넣어준다.
@@ -231,7 +231,7 @@ npm i -D ts-node
 
 - tsconifg.json을 통해 ts-node의 컴파일 옵션을 CJS, 그리고 Node로 만들어 주고 esModuleInterop 옵션을 true로 주게되면 CJS형식의 모듈을 ES6 방식으로 불러올 수 있게 해준다. 그리고 npm run build를 해보면!!
 
-![](/images/react/webpack_v5/2.png)
+<img src="/images/react/webpack_v5/2.png" width="100%" alt="post image" className='post-image' />
 
 - Webpack 빌드에 성공하게 된다. 아직 개발환경과 프로덕션의 환경 분리와 다른 loader, plugins 등등 설정할 것이 많이 남아있다.
 - 글이 길어져 2편으로 돌아오겠다. 혹시 급하게 환경을 구성해야할 분들을 위해 Yarn Berry + React + TS + Webpack 으로 구성된 내 [보일러플레이트](https://github.com/yunwoo-yu/React-BoilerPlate)를 남겨놓는다. (스타도 눌러주시면 좋구요..👏)
