@@ -1,0 +1,361 @@
+---
+title: "React + Typescript + Webpack(v5) 보일러 플레이트 만들기 - 2"
+createdAt: 2024-12-15
+description: 깊디 깊은 웹팩 이해하려 노력하기
+thumbnail: /images/react/webpack_v5_2/thumbnail.png
+tags: [React, Webpack]
+---
+
+> 어쩌다 보니 1편을 쓰고 1년이 지났네요.. 반성합니다. 😅 2편은 웹팩설정 시 사용되는 개념을들 알아보고, 리액트 개발환경과 프로덕션 빌드 환경을 구성해보겠습니다.
+
+[1편 보러가기](https://www.ycow-dev.com/blog/posts/react/webpack_v5)
+
+## Loader ? Plugin ?
+
+이전에 작성한 [1편](https://www.ycow-dev.com/blog/posts/react/webpack_v5)에서 babel-loader를 적용했는데요. 좋은 기회가 생겨 면접을 봤는데 자연스럽게 지나갔던 부분들에 대해 답변하지 못하여 저 자신에게 많이 실망했습니다. 반성하며, Loader와 Plugin이 무엇인지, 무엇이 다른지부터 파헤쳐 볼게요.
+
+### Loader
+
+```ts showLineNumbers
+import "./index.css";
+
+const App = () => {
+  return <div>App</div>;
+};
+
+export default App;
+```
+
+웹팩은 각 파일을 확장자(css, image 등)가 아닌 **모듈**로써 바라봅니다. 위 예시로 보자면 import를 통해 모듈(css파일)을 불러옵니다. 어떻게 적용되는걸까요?
+
+```ts showLineNumbers
+	module: {
+		rules: [
+			{
+				test: /\.css$/i,
+				use: ['css-loader'],
+			},
+    ]
+  }
+```
+
+위 코드는 webpack config에서 설정할 내용입니다. 구문은 잠시 뒤에 설명하고 간단하게 보자면 .css 가 달린 파일(모듈)은 `css-loader` 에 정의된 함수를 실행하도록 되어있습니다. 함수는 css파일을 로드하여 자바스크립트 모듈로 변환되도록 되어있습니다. 이때 @import, url() 은 자바스크립트의 import나 require처럼 동작하도록 해석하고 처리합니다.
+
+해당 css가 html에 style, 혹은 청크 단위의 css파일로 분리가 되어 link태그로 연결될 수도 있는데 이건 또 다른 (style-loader, MiniCssExtractPlugin) 로더를 무엇을 설정하느냐에 따라 달라집니다.
+
+즉 **로더는 함수를 내보내는 노드 모듈** 로서 모듈이 **번들링 되는 과정에서 해당하는 모듈이 처리될 때 실행**되는 함수라고 정의할 수 있습니다. 
+
+### Plugin
+
+loader는 특정 모듈을 변환하는데 사용되지만 plugin은 좀 더 넓은 범위로써 번들을 최적화하거나, 에셋관리, 환경변수 주입같은 광범위한 작업에 사용됩니다. 쉽게 말해 추가적인 기능을 제공하는거죠.
+여기서 꼭 알아야 할 부분은 **Loader는 번들링 중에 모듈을 확인할 때 실행되지만 Plugin은 webpack lifecycle hooks 단계별로 원하는 타이밍에 코드를 실행시킬 수 있습니다.** [Compiler Hooks](https://webpack.kr/api/compiler-hooks/)
+
+## Config 구성
+
+저는 webpack 설정을 dev 환경과 production 환경으로 분리할 예정인데요. 이전에 만든 webpack.config.ts 파일을 공통적인 설정을 모아놓은 config로 사용하고 환경별 설정 파일을 분리해서 만들겠습니다.
+
+### TsConfig
+
+```json showLineNumbers
+{
+  "compilerOptions": {
+    /* Modules */
+    "baseUrl": ".",
+    "outDir": "dist",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "resolveJsonModule": true,
+
+    /* Type Checking */
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "strict": true,
+
+    /* Language and Environment */
+    "experimentalDecorators": true,
+    "jsx": "react-jsx",
+    "lib": ["dom", "dom.iterable", "ESNext", "ESNext.AsyncIterable"],
+    "target": "es6",
+
+    /* Interop Constraints */
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true
+  },
+
+  "include": ["src/**/*"],
+
+  "ts-node": {
+    "compilerOptions": {
+      "module": "NodeNext",
+      "moduleResolution": "NodeNext",
+      "target": "ES6",
+      "esModuleInterop": true,
+      "jsx": "react-jsx"
+    }
+  }
+}
+```
+tsconfig에 적용된 속성들은 공식문서에 모두 나와있기에 따로 설명하지는 않겠습니다! [tsconfig공식문서](https://www.typescriptlang.org/tsconfig)
+
+### webpack.config.ts
+
+```ts showLineNumbers
+import { Configuration, ProvidePlugin } from "webpack";
+import path from "path";
+import { CleanWebpackPlugin } from "clean-webpack-plugin";
+import TsconfigPathsPlugin from "tsconfig-paths-webpack-plugin";
+import HtmlWebpackPlugin from "html-webpack-plugin";
+import CopyWebpackPlugin from "copy-webpack-plugin";
+import ForkTsCheckerWebpackPlugin from "fork-ts-checker-webpack-plugin";
+import ESLintPlugin from "eslint-webpack-plugin";
+
+const config: Configuration = {
+  entry: "./src/index.tsx",
+  target: "web",
+  resolve: {
+    extensions: [".ts", ".tsx", ".js", ".jsx"],
+    plugins: [new TsconfigPathsPlugin()],
+  },
+  output: {
+    filename: "static/js/[name].[contenthash:8].js",
+    path: path.resolve("dist"),
+    chunkFilename: "static/js/[name].[contenthash:8].chunk.js",
+    publicPath: "auto",
+  },
+  plugins: [
+    new ProvidePlugin({ React: "react" }),
+    new CleanWebpackPlugin(),
+    new HtmlWebpackPlugin({
+      template: "public/index.html",
+      favicon: "public/favicon.ico",
+      minify: {
+        collapseWhitespace: true,
+        keepClosingSlash: true,
+        removeComments: true,
+        removeRedundantAttributes: true,
+        removeScriptTypeAttributes: true,
+        removeStyleLinkTypeAttributes: true,
+        useShortDoctype: true,
+      },
+    }),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: "public",
+          to: "./",
+          globOptions: {
+            ignore: ["**/index.html"],
+          },
+        },
+      ],
+    }),
+    new ForkTsCheckerWebpackPlugin(),
+    new ESLintPlugin(),
+  ],
+  module: {
+    rules: [
+      // babel-loader
+      {
+        test: /\.(js|jsx|ts|tsx)$/,
+        exclude: [/node_modules/],
+        loader: "babel-loader",
+        options: {
+          presets: [
+            "@babel/preset-env",
+            "@babel/preset-react",
+            "@babel/preset-typescript",
+          ],
+        },
+      },
+      {
+        test: /\.(ts|tsx)$/,
+        loader: "ts-loader",
+      },
+      {
+        test: /\.svg$/,
+        use: ["@svgr/webpack"],
+      },
+    ],
+  },
+};
+
+export default config;
+```
+
+**plugins**
+
+- TsconfigPathsPlugin : tsconfig.json에 정의된 경로를 사용하여 모듈을 해석하는 플러그인
+- ProvidePlugin : 모듈을 자동으로 가져오는 플러그인 (react를 넣음으로써 import 구문없이 모듈을 자동으로 가져오게 함)
+- CleanWebpackPlugin : 번들링 전에 기존 번들 파일을 정리해주는 플러그인 (dist 폴더 정리)
+- HtmlWebpackPlugin : 번들링된 결과물을 html에 자동으로 주입하는 플러그인 [옵션 참고 내용](https://github.com/jantimon/html-webpack-plugin/blob/main/README.md)
+- CopyWebpackPlugin : 파일을 복사하는 플러그인 (public 폴더 복사)
+- ForkTsCheckerWebpackPlugin : 타입 체크를 별도의 프로세스로 실행하여 빌드 속도를 향상시키는 플러그인
+- ESLintPlugin : 빌드 단계 & 런타임 단계에서 자바스크립트 코드 검사를 위한 플러그인
+
+**loader**
+
+- babel-loader : 자바스크립트 파일을 번들링하기 전에 babel을 사용하여 트랜스파일링하는 로더
+- ts-loader : 타입스크립트 파일을 번들링하기 전에 타입스크립트 컴파일러를 사용하여 트랜스파일링하는 로더
+- @svgr/webpack : svg를 React 컴포넌트로 가져올 수 있게 해주는 로더
+
+### webpack.dev.ts
+
+```bash
+npm i -D webpack-merge webpack-dev-server dotenv
+```
+<br />
+
+```ts showLineNumbers
+
+import { Configuration as DevServerConfiguration } from "webpack-dev-server";
+import { merge } from "webpack-merge";
+import config from "./webpack.config";
+import { EnvironmentPlugin } from "webpack";
+
+import { configDotenv } from "dotenv";
+
+configDotenv({ path: "./.env.development" });
+
+const devServer: DevServerConfiguration = {
+  port: 5177, // 사용할 포트 번호
+  static: false, // 정적 파일 관련 옵션 false시 default public
+  open: true, // 실행 시 브라우저 자동 열기
+  compress: true, // gzip 압축 사용
+  historyApiFallback: true, // SPA 라우팅 사용 시 필요
+  hot: true, // 코드 변경 시 자동 리로드 (HMR)
+  client: {
+    overlay: true, // 오류 발생 시 화면에 오류 출력
+  },
+  // 프록시 필요 시 사용 (ex : /api 로 가는 요청은 전부 localhost:8080 으로 보내라)
+  // proxy: {
+  // 	'/api': 'http:localhost:8080',
+  // },
+};
+
+const devConfig = merge(config, {
+  mode: "development",
+  devtool: "inline-source-map",
+  devServer,
+  optimization: {
+    minimize: false,
+    splitChunks: false,
+  },
+  plugins: [new EnvironmentPlugin({ ...process.env })],
+  module: {
+    rules: [
+      {
+        test: /\.css$/i,
+        use: ["style-loader", "css-loader"],
+      },
+    ],
+  },
+});
+
+export default devConfig;
+
+```
+
+- 개발환경 webpack 설정입니다. webpakc-merge를 사용하여 공통 설정을 먼저 불러온 후 개발환경 설정을 추가합니다.
+- `configDotenv({ path: "./.env.development" })` 개발환경에서 사용할 환경변수를 불러옵니다.
+- 개발환경에서 빠른 디버깅을 위해 devtool을 inline-source-map으로 설정했습니다. (앱이 커질 경우 inline-source-map 사용 시 속도가 느려질 수 있습니다.)
+- CSS는 css-loader와 style-loader를 사용하여 html에 inline 스타일로 주입되도록 설정했습니다. (style-loader 사용 시 리빌드 속도가 빠르다.)
+
+### webpack.prod.ts
+
+```ts showLineNumbers
+
+import config from "./webpack.config";
+import merge from "webpack-merge";
+import { Configuration, EnvironmentPlugin } from "webpack";
+import { configDotenv } from "dotenv";
+import MiniCssExtractPlugin from "mini-css-extract-plugin";
+import CssMinimizerPlugin from "css-minimizer-webpack-plugin";
+import TerserPlugin from "terser-webpack-plugin";
+
+configDotenv({ path: "./.env.production" });
+
+const prodConfig: Configuration = merge(config, {
+  mode: "production",
+  optimization: {
+    minimize: true,
+    minimizer: [
+      new CssMinimizerPlugin(),
+      new TerserPlugin({
+        terserOptions: {
+          compress: {
+            drop_console: true,
+          },
+        },
+      }),
+    ],
+    splitChunks: {
+      chunks: "all",
+      name: "vendor",
+    },
+  },
+  plugins: [new EnvironmentPlugin({ ...process.env })],
+  module: {
+    rules: [
+      {
+        test: /\.html$/i,
+        loader: "html-loader",
+      },
+      {
+        test: /\.css$/i,
+        use: [MiniCssExtractPlugin.loader, "css-loader"],
+      },
+    ],
+  },
+});
+
+export default prodConfig;
+
+```
+
+프로덕션 환경에서는 코드를 최적화하고 콘솔로그를 제거하는 작업을 합니다. 하나씩 살펴볼까요?
+
+- minimize : minimizer에 정의된 플러그인을 사용하여 코드를 최적화합니다.
+- CssMinimizerPlugin : CSS를 최적화하는 플러그인
+- TerserPlugin : 자바스크립트 코드를 최적화하는 플러그인
+- splitChunks : 공통 모듈을 나누어 번들링하는 플러그인
+- html-loader : html 파일을 컴파일 단계에서 최소화 하는 로더
+- MiniCssExtractPlugin : CSS를 추출하여 별도의 파일로 생성하는 플러그인
+
+## 청크 ? vendor ?
+
+청크는 하나의 덩어리다. SPA의 문제점인 초기 로딩 속도를 개선하기 위해 청크로 나누어 번들링하는 겁니다!
+vendor는 청크간에 겹치는 패키지들을 모아 별도의 파일로 추출해주는 코드입니다. A 청크에 (a, b) 패키지가 있고 B 청크에 (a, c) 패키지가 있으면 vendor에는 (a) 패키지가 있게 됩니다.
+또 하나 outfut쪽 [name], [chunkhash], [contenthash] 등의 옵션을 사용하여 파일명을 지정할 수 있습니다. 각각의 특징이 있는데 간단하게 요점만 살펴보자면
+
+### [name]
+
+- [name] : entry에 정의된 이름을 사용합니다. (default : main)
+
+### [hash]
+
+- [hash] : 더 이상 지원되지 않습니다.
+
+### [chunkhash]
+
+**첫 빌드 시**
+<img src="/images/react/webpack_v5_2/1.png" width="100%" alt="post image" className='post-image' />
+
+**CSS만 변경 후 빌드 시**
+<img src="/images/react/webpack_v5_2/2.png" width="100%" alt="post image" className='post-image' />
+
+- CSS만 변경했음에도 js 파일이 변경되었습니다. chunkhash는 entry 기준으로 해시를 생성하기에 js 파일은 변경되지 않았음에도 불구하고 해시가 변경되었습니다.
+
+### [contenthash]
+
+<img src="/images/react/webpack_v5_2/3.png" width="100%" alt="post image" className='post-image' />
+
+- entry 기준 [name]에 따라 동일한 main이란 이름을 쓰고있는 css, js 파일은 각각 다른 해시를 가지고 있습니다. contenthash는 파일 변경 사항에 따라 해시가 생성되기에 변경 된 파일만 해시가 변경됩니다.
+
+저는 contenthash가 가장 합당하다고 생각하기에 contenthash를 사용했습니다.
+
+## 마무리
+
+> 이번 2편에서는 웹팩 설정에 사용되는 개념들을 살펴보고 개발환경과 프로덕션 환경을 구성해보았습니다. 요즘 이직을 준비하며 면접도 보고있늗네 나름 공부를 열심히 했다고 생각했음에도 면접에서 답하지 못한 부분들이 많아 아쉬움이 많이 남습니다.. 뭐 부족한 부분도 깨달았고 더 성장할 수 있는 계기가 된거같아서 만족하려고 합니다! 잘못된 부분이나 더 좋은 방향이 있다면 언제든 댓글에 남겨주세요. 감사합니다 :)
