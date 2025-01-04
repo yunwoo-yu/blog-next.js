@@ -4,6 +4,7 @@ import { Metadata } from 'next';
 import CustomMDXRemote from '@/components/common/CustomMDXRemote';
 import Comments from '@/components/postDetail/Comments';
 import PostDetailHeader from '@/components/postDetail/PostDetailHeader';
+import PostProgressScroll from '@/components/postDetail/PostProgressScroll';
 import Toc from '@/components/postDetail/Toc';
 import { getAllPosts, getAllPostsPath, getHeaderNavigationList, getPostDetail } from '@/utils/post-utils';
 interface Params {
@@ -48,6 +49,7 @@ const PostDetailPage = async ({ params }: Params) => {
 
 	return (
 		<>
+			<PostProgressScroll />
 			<PostDetailHeader frontmatter={frontmatter} />
 			<article className="mx-auto max-w-3xl px-5 transition xl:fixed xl:left-[80%] xl:top-64 xl:mx-0 xl:max-w-72">
 				<Toc headerNavigationList={headerNavigationList} />
