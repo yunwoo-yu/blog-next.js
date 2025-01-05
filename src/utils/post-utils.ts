@@ -73,7 +73,7 @@ export const getHeaderNavigationList = (source: string) => {
 			.replace(/\p{Emoji_Presentation}/gu, '')
 			.replace(/[\[\]:!@#$/%^&*()+=,.]/g, '')
 			.replace(/ /g, '-')
-			.replace('?', '')
+			.replace(/\?/g, '')
 			.toLowerCase();
 	};
 
