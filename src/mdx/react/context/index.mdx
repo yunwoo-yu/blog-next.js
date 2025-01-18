@@ -1,0 +1,311 @@
+---
+title: "React Context (최적화)"
+createdAt: 2025-01-18
+description: Context가 무엇인지 부터 알아보고 최적화도 해보자
+thumbnail: /images/react/context/thumbnail.png
+tags: [React, Context]
+---
+
+> Context를 사용할 때 하위 컴포넌트들은 리렌더링이 되는데 이를 방지하고 변화하는 곳만 리렌더링 하는 방법을 알아보자
+
+## Context
+
+일반적으로는 React에서 부모컴포넌트에서 자식 컴포넌트로 데이터를 전달할 때 props를 통해 전달합니다. 하지만 중간에 끼어있는 **자식 컴포넌트들이 많아지면 Prop drilling이 발생**하게 됩니다.
+또한 **많은 컴포넌트에 동일한 데이터가 필요**할 경우 porps를 전달하기가 번거로워 지는 문제가있죠.
+이럴 땐 **state를 상위 컴포넌트로 끌어올리게 되는데** 이런 방식은 Prop drilling을 초래하게 됩니다. 이때 **Context를 이용하면 부모컴포넌트 트리 아래에 있는 모든 컴포넌트에 깊이 상관없이 데이터를 사용**할 수 있습니다.
+
+<br />
+
+<div className='flex py-3'>
+  <figure className='flex flex-col items-center'>
+    <img src="/images/react/context/1.png" width="100%" alt="post image" className='post-image' />
+    <figcaption>State 끌어올리기</figcaption>
+  </figure>
+  <figure className='flex flex-col items-center'>
+    <img src="/images/react/context/2.png" width="100%" alt="post image" className='post-image' />
+    <figcaption>Prop drilling</figcaption>
+  </figure>
+  </div>
+
+### Context 생성
+
+```tsx showLineNumbers
+import { createContext, PropsWithChildren, useState } from "react";
+
+interface UserContextType {
+  gender: string;
+  name: string;
+  handleChangeGender: (gender: string) => void;
+  handleChangeName: (name: string) => void;
+}
+
+export const UserContext = createContext<UserContextType>({
+  gender: "",
+  name: "",
+  handleChangeGender: () => {},
+  handleChangeName: () => {},
+});
+
+export const UserProvider = ({ children }: PropsWithChildren) => {
+  const [gender, setGender] = useState("남");
+  const [name, setName] = useState("홍길동");
+
+  const handleChangeGender = (gender: string) => {
+    setGender(gender);
+  };
+
+  const handleChangeName = (name: string) => {
+    setName(name);
+  };
+
+  return (
+    <UserContext.Provider
+      value={{ gender, name, handleChangeGender, handleChangeName }}
+    >
+      {children}
+    </UserContext.Provider>
+  );
+};
+```
+
+예시로 생성한 Context입니다. context를 생성하고 Provider에 value를 전달한 뒤 해당 Provider로 사용할 컴포넌트들을 감싸주면 적용됩니다. App.tsx 같은 파일에서 state를 두고 사용하면 state가 변경되면 App.tsx 포함 하위 모든 컴포넌트가 리렌더링 되기에 UserProvider를 분리해서 생성하여 사용합니다.
+
+### Context 사용
+
+```tsx showLineNumbers
+import { useContext } from "react";
+import "./App.css";
+import {
+  GenderContext,
+  NameContext,
+  UserProvider,
+} from "./context/userContext";
+
+const UserGender = () => {
+  const { gender } = useContext(UserContext);
+
+  console.log("UserProfile 렌더링");
+
+  return <p>유저의 성별은 {gender} 입니다.</p>;
+};
+
+const UserName = () => {
+  const { name } = useContext(UserContext);
+
+  console.log("UserName 렌더링");
+
+  return <p>유저의 이름은 {name} 입니다.</p>;
+};
+
+const EditUserGender = () => {
+  const { handleChangeGender } = useContext(UserContext);
+
+  console.log("EditUserGender 렌더링");
+
+  return <button onClick={() => handleChangeGender("여")}>성별 변경</button>;
+};
+
+const EditUserName = () => {
+  const { handleChangeName } = useContext(UserContext);
+
+  console.log("EditUserName 렌더링");
+
+  return <button onClick={() => handleChangeName("김영희")}>이름 변경</button>;
+};
+
+function App() {
+  return (
+    <>
+      <UserProvider>
+        <UserGender />
+        <UserName />
+        <EditUserGender />
+        <EditUserName />
+      </UserProvider>
+    </>
+  );
+}
+
+export default App;
+```
+
+<br />
+<figure className='flex flex-col items-center'>
+  <img src="/images/react/context/3.png" width="100%" alt="post image" />
+  <figcaption>컴포넌트가 마운트 된 후</figcaption>
+</figure>
+<br />
+<figure className='flex flex-col items-center'>
+  <img src="/images/react/context/4.png" width="100%" alt="post image" />
+  <figcaption>성별 변경 후</figcaption>
+</figure>
+
+예시로 사용할 컴포넌트들을 만들고 위에서 만든 UserProvider로 감싸주었습니다. 각 컴포넌트는 하나의 state 또는 변경시키는 함수를 useContext를 통해 가져와 사용하고 있습니다.
+지금 형태의 Context는 하나의 값이 변하면 하위에 있는 모든 컴포넌트가 리렌더링이 일어납니다.
+성별 변경하기 버튼을 누르면 UserProvider의 state가 변경되면서 모든 하위 컴포넌트가 리렌더링이 일어나는 것을 확인할 수 있습니다.
+
+리렌더링의 조건은 다음과 같습니다.
+
+1. 부모 컴포넌트가 리렌더링 될 때
+2. state가 변경될 때
+3. props가 변경될 때
+
+## 리렌더링 최적화
+
+변경되는 state를 사용하고 있는 컴포넌트만 리렌더링 되는게 합당합니다. React에서 제공하는 useCallback, useMemo 등을 사용하여 최적화를 해보겠습니다. Context를 설정한 파일로 돌아갈게요.
+
+### Context 분리
+
+현재 만들어 둔 Contedxt는 문제가 많습니다. 일부로 아무것도 적용하지 않고 만들어 두었는데 이러면 React에서 제공하는 useCallback, useMemo 등을 사용해도 모두 리렌더링이 일어납니다.
+
+```tsx showLineNumbers
+import { createContext, PropsWithChildren, useState } from "react";
+
+interface GenderContextType {
+  gender: string;
+  handleChangeGender: (gender: string) => void;
+}
+
+interface NameContextType {
+  name: string;
+  handleChangeName: (name: string) => void;
+}
+
+export const GenderContext = createContext<GenderContextType>({
+  gender: "",
+  handleChangeGender: () => {},
+});
+
+export const NameContext = createContext<NameContextType>({
+  name: "",
+  handleChangeName: () => {},
+});
+
+export const UserProvider = ({ children }: PropsWithChildren) => {
+  const [gender, setGender] = useState("남");
+  const [name, setName] = useState("홍길동");
+
+  const handleChangeGender = (gender: string) => {
+    setGender(gender);
+  };
+
+  const handleChangeName = (name: string) => {
+    setName(name);
+  };
+
+  return (
+    <GenderContext.Provider value={{ gender, handleChangeGender }}>
+      <NameContext.Provider value={{ name, handleChangeName }}>
+        {children}
+      </NameContext.Provider>
+    </GenderContext.Provider>
+  );
+};
+```
+
+우선 데이터 별로 Context를 분리해주었습니다. 하지만 여전히 리렌더링은 모두 일어납니다. Context를 분리했을지언정 버튼을 눌러 state가 변경되면 Provider 컴포넌트가 리렌더링 되고,
+내부에 작성된 useState, handler 함수들이 재생성 되기 때문이죠. 그럼 이번엔 메모이제이션 훅을 적용해보겠습니다.
+
+### 메모이제이션 훅 적용
+
+```tsx showLineNumbers
+export const UserProvider = ({ children }: PropsWithChildren) => {
+  const [gender, setGender] = useState("남");
+  const [name, setName] = useState("홍길동");
+
+  const handleChangeGender = useCallback((gender: string) => {
+    setGender(gender);
+  }, []);
+
+  const handleChangeName = useCallback((name: string) => {
+    setName(name);
+  }, []);
+
+  const genderValue = useMemo(() => ({ gender, handleChangeGender }), [gender]);
+
+  const nameValue = useMemo(() => ({ name, handleChangeName }), [name]);
+
+  return (
+    <GenderContext.Provider value={genderValue}>
+      <NameContext.Provider value={nameValue}>{children}</NameContext.Provider>
+    </GenderContext.Provider>
+  );
+};
+```
+useCallback은 함수를 메모이제이션 해주는 훅입니다. 두번째 인자로 디펜던시 배열에 변화가 감지되면 함수를 재 생성합니다. 예시로 만든 핸들러 함수는 변화가 필요없으므로 빈 배열을 넘겨 항상 같은 함수를 사용하도록 해주었습니다.
+해당 최적화 훅은 state가 변경되어 Provider 컴포넌트가 리렌더링 될 시 함수가 재생성 되지 않도록 해줍니다.
+
+useMemo는 간단하게 값을 메모이제이션 해주는 훅입니다. value에 넘기는 값을 엮여있는 context끼리 묶어 useMemo를 통해 메모이제이션 해줍니다.
+해당 최적화 훅은 gender 변경 시 name, name 변경 시 gender에 리렌더링 영향을 주지 않기 위함입니다.
+
+### 결과 ⚠️
+
+<figure className='flex flex-col items-center'>
+  <img src="/images/react/context/5.png" width="100%" alt="post image" />
+  <figcaption>성별 변경 후</figcaption>
+</figure>
+
+이렇게 까지 적용하시면 gender, name 변경 시 해당 state를 사용하는 컴포넌트에서만 리렌더링이 일어날 것 같지만 사실 그렇지 않습니다.
+useMemo로 handler와 state를 감쌌기에 변경되면 두개 모두 재생성되어 state와 handler함수를 사용하는 컴포넌트가 리렌더링 되죠. 그렇다고 useMemo로 state만 묶어준다면 `value={{}}`형태로 넘겨주어야 하기에 새 객체로 인식되어 모두 리렌더링이 일어납니다.
+
+### Context를 모두 분리 ✅
+
+```tsx showLineNumbers
+import { createContext, PropsWithChildren, useCallback, useState } from "react";
+
+type GenderContextType = string;
+type GenderDispatchContextType = (gender: string) => void;
+
+type NameContextType = string;
+type NameDispatchContextType = (name: string) => void;
+
+export const GenderContext = createContext<GenderContextType>("");
+export const GenderDispatchContext = createContext<GenderDispatchContextType>(
+  () => {}
+);
+
+export const NameContext = createContext<NameContextType>("");
+export const NameDispatchContext = createContext<NameDispatchContextType>(
+  () => {}
+);
+
+export const UserProvider = ({ children }: PropsWithChildren) => {
+  const [gender, setGender] = useState("남");
+  const [name, setName] = useState("홍길동");
+
+  const handleChangeGender = useCallback((gender: string) => {
+    setGender(gender);
+  }, []);
+
+  const handleChangeName = useCallback((name: string) => {
+    setName(name);
+  }, []);
+
+  return (
+    <GenderContext.Provider value={gender}>
+      <NameContext.Provider value={name}>
+        <GenderDispatchContext.Provider value={handleChangeGender}>
+          <NameDispatchContext.Provider value={handleChangeName}>
+            {children}
+          </NameDispatchContext.Provider>
+        </GenderDispatchContext.Provider>
+      </NameContext.Provider>
+    </GenderContext.Provider>
+  );
+};
+```
+
+<figure className='flex flex-col items-center'>
+  <img src="/images/react/context/6.gif" width="100%" alt="post image" />
+  <figcaption>Context를 모두 분리 후</figcaption>
+</figure>
+
+이렇게 Context를 모두 분리하여 사용하면 딱 변화가 생긴 컴포넌트만 리렌더링 할 수 있습니다. 물론 값이 많을수록 wrapper hell이 되어버리겠지만 이런 문제와 한계들 때문에 context만으로 전역 상태를 관리하는 것은 권장하지 않는 것 아닐까 생각해봅니다.
+
+## 마치며
+
+Context를 사용할 때 root 단위에 사용하는 것은 별로 바람직하지 않은 것 같습니다. Compound Component 패턴처럼 지역적으로 사용하는 것을 추천드립니다. 👍 해당 포스트에는 예시에 바람직하지 않아 React.memo는 사용하지 않았는데
+해당 훅은 Context를 이용하는 컴포넌트의 하위 컴포넌트를 메모이제이션이 필요할 때 주로 사용합니다. 구글에 예시가 많으니 한번 보시는 걸 추천드려요 :) 또한 useReducer를 사용해 처음부터 state와 dispatch를 분리하는 방법도 있습니다!
+
+> Context를 알고 있다고 생각했지만 이런 최적화적인 문제를 깊게 고민해 보지 않았었습니다. 그 결과가 면접 때 바로 드러났기에.. 특히나 조언을 해주셨었는데 왜?라는 의문을 가져보라는 말이 확 와닿았습니다.
+> 왜 전부 리렌더링 되는 거지?라고 의문을 계속 가져 깊게 파보았다면 당당하게 얘기할 수 있었지 않을까 싶습니다. 이 글을 보는 분들은 당당히 Context 최적화를 설명하실 수 있길 바라봅니다:)
