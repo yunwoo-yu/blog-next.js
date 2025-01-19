@@ -1,18 +1,18 @@
 ---
 title: "React Context (최적화)"
 createdAt: 2025-01-18
-description: Context가 무엇인지 부터 알아보고 최적화도 해보자
+description: Context가 무엇인지부터 알아보고 최적화도 해보자
 thumbnail: /images/react/context/thumbnail.png
 tags: [React, Context]
 ---
 
-> Context를 사용할 때 하위 컴포넌트들은 리렌더링이 되는데 이를 방지하고 변화하는 곳만 리렌더링 하는 방법을 알아보자
+> Context를 사용할 때 한 곳에서만 변화가 일어나도 하위 컴포넌트들은 리렌더링이 되는데 이를 방지하고 변화하는 곳만 리렌더링 하는 방법을 알아보자
 
 ## Context
 
 일반적으로는 React에서 부모컴포넌트에서 자식 컴포넌트로 데이터를 전달할 때 props를 통해 전달합니다. 하지만 중간에 끼어있는 **자식 컴포넌트들이 많아지면 Prop drilling이 발생**하게 됩니다.
-또한 **많은 컴포넌트에 동일한 데이터가 필요**할 경우 porps를 전달하기가 번거로워 지는 문제가있죠.
-이럴 땐 **state를 상위 컴포넌트로 끌어올리게 되는데** 이런 방식은 Prop drilling을 초래하게 됩니다. 이때 **Context를 이용하면 부모컴포넌트 트리 아래에 있는 모든 컴포넌트에 깊이 상관없이 데이터를 사용**할 수 있습니다.
+또한 **많은 컴포넌트에 동일한 데이터가 필요**할 경우 porps를 전달하기가 번거로워 지는 문제가있죠. 이럴 땐 **state를 상위 컴포넌트로 끌어올리게 되는데**
+이런 방식은 Prop drilling을 초래하게 됩니다. 이때 **Context를 이용하면 부모컴포넌트 트리 아래에 있는 모든 컴포넌트에 깊이 상관없이 데이터를 사용**할 수 있습니다.
 
 <br />
 
@@ -156,7 +156,7 @@ export default App;
 
 ### Context 분리
 
-현재 만들어 둔 Contedxt는 문제가 많습니다. 일부로 아무것도 적용하지 않고 만들어 두었는데 이러면 React에서 제공하는 useCallback, useMemo 등을 사용해도 모두 리렌더링이 일어납니다.
+현재 만들어 둔 Context는 문제가 많습니다. 일부로 아무것도 적용하지 않고 만들어 두었는데 이러면 React에서 제공하는 useCallback, useMemo 등을 사용해도 모두 리렌더링이 일어납니다.
 
 ```tsx showLineNumbers
 import { createContext, PropsWithChildren, useState } from "react";
@@ -203,7 +203,7 @@ export const UserProvider = ({ children }: PropsWithChildren) => {
 };
 ```
 
-우선 데이터 별로 Context를 분리해주었습니다. 하지만 여전히 리렌더링은 모두 일어납니다. Context를 분리했을지언정 버튼을 눌러 state가 변경되면 Provider 컴포넌트가 리렌더링 되고,
+우선 데이터 별로 Context를 분리해주었습니다. 하지만 여전히 리렌더링은 모두 일어납니다. Context를 분리했을지언정 버튼을 눌러 state가 변경되면 Provider 컴포넌트가 재생성(Remounting)되고,
 내부에 작성된 useState, handler 함수들이 재생성 되기 때문이죠. 그럼 이번엔 메모이제이션 훅을 적용해보겠습니다.
 
 ### 메모이제이션 훅 적용
@@ -246,7 +246,8 @@ useMemo는 간단하게 값을 메모이제이션 해주는 훅입니다. value�
 </figure>
 
 이렇게 까지 적용하시면 gender, name 변경 시 해당 state를 사용하는 컴포넌트에서만 리렌더링이 일어날 것 같지만 사실 그렇지 않습니다.
-useMemo로 handler와 state를 감쌌기에 변경되면 두개 모두 재생성되어 state와 handler함수를 사용하는 컴포넌트가 리렌더링 되죠. 그렇다고 useMemo로 state만 묶어준다면 `value={{}}`형태로 넘겨주어야 하기에 새 객체로 인식되어 모두 리렌더링이 일어납니다.
+useMemo로 handler와 state를 감쌌기에 변경되면 두 개 모두 재생성되어 state와 handler 함수를 사용하는 컴포넌트가 리렌더링 되죠. 그렇다고 useMemo로 `value={{gender, name}}`이렇게 state만 묶어준다면
+인라인 객체 형태로 데이터를 넘겨주게 되며 자바스크립트 객체는 참조 데이터기에 동일한 값을 가지고 있어도 참조 메모리 주소가 달라 새로운 객체로 인식되어 모두 리렌더링이 일어납니다.
 
 ### Context를 모두 분리 ✅
 
@@ -300,7 +301,7 @@ export const UserProvider = ({ children }: PropsWithChildren) => {
   <figcaption>Context를 모두 분리 후</figcaption>
 </figure>
 
-이렇게 Context를 모두 분리하여 사용하면 딱 변화가 생긴 컴포넌트만 리렌더링 할 수 있습니다. 물론 값이 많을수록 wrapper hell이 되어버리겠지만 이런 문제와 한계들 때문에 context만으로 전역 상태를 관리하는 것은 권장하지 않는 것 아닐까 생각해봅니다.
+이렇게 Context를 모두 분리하여 사용하면 딱 변화가 생긴 컴포넌트만 리렌더링 할 수 있습니다. 물론 값이 많을수록 wrapper hell이 되어버리겠지만 이런 문제와 한계들 때문에 Context만으로 전역 상태를 관리하는 것은 권장하지 않는 것 아닐까 생각해봅니다.
 
 ## 마치며
 
