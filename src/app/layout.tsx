@@ -1,6 +1,7 @@
 import './globals.css';
 
 import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Metadata } from 'next';
 
 import { pretendard } from '@/assets/fonts/fonts';
@@ -26,6 +27,7 @@ export default function RootLayout({
 					<main className="mt-[97px] flex-1">{children}</main>
 					<Footer />
 				</ThemeProvider>
+				<SpeedInsights />
 				<Analytics />
 			</body>
 		</html>
