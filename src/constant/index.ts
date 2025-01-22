@@ -52,3 +52,14 @@ export const ROOT_META_DATA: Metadata = {
 		images: ['/images/og_thumbnail.png'],
 	},
 };
+
+export const WEB_PATH = {
+	POSTS: {
+		path: () => '/blog/posts',
+		label: 'Posts',
+	},
+	// LOBBY: {
+	// 	path: () => '/blog/lobby',
+	// 	label: 'Lobby',
+	// },
+};
