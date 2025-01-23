@@ -303,6 +303,8 @@ export const UserProvider = ({ children }: PropsWithChildren) => {
 
 이렇게 Context를 모두 분리하여 사용하면 딱 변화가 생긴 컴포넌트만 리렌더링 할 수 있습니다. 물론 값이 많을수록 wrapper hell이 되어버리겠지만 이런 문제와 한계들 때문에 Context만으로 전역 상태를 관리하는 것은 권장하지 않는 것 아닐까 생각해봅니다.
 
+사실 싱글톤을 적용한 Class 인스턴스를 사용하는 방법도 있습니다만..(React-query에서 사용) 예시로 만들어보려 했으나 Context와 연계해서 만드려니 일이 너무 커져버려서..😂 싱글톤 인스턴스를 이용한 방법도 있다! 정도도 알아두시면 좋을거같습니다!
+
 ## 마치며
 
 Context를 사용할 때 root 단위에 사용하는 것은 별로 바람직하지 않은 것 같습니다. Compound Component 패턴처럼 지역적으로 사용하는 것을 추천드립니다. 👍 해당 포스트에는 예시에 바람직하지 않아 React.memo는 사용하지 않았는데
