@@ -1,0 +1,184 @@
+---
+title: "[ios] ios 사파리 가상키보드 하단 여백 문제"
+createdAt: 2025-01-27
+description: 모바일 사파리 환경에서 생기는 문제 해결 방법
+thumbnail: /images/issues/ios_virtual_keyboards/thumbnail.png
+tags: [ios, safari, crossBrowsing, Next.js]
+---
+
+> Next.js 프로젝트에서 ios 사파리 환경에서 input, textarea 등에 포커싱 됐을 때 올라오는 가상키보드로 인한 하단 여백 생김 이슈 해결방법
+
+## 미리보기
+
+많이들 접하는 채팅형태의 UI를 구현하던 중 ios 사파리 환경에서 가상키보드로 인한 하단에 알수없는 여백이 발생했고, 이를 해결하기 위한 방법으로 찾은 것과 왜 이런 문제가 발생하는지 정리해봤습니다.
+
+<div className='flex py-3 justify-between'>
+  <figure className='flex flex-col items-center'>
+    <img src="/images/issues/ios_virtual_keyboards/1.png" width="294px" alt="post image" />
+    <figcaption>가상키보드로 인한 하단 여백</figcaption>
+  </figure>
+  <figure className='flex flex-col items-center'>
+    <img src="/images/issues/ios_virtual_keyboards/2.gif" width="294px" alt="post image" />
+    <figcaption>해결 후</figcaption>
+  </figure>
+</div>
+---
+## 문제점 파악 하기
+
+### Visual viewport & Layout viewport
+
+화면의 뷰포트는 크게 두가지로 나눌 수 있습니다. 바로 Visual viewport 와 Layout viewport입니다.
+Visual viewport는 유동적인 화면으로 현재 내 화면에 보이는 영역 (확대, 축소 포함)에 대한 정보이며
+Layout viewport는 고정된 화면으로 window 객체의 outerWidth, outerHeight 등 변하지 않는 브라우저 전체 크기에 대한 정보입니다.
+
+- Layout viewport에 해당 : window.outerWidth, window.outerHeight
+- Visual viewport에 해당 : window.innerWidth, window.innerHeight
+
+우리가 뷰포트를 구할때는 보통 innerWidth, innerHeight를 사용하게됩니다. 하지만 사용자의 확대, 축소 혹은 가상키보드가 올라오는 등의 이유로 뷰포트가 변경되는 경우가 있습니다.
+이런 경우에 뷰포트를 구할때는 inner가 아닌 JS에서 제공하는 VisualViewport 인스턴스 혹은 window.visualViewport를 사용해야합니다.
+
+일단 저희 프로젝트는 html 부터 height:100%로 설정되어있습니다. 내부 컨텐츠에 의해 크기가 바뀌고 document의 크기가 늘어나도록 되어있어요.
+
+### 안드로이드 환경 브라우저 (Chrome)
+
+<img src="/images/issues/ios_virtual_keyboards/5.gif" width="260px" alt="post image" />
+
+안드로이드는 예측가능하게 동작했습니다. 
+input에 포커싱하여 가상키보드가 올라오면 resize 이벤트가 실행됐고 window 객체 내에 visualViewport.height 값이 변경되었습니다.
+마찬가지로 포커싱이 풀리면 resize 이벤트가 실행되고 값도 원래대로 돌아왔죠. 고로 별도의 작업이 필요없었습니다.
+
+### ios 환경 브라우저 (Safari)
+
+<img src="/images/issues/ios_virtual_keyboards/6.gif" width="260px" alt="post image" />
+
+ios는 비정상이라고 느껴지는 동작들이 꽤 많이 보였습니다. 나열해보자면
+
+- 새로고침 방식이 드래그냐 클릭이냐에 따라 초기 visualViewport.height, innerHeight 값이 달라졌습니다.
+- 가상키보드가 올라오면 innerHeight 값 또한 visualViewport.height 값과 동일해졌습니다.
+- 스크롤이벤트 시 상단 끝 또는 하단 끝에 닿을 경우 innerHeight 값이 돌아왔습니다.
+- 가상키보드가 생기며 만들어지는 가상영역이 스크롤 범위에 들어왔습니다.
+
+너무나도 이상한 동작들이 끼어있었어요.😂 visualViewport.height, innerHeight 값이 동일해버리니 어떻게 하단 여백이 나오는 부분을 처리해야할지 막막했죠.
+
+## 해결 과정
+
+일단 다른 개발자분들이 해결한 방법이 있을까하여 레퍼런스를 탐색해보았습니다. ios 사파리 기준으로 오늘의집, 뤼튼, 번개장터를 살펴보았지만 다들 주력이 **모바일 앱**이어서 그런지 웹 환경은 하단여백이 그대로 나오도록 되어있었습니다.
+
+### 채널톡 블로그 (실패 ❌)
+
+[채널톡 블로그](https://channel.io/ko/blog/articles/12bccbc3)에서 참고한 방법으로 시도해봤습니다.
+동일하게 작성했을 땐 스크롤을 꼭! 맨 상단에 올렸다가 내리면 가상영역이 요소가 스크롤링으로 잡혀 문제가 없었지만 연속으로 스크롤을 내리면 동일한 이슈가 발생했습니다.
+고민고민하다가 해당 페이지는 100vh 높이를 가진 페이지기에 스크롤이벤트에서 target의 scrollTop이 0 or 1이기에 0이 아닌경우 scrollTop을 0으로 만들어주었습니다.
+
+저는 리액트 환경에 맞게 구성하여 코드를 작성해보았습니다. (일부만 가져왔기에 문제가 있을 수 있습니다.)
+
+```tsx
+
+const App = () => {
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+    const handleScroll = (e: Event) => {
+      const target = e.target as HTMLDivElement;
+
+      if (target.scrollTop) {
+        target.scrollTop = 0;
+      }
+    };
+
+    if (scrollRef.current) {
+      scrollRef.current.addEventListener('scroll', handleScroll);
+    }
+
+    return () => {
+      if (scrollRef.current) {
+        scrollRef.current.removeEventListener('scroll', handleScroll);
+      }
+    };
+  }, []);
+
+  
+  return (
+    // 전체 Wrapper
+    <div className="overflow-y-auto relative" ref={scrollRef}>
+        <Content />
+        <div className="absolute left-0 top-0 h-[calc(100%_+_1px)] w-[1px]" />
+    </div>
+  )
+}
+
+```
+
+잘 동작하는 듯 했지만 가상키보드가 나오고 요소 자체의 스크롤이 길어지면 위로 올린 스크롤을 다시 내릴 수 없는 문제가 있었습니다. (지금 생각하니 당연한 문제인데 바보같네요🫣)
+
+### ScrollY를 이용한 방법 (성공 ✅)
+
+```tsx
+
+let initialScrollY = 0;
+
+const App = () => {
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [isFocus, setIsFocus] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+
+      if (isFocus) {
+        if (!initialScrollY) {
+          initialScrollY = currentScrollY;
+        }
+
+        if (currentScrollY > initialScrollY) {
+          window.scrollTo(0, initialScrollY);
+        }
+      } else {
+        initialScrollY = 0;
+      }
+    };
+
+    window.visualViewport?.addEventListener('resize', handleScroll);
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.visualViewport?.removeEventListener('resize', handleScroll);
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [isFocus]);
+
+  
+  return (
+    // 전체 Wrapper
+    <div className="overflow-y-auto relative">
+      {/* 컨텐츠 영역... List 등등 */}
+        <Textarea
+        onFocus={() => setIsFocus(true)}
+        onBlur={() => setIsFocus(false)}
+        onClick={() => {
+          textareaRef?.current?.focus();
+        }}
+      />
+    </div>
+  )
+}
+
+```
+
+ios에서 가상키보드가 나올때 document를 밀어버리고 가상키보드가 자리합니다. 
+resize 이벤트 시 viewport.height 값은 변경되지 않지만 [scrollY](https://developer.mozilla.org/ko/docs/Web/API/Window/scrollY) 값은 변경됩니다.
+
+<img src="/images/issues/ios_virtual_keyboards/7.png" width="100%" alt="post image" />
+
+즉 포커스 시 scrollY의 위치를 저장해두고 스크롤 이벤트로 감지하며 첫 scrollY보다 높은값으로 넘어가면 스크롤을 저장된 위치로 돌리면 가상영역이 나오지 않도록 처리할 수 있습니다 👍
+native 환경이라면 더 수월하게 처리가 가능한거 같지만 현재 제가 진행중인 프로젝트에서는 Web 환경뿐이기에 조금 부자연스럽지만 해당 방법으로 해결하였습니다.
+
+## 마무리
+
+해당 이슈는 이전에 진행중인 프로젝트에서도 발생했지만 기간 내 이슈를 해결하지 못하고 넘어갔던 이슈였습니다.
+이번에 해당 이슈를 해결하면서 뷰포트에 대한 이해도를 높일 수 있었고 오랜만에 이슈를 해결하며 성취감을 얻을 수 있어 좋았습니다.
+
+### 참고 레퍼런스
+
+- [채널톡 블로그](https://channel.io/ko/blog/articles/12bccbc3)
+- [웹뷰 - Fixed, 가상 키보드, VisualViewport 사용](https://velog.io/@th_velog/%EC%9B%B9%EB%B7%B0-Fixed-%EA%B0%80%EC%83%81-%ED%82%A4%EB%B3%B4%EB%93%9C-VisualViewport-%EC%82%AC%EC%9A%A9)
