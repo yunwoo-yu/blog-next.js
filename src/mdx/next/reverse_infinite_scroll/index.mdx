@@ -1,0 +1,212 @@
+---
+title: "역방향 무한스크롤을 구현하는 2가지 방법"
+createdAt: 2025-03-10
+description: 스크롤 핸들링 or CSS를 이용해서 역방향 무한스크롤 만들기
+thumbnail: /images/next/reverse_infinite_scroll/thumbnail.png
+tags: [Blog, Next.js, Infinite Scroll]
+---
+
+> 채팅 같은 경우 최신 데이터가 맨 하단에 있고 스크롤을 올리면 이전 데이터들이 나와야합니다. 이럴 때 필요한 역방향 무한스크롤을 구현해봤습니다.
+> 작업 환경은 Next.js + Ts 이며 Tanstack Query를 이용하고 있습니다.
+
+## 역방향 무한스크롤 시 고려할 점
+
+무한스크롤 같은 경우 구글에 많은 레퍼런스가 존재하기에 딱히 어려울 건 없습니다. 하지만 역방향의 경우는 고려해줘야 할 부분이 한가지 있는데요 바로 스크롤을 이전 위치로 가져다 놓는 것입니다.
+
+저는 이 문제를 **스크롤 이벤트 조작** 하는 방법과 **CSS Flex**를 이용한 방법으로 해결해보았습니다.
+
+## 스크롤 이벤트 
+
+사실 이 부분은 구글에 레퍼런스가 꽤있는데요. 그 중 많이 보인 방법이 setTimeout을 이용해 비동기 처리로 만들어 렌더링 후 스크롤을 이전 위치로 가져다 놓는 방법입니다.
+가능한 방법이지만 논리적으로 시간설정을 할 수가 없습니다. 50ms를 설정했는데 어떤 사용자는 다음 데이터를 불러오는데 100ms가 걸리는 환경이라면 제대로 동작하지 않을테고,
+반대로 데이터를 더 빠르게 불러온 유저는 마치 플리커링 현상이 일어나는 것 처럼 최신데이터가 보였다가 이전 위치로 돌아오게 됩니다.
+
+### 코드
+
+```tsx showLineNumbers
+
+import { useEffect, useRef, useState } from "react";
+import { useInView } from "react-intersection-observer";
+import { ImageList, useGetImageList } from "./hooks/useGetImageList";
+
+function App() {
+  const wraaperRef = useRef<HTMLDivElement>(null);
+  const firstRenderRef = useRef(true);
+  const prevScrollHeightRef = useRef(0);
+  const [items, setItems] = useState<ImageList[]>([]);
+  const { data, hasNextPage, fetchNextPage } = useGetImageList();
+  const { ref, inView } = useInView();
+
+  
+  useEffect(() => {
+    const wrapper = wraaperRef.current;
+
+    if (wrapper) {
+      const newScrollHeight = wrapper.scrollHeight;
+      // 업데이트 된 scrollHeight + 현재 scrollTop - 이전 scrollHeight
+      wrapper.scrollTop = newScrollHeight + wrapper.scrollTop - prevScrollHeightRef.current;
+
+      prevScrollHeightRef.current = newScrollHeight;
+    }
+  }, [items]);
+
+  useEffect(() => {
+    if (inView && hasNextPage) {
+      fetchNextPage();
+    }
+  }, [inView, hasNextPage, fetchNextPage]);
+
+  useEffect(() => {
+    if (data) {
+      const latestData = [...data.pages[data.pages.length - 1]].reverse();
+
+      setItems((prev) => [...latestData, ...prev]);
+    }
+  }, [data]);
+
+  useEffect(() => {
+    if (firstRenderRef.current) {
+      const wrapper = wraaperRef.current;
+      firstRenderRef.current = false;
+
+      if (wrapper) {
+        wrapper.scrollTop = wrapper.scrollHeight;
+      }
+    }
+  }, [items]);
+
+  return (
+    <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">무한 스크롤 예시</h1>
+      <div className="space-y-4 overflow-y-auto h-[700px]" ref={wraaperRef}>
+        {items.length ? <div ref={ref} /> : null}
+        {items.map((item) => (
+          <div key={item.id} className="border p-4 rounded shadow mb-2">
+            <div className="flex items-start">
+              <div className="flex-shrink-0 mr-3">
+                <img
+                  src={item.download_url}
+                  alt={`프로필 이미지 ${item.id}`}
+                  className="w-10 h-10 rounded-full"
+                />
+              </div>
+              <div className="bg-gray-100 p-3 rounded-lg max-w-[80%]">
+                <p className="font-semibold text-sm mb-1">{item.author}</p>
+                <p className="text-gray-700">{item.id}번째 메세지 입니다.</p>
+                <p className="text-xs text-gray-500 mt-1 text-right">
+                  {new Date().toLocaleTimeString()}
+                </p>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default App;
+
+```
+
+위 코드처럼 React환경에서 더미용 API를 이용했을 땐 useEffect를 사용해도 깜빡임이 없지만, 제가 프로젝트에 적용할 땐
+정렬, 데이터 구조 변경 등 많은 핸들링 + Next.js의 pre-rendering 때문인지 **깜박임처럼 스크롤 변경전 화면이 보였다 스크롤이 이동되는 현상**이 발생했습니다.
+
+**이런 현상이 생긴다면 useLayoutEffect를 사용해 해결**할 수 있습니다. useLayoutEffect는 브라우저 렌더링 과정인 Layout과 Paint 중간에 동기적으로 실행되기 때문에 업데이트 된 DOM의 스크롤 값을 렌더링 이전에 먼저 반영할 수 있습니다.
+
+### 결과
+
+<div className='flex py-3 justify-between'>
+  <figure className='flex flex-col items-center'>
+    <img src="/images/next/reverse_infinite_scroll/1.gif" width="294px" alt="post image" />
+    <figcaption>useEffect 사용</figcaption>
+  </figure>
+  <figure className='flex flex-col items-center'>
+    <img src="/images/next/reverse_infinite_scroll/2.gif" width="294px" alt="post image" />
+    <figcaption>useLayoutEffect 사용</figcaption>
+  </figure>
+</div>
+
+## CSS Flex 이용하기
+
+오히려 이 방법이 훨씬 깔끔하고 데이터 핸들링도 적게 들어가는 것 같습니다.
+방법은 간단합니다. 리스트 요소를 감싸고 있는 컨테이너에 `flex flex-col-reverse`를 주고 데이터는 정방향으로 삽입하면 됩니다.
+그럼 reverse로 인해 데이터는 돌아갔지만 돔이 추가되는 방향은 일반 무한스크롤 처럼 요소가 아래로 쌓이게 되기때문에 자동으로 스크롤이 추가되죠.
+
+### 코드
+
+```tsx showLineNumbers
+
+import { useEffect, useState } from "react";
+import { useInView } from "react-intersection-observer";
+import { ImageList, useGetImageList } from "./hooks/useGetImageList";
+
+function App() {
+  const [items, setItems] = useState<ImageList[]>([]);
+  const { data, hasNextPage, fetchNextPage } = useGetImageList();
+  const { ref, inView } = useInView();
+
+  useEffect(() => {
+    if (inView && hasNextPage) {
+      fetchNextPage();
+    }
+  }, [inView, hasNextPage, fetchNextPage]);
+
+  useEffect(() => {
+    if (data) {
+      setItems((prev) => [...prev, ...data.pages[data.pages.length - 1]]);
+    }
+  }, [data]);
+
+  return (
+    <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">무한 스크롤 예시</h1>
+      <div className="space-y-4 overflow-y-auto h-[700px] flex flex-col-reverse">
+        {items.map((item) => (
+          <div key={item.id} className="border p-4 rounded shadow mb-2">
+            <div className="flex items-start">
+              <div className="flex-shrink-0 mr-3">
+                <img
+                  src={item.download_url}
+                  alt={`프로필 이미지 ${item.id}`}
+                  className="w-10 h-10 rounded-full"
+                />
+              </div>
+              <div className="bg-gray-100 p-3 rounded-lg max-w-[80%]">
+                <p className="font-semibold text-sm mb-1">{item.author}</p>
+                <p className="text-gray-700">{item.id}번째 메세지 입니다.</p>
+                <p className="text-xs text-gray-500 mt-1 text-right">
+                  {new Date().toLocaleTimeString()}
+                </p>
+              </div>
+            </div>
+          </div>
+        ))}
+        {items.length ? <div ref={ref} /> : null}
+      </div>
+    </div>
+  );
+}
+
+export default App;
+
+```
+
+### 결과
+
+<div className='flex py-3 justify-between'>
+  <figure className='flex flex-col items-center'>
+    <img src="/images/next/reverse_infinite_scroll/3.gif" width="294px" alt="post image" />
+    <figcaption>CSS Flex 이용</figcaption>
+  </figure>
+</div>
+
+코드도 약 30줄 줄어들고 별도의 DOM조작 없이 깔끔하게 동작하네요. 물론 데이터를 거꾸로 정렬하는게 불편한 환경이라면 첫번째 방법을 이용하는게 좋겠지만,
+둘 다 사용해본 결과 CSS만으로 끝내는게 좋아보입니다.
+
+## 마무리
+
+이번 포스팅에서는 역방향 무한스크롤을 구현하는 두가지 방법을 알아보았습니다. 프로젝트 상황에 따라 적절한 방법을 사용하시면 좋을 것 같습니다. :)
+사실 이전에 CSS flex를 이용해 구현해봤지만 DOM조작을 통해 해결해야만 하는 순간 고려해야할 사항들이 궁금해 만들어 보았습니다.
+도움이 되셨으면 좋겠네요.🙇‍♂️
+
