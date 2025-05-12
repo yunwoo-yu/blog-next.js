@@ -7,7 +7,7 @@ import { GitHubIcon, LinkedInIcon } from './Icons';
 
 const Footer = () => {
 	return (
-		<footer className="flex flex-col items-center justify-center gap-3 border-t py-10">
+		<footer className="flex flex-col items-center justify-center gap-3 border-t py-10 print:hidden">
 			<article className="flex justify-center gap-3">
 				<Link
 					href={GITHUB_URL}

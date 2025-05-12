@@ -15,7 +15,7 @@ const PostListType = ({ data, category, slug }: PostListTypeProps) => {
 		<li className="flex cursor-pointer flex-col border-t border-gray-400">
 			<Link href={`/blog/posts/${category}/${slug}`} className="flex justify-between px-2 py-5">
 				<div>
-					<h2 className="text-lg">{data.title}</h2>
+					<h3 className="text-lg">{data.title}</h3>
 					<p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{data.description}</p>
 					<div className="mt-3 flex text-xs">
 						<span className="text-gray-400">{data.createdAt}</span>

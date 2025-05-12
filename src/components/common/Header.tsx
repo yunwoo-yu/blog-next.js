@@ -25,12 +25,13 @@ const Header = () => {
 		<header
 			className={cn(
 				showHeader ? 'translate-y-[0px]' : 'translate-y-[-97px]',
-				'fixed left-0 top-0 z-50 w-full border-b border-gray-300 bg-[rgba(255,255,255,0.5)] px-5 py-2 backdrop-blur-sm transition-transform duration-300 ease-in-out dark:bg-[rgba(0,0,0,0.5)]',
+				'fixed left-0 top-0 z-50 w-full border-b border-gray-300 bg-[rgba(255,255,255,0.5)] px-5 py-2 backdrop-blur-sm transition-transform duration-300 ease-in-out dark:bg-[rgba(0,0,0,0.5)] print:hidden',
 			)}>
 			<NavigationMenu className="mx-auto max-w-7xl justify-between">
 				<NavigationMenuList className="gap-5">
 					<NavigationMenuItem className="mr-5">
 						<Link href={WEB_PATH.POSTS.path()} className="relative flex h-20 w-20">
+							<h1 className="sr-only">Ycow Blog</h1>
 							<Image
 								src="/images/logo.png"
 								alt="blog logo"

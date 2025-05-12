@@ -68,6 +68,18 @@
   }
 }
 
+@media print {
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  @page {
+    size: A4;
+  }
+
+}
+
 @layer base {
   * {
     @apply border-border;
@@ -76,7 +88,6 @@
     @apply bg-background text-foreground;
   }
 }
-
 
 h3 code {
   @apply !text-lg md:!text-xl;

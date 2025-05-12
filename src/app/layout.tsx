@@ -24,7 +24,7 @@ export default function RootLayout({
 			<body className="flex min-h-screen flex-col">
 				<ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
 					<Header />
-					<main className="mt-[97px] flex-1">{children}</main>
+					<main className="mt-[97px] flex-1 print:mt-0">{children}</main>
 					<Footer />
 				</ThemeProvider>
 				<SpeedInsights />

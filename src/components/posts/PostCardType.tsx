@@ -24,7 +24,7 @@ const PostCardType = ({ data, category, slug }: PostCardTypeProps) => {
 					/>
 				</div>
 				<div className="p-4">
-					<h2 className="text-xl">{data.title}</h2>
+					<h3 className="text-xl">{data.title}</h3>
 					<p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{data.description}</p>
 					<p className="mt-2 flex items-center text-xs text-gray-400">
 						<CalendarDays className="mr-1 size-4" />

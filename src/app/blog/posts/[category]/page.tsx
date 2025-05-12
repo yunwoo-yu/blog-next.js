@@ -29,7 +29,7 @@ const PostsPageWithCategory = async ({ params }: Params) => {
 
 	return (
 		<section className="relative mx-auto flex max-w-6xl gap-5 px-5 py-20">
-			<h1 className="sr-only">Ycow Blog</h1>
+			<h2 className="sr-only">블로그 {category} 게시글 목록</h2>
 			<CategoryVerticalList categoryData={categoryData} category={category} />
 			<BlogPosts posts={posts} />
 			{/* <KakaoAdFit unit="DAN-Cj5MxJWs7glmj6ft" width="160" height="600" className="hidden md:block" /> */}

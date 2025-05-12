@@ -10,7 +10,7 @@ interface PostDetailHeaderProps {
 const PostDetailHeader = ({ frontmatter }: PostDetailHeaderProps) => {
 	return (
 		<section className="mx-auto max-w-4xl border-b border-border px-5 py-10">
-			<h1 className="text-3xl text-primary">{frontmatter.title}</h1>
+			<h2 className="text-3xl text-primary">{frontmatter.title}</h2>
 			<div className="mt-2 flex justify-between text-sm text-gray-400">
 				<span>{frontmatter.description}</span>
 				<span className="flex items-center">
