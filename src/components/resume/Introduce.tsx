@@ -7,9 +7,12 @@ export default function Introduce() {
 		<ResumeContainer title="자기소개">
 			<div className="leading-7">
 				<p>안녕하세요, 협업과 소통을 중시하는 2년차 프론트엔드 개발자 유윤우입니다.</p>
-				<p>&apos;내 일&apos;과 &apos;팀의 일&apos;의 경계 없이 함께 문제를 해결해 나가는 개발 문화를 추구합니다.</p>
-				<p>사용자 관점(UX)과 개발자 관점(DX)을 모두 고려한 코드 작성으로 유저와 동료들의 편의를 고려합니다.</p>
-				<p>비즈니스적 성장과 함께 성장하는 것에 큰 성취감을 느낍니다.</p>
+				<p>
+					&apos;내 일&apos;과 &apos;팀의 일&apos;의 경계 없이{' '}
+					<strong>함께 문제를 해결해 나가는 환경을 좋아합니다.</strong>
+				</p>
+				<p>UX와 DX를 고려한 코드 작성을 위해 노력합니다.</p>
+				<p>트렌디한 기술에 관심이 많지만, 오버엔지니어링을 경계하며 비즈니스 문제를 해결하는 것을 우선시 합니다.</p>
 			</div>
 		</ResumeContainer>
 	);
