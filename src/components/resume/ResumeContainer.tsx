@@ -5,8 +5,8 @@ interface ResumeContainerProps {
 
 export default function ResumeContainer({ title, children }: ResumeContainerProps) {
 	return (
-		<section>
-			<h3 className="my-5 text-xl font-medium">{title}</h3>
+		<section className="[&_strong]:font-medium [&_strong]:text-destructive">
+			<h3 className="my-5 text-2xl font-semibold">{title}</h3>
 			{children}
 		</section>
 	);
