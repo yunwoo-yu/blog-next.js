@@ -20,7 +20,10 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<html lang="en" suppressHydrationWarning className={`${pretendard.variable} font-pretendard font-normal`}>
+		<html
+			lang="en"
+			suppressHydrationWarning
+			className={`${pretendard.variable} font-pretendard font-normal print:text-sm`}>
 			<body className="flex min-h-screen flex-col">
 				<ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
 					<Header />

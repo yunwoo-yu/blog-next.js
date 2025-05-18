@@ -74,10 +74,14 @@
     print-color-adjust: exact;
   }
 
-  @page {
-    size: A4;
+  .divider-print {
+    height: 1px !important;
   }
 
+  @page {
+    size: A4;
+    margin-bottom: 10mm;
+  }
 }
 
 @layer base {
