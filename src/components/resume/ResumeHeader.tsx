@@ -1,6 +1,7 @@
 'use client';
 
 import { useTheme } from 'next-themes';
+
 import { Button } from '../ui/button';
 import Address from './Address';
 import NameTitle from './NameTitle';

@@ -1,8 +1,8 @@
-import ResumeContainer from './ResumeContainer';
-
 import RESUME from '@/constant/resume';
-import { ResumeLink } from './ResumeLink';
+
+import ResumeContainer from './ResumeContainer';
 import { ResumeItem } from './ResumeItem';
+import { ResumeLink } from './ResumeLink';
 
 export default function Careers() {
 	return (
