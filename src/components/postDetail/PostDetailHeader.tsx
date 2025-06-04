@@ -10,11 +10,11 @@ interface PostDetailHeaderProps {
 const PostDetailHeader = ({ frontmatter }: PostDetailHeaderProps) => {
 	return (
 		<section className="mx-auto max-w-4xl border-b border-border px-5 py-10">
-			<h2 className="text-3xl text-primary">{frontmatter.title}</h2>
-			<div className="mt-2 flex justify-between text-sm text-gray-400">
+			<h2 className="text-2xl text-primary sm:text-3xl">{frontmatter.title}</h2>
+			<div className="mt-2 flex items-start justify-between gap-2 text-sm text-gray-400">
 				<span>{frontmatter.description}</span>
-				<span className="flex items-center">
-					<CalendarDays className="mr-1 size-4" />
+				<span className="flex flex-shrink-0 items-center">
+					<CalendarDays className="mr-1 size-3 sm:size-4" />
 					{frontmatter.createdAt}
 				</span>
 			</div>
