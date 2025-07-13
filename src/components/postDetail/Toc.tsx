@@ -14,7 +14,7 @@ const Toc = ({ headerNavigationList }: TitleIndexProps) => {
 	const { activeIds } = useObserverToc();
 
 	return (
-		<ul className="mx-auto mt-10 flex max-h-[calc(80vh-10rem)] max-w-3xl flex-col gap-1 overflow-y-scroll rounded-lg bg-secondary p-5 text-gray-500 dark:text-gray-300">
+		<ul className="mx-auto mt-10 flex max-h-[calc(80vh-10rem)] max-w-3xl flex-col gap-1 overflow-y-scroll rounded-lg bg-secondary p-5 text-gray-500 scrollbar-hide dark:text-gray-300">
 			<li className="text-lg font-semibold text-foreground">목차</li>
 			{headerNavigationList &&
 				headerNavigationList.map(({ text, href, children }, index) => (
