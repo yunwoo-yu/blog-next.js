@@ -1,0 +1,676 @@
+---
+title: "항해플러스 2주차 - Virtual DOM, Diff"
+createdAt: 2025-07-22
+description: 바닐라 자바스크립트 SPA 만들기 두번째 Virtual DOM
+thumbnail: /images/activities/hh_plus_1/thumbnail.png
+tags: [JavaScript, SPA, 항해플러스]
+---
+
+> 항해플러스 2주차 바닐라 JavaScript로 Virtual DOM 구현하기
+
+## 2주차 발제
+
+폭풍같던 1주차 과제를 BP는 간신히 통과했더니 바로 2주차가 시작되었다. 이번 과제는 JSX를 파싱해 Virtual DOM을 만들고 이를 정규화하여 트리를 만들어 비교(diff)해 변경이 있는 부분만 업데이트하는 과제였다. (이벤트 관리까지)
+
+다행히 이번에는 1주차보다 양이 적어 테스트를 따라 단계별로 밟아가며 고민할 수 있었기에 나름 수월(?)하게 풀 수 있었다. 물론 React 정도의 복잡한 시스템은 아니지만 이번 과제를 통해 가상 DOM을 정규화하여 트리를 만들고 이를 비교하는 방법을 배웠다.
+
+오늘은 전체적인 플로우를 상세하게 적으며 복기하고 회고를 진행해보자.
+
+## 과제
+
+### 전체적인 플로우
+
+1. 상태가 변경된다. (setState)
+2. JSX를 파싱하여 Virtual DOM을 만든다. (createVNode)
+3. 정규화하여 트리를 만든다. (normalizeVNode)
+4. 정규화된 트리를 기반으로 DOM 트리를 생성한다. (createElement)
+5. 트리를 비교하여 변경이 있는 부분만 업데이트한다.(Diff) 기존 트리가 없다면 새로 만든다. (updateElement, renderElement)
+6. 기존 이벤트를 지우고 새로운 이벤트를 추가한다. (eventManager)
+
+## createVNode
+
+### jsx에 대해 알아보자
+
+JSX는 JavaScript에 XML/HTML을 추가하여 확장된 문법이다. 브라우저는 이를 이해할 수 없기에 컴파일 과정을 거쳐 브라우저가 이해할 수 있는 코드로 변환된다. 코드의 변환은 Babel 같은 컴파일러를 통해 이루어진다. 이때 컴파일러는 우리가 작성한 JSX를 파싱하여 브라우저가 이해할 수 있는 코드로 변환한다.
+
+```jsx
+const App = () => {
+  return (
+    <div className="app">
+      <h1>Hello, World!</h1>
+    </div>
+  )
+}
+// React에서 이 코드는 트랜스파일러를 통해 아래와 같이 변경된다.
+const App = () => {
+  return React.createElement("div", { className: "app" }, React.createElement("h1", null, "Hello, World!"));
+}
+
+// 함수 실행 시 아래와 같이 객체를 생성한다.
+
+const App = {
+  type: "div",
+  props: {
+    className: "app"
+  },
+  children: [
+    { type: "h1", props: { children: "Hello, World!" } }
+  ]
+  //... 생략 사실은 더 많은 속성이 존재한다.
+}
+```
+
+사실 이런 변환은 트랜스파일러가 동작하는 과정에 가깝지만 Babel 홈페이지를 보면 자신을 컴파일러라고 작성되어 있어 컴파일 과정이라고 부르겠다.
+
+### 어떻게 변환이 이루어질까? (Vite 기준)
+
+[Vite 공식 문서](https://vite.dev/guide/features.html#jsx)에서 컴파일 과정을 확인할 수 있다. Vite는 기본적으로 .jsx, .tsx 파일을 지원하며 이를 컴파일하는 것은 esbuild를 통해 처리가 가능하다. 자세한 내용은 [esbuild 공식 문서](https://esbuild.github.io/content-types/#jsx)에서 확인할 수 있다.
+문서를 확인해보면 기본적으로는 `React.createElement`를 사용하여 변환한다고 나와있으며 React가 아닌 다른 라이브러리를 사용할 경우 esbuild 옵션에서 `jsx, jsxFactory`를 설정하여 커스텀할 수 있다.
+
+```js
+import { defineConfig } from "vite";
+
+export default defineConfig({
+  esbuild: {
+    jsx: "transform",
+    jsxFactory: "createVNode",
+  },
+  optimizeDeps: {
+    esbuildOptions: {
+      jsx: "transform",
+      jsxFactory: "createVNode",
+    },
+  },
+})
+```
+
+먼저 vite.config.js에서 컴파일 옵션을 설정한다.
+
+- jsx: "transform"으로 설정하여 JSX를 파싱하여 jsxFactory 함수를 이용하도록 설정 ([이외의 옵션들](https://esbuild.github.io/api/#transformation))
+- jsxFactory: 변환에 사용할 커스텀 함수 이름
+
+optimizeDeps는 개발 서버에서 사용할 node_modules의 의존성을 최적화하는 옵션으로 외부 라이브러리, 의존성에 JSX도 변환하도록 설정해준다.
+여기까지 설정한 후 내가 생성한 createVNode가 사용되도록 하려면 아래와 같이 작성하면 된다.
+
+```js
+/** @jsx createVNode */ //-> 명시적으로 jsx에 createVNode 함수를 사용하도록 설정
+import { createVNode } from "../lib"; //-> 사용할 함수가 import 되어 있어야 한다.
+
+// 이렇게 작성한 코드는
+const App = () => {
+  return (
+    <div className="app">
+      <h1>Hello, World!</h1>
+    </div>
+  )
+}
+
+// 이렇게 변환된다.
+const App = () => {
+  return createVNode('div', { className: 'app' }, createVNode('h1', null, 'Hello, World!')) ;
+}
+```
+
+> 💡 createVNode 함수를 사용하기 위해 import가 필요한 이유 (jsx classic)
+> React 17 이전 버전에서는 JSX 사용 시 React.createElement를 위해 import React from "react"가 필수였다.
+> React 17부터는 react/jsx-runtime 패키지와 Babel의 runtime: automatic 설정을 통해 React를 자동으로 import한다. [React 17 버전 업데이트 문서](https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html)
+> Vite에서는 esbuild의 jsxInject 옵션으로 자동 import를 설정할 수 있지만 이 프로젝트에서는 runtime: classic 설정을 사용하므로 import를 수동으로 추가해야 한다.
+
+```js
+export function createVNode(type, props, ...children) {
+  const vNode = {
+    type: type,
+    props,
+    children: children.flat(Infinity).filter((node) => node === 0 || node), // 모든 children을 평탄화하여 일관성 있는 vNode 형태로 만든다.
+  };
+
+  return vNode;
+}
+```
+
+- 숫자 0은 유효한 렌더링 값이지만 JavaScript에서는 falsy 값이므로 별도로 처리하고 children 배열은 1차원 배열로 평탄화한다.
+
+### 만약 평탄화가 없다면?
+
+```js
+// 평탄화 전 children 구조
+children: [
+  { type: 'h1', props: null, children: ['제목'] },
+  [
+    [
+      { type: 'span', props: null, children: ['A'] },
+      { type: 'hr', props: null, children: [] }
+    ],
+    [
+      { type: 'span', props: null, children: ['B'] },
+      { type: 'hr', props: null, children: [] }
+    ]
+  ]
+]
+
+// 각 child를 순회할 때
+children.forEach(child => {
+  if (child.type) {
+    // vNode 처리 로직
+    createElement(child.type, child.props, child.children)
+  } else if (Array.isArray(child)) {
+    // 배열이면? 재귀적으로 또 처리해야 함
+    child.forEach(nestedChild => {
+      if (Array.isArray(nestedChild)) {
+        // 또 배열이면? 더 깊은 재귀 필요...
+      }
+    })
+  }
+})
+```
+
+너무 많은 재귀함수를 돌려야 하기에 평탄화를 해준다.
+
+## normalizeVNode
+
+createVNode 함수는 데이터의 형식을 일관성 있게 만들어주지만 그 내부에 들어가는 데이터 형식에 대한 처리가 필요하기에 normalizeVNode 함수를 만들어 처리한다.
+
+### jsx의 다양항 값들을 처리한다.
+
+JSX에는 JavaScript를 사용할 수 있기에 다양한 값들이 들어갈 수 있다. 조건에 따른 값, 배열, 함수 등 다양한 값들이 들어갈 수 있기에 이를 처리하기 위해 normalizeVNode 함수를 만들어 처리한다. 아래에서 예시와 함께 코드를 확인해보자.
+
+```jsx showLineNumbers
+// 1. 조건부 렌더링으로 인한 falsy 값들
+{showContent && <div>내용</div>}  // false가 children에 포함됨
+{count > 0 ? <span>{count}</span> : null}  // null이 포함됨
+
+// 2. 원시 타입 값들
+<div>
+  {userName}  // string
+  {age}       // number
+  {isActive}  // boolean
+</div>
+
+// 3. 함수 컴포넌트
+function Welcome({name}) {
+  return <h1>Hello {name}</h1>;
+}
+<Welcome name="React" />  // type이 함수
+
+// 4. 중첩된 구조
+<div>
+  {items.map(item => item.visible && <span>{item.name}</span>)}
+</div>
+```
+
+이런 다양한 값들을 createVNode 함수를 사용하여 변환하면 아래와 같이 변환된다.
+
+```js
+// 조건부 렌더링 결과
+{
+  type: 'div',
+  props: null,
+  children: [
+    false,  // showContent가 false일 때
+    null,   // 삼항 연산자에서 null
+    "사용자명",  // string
+    25,     // number
+    true,   // boolean
+    { type: Welcome, props: {name: "React"}, children: [] }  // 함수 컴포넌트
+  ]
+}
+```
+
+이런 값들을 렌더링하기 위해서는 모두 문자열로 변환해줘야 한다.
+
+```js showLineNumbers
+// 완성된 normalizeVNode 함수
+export function normalizeVNode(vNode) {
+  // 1. Falsy 값들은 문자열로 변환하여 렌더링 하지 않는다.
+  if (vNode === null || vNode === undefined || vNode === Boolean(vNode)) {
+    return "";
+  }
+
+  // 2. 원시 타입 값들은 문자열로 변환한다.
+  if (typeof vNode === "string" || typeof vNode === "number") {
+    return String(vNode);
+  }
+
+  // 3. 함수 컴포넌트는 실행하여 즉시 normalizeVNode 함수를 호출한다.
+  if (typeof vNode.type === "function") {
+    return normalizeVNode(vNode.type({ ...vNode.props, children: vNode.children }));
+  }
+
+  // 4. 배열인 경우 재귀적으로 처리한다. 이때 children 배열의 빈 문자열을 제거한다. 상위 요소는 createVNode에서 제거되었기에 빈 문자열이 들어가지 않는다.
+  if (Array.isArray(vNode.children)) {
+    return {
+      ...vNode,
+      children: vNode.children.map((child) => normalizeVNode(child)).filter((child) => child !== ""),
+    };
+  }
+
+  // 5. 그 외 나머지는 그대로 반환한다.
+  return vNode;
+}
+```
+
+이렇게 정규화 과정이 끝나면 모든 값들이 문자열로 변환되어 렌더링이 가능한 형태로 변환된다.
+
+## createElement
+
+정규화된 VNode를 기반으로 DOM 트리를 생성하기 위해 createElement 함수를 만들어 처리한다.
+
+### props로 들어온 값들을 제거, 업데이트 하는 함수
+
+setAttribute 함수는 props로 들어온 값들을 속성으로 넣어주는 함수이다. HTML에 적용될 수 있도록 className 같은 속성을 변환해 적용해준다. 반대로 removeAttribute 함수는 속성을 제거하는 함수이다. updateElement 함수에서 사용된다.
+이때 이벤트 처리는 addEvent 함수를 통해 등록하는데 실제 이벤트 리스너에 등록하는 것이 아니고 별도의 이벤트 매니저를 통해 이벤트 위임 방식으로 처리한다.
+
+```js
+// props로 들어온 값들을 실제 DOM에 적용하기 위한 함수
+export function setAttribute(target, key, value) {
+  if (key.startsWith("on") && typeof value === "function") {
+    const eventType = key.slice(2).toLowerCase();
+
+    addEvent(target, eventType, value);
+  } else if (key === "className") {
+    target.setAttribute("class", value);
+  } else if (key === "style") {
+    Object.assign(target.style, value);
+  } else if (value === true) {
+    target[key] = true;
+  } else if (value === false) {
+    target[key] = false;
+  } else {
+    target.setAttribute(key, value);
+  }
+}
+
+// 속성 제거 함수 (setAttribute 함수의 반대)
+export function removeAttribute(target, key, value) {
+  if (key.startsWith("on")) {
+    const eventType = key.slice(2).toLowerCase();
+    removeEvent(target, eventType, value);
+  } else if (key === "className") {
+    target.removeAttribute("class");
+  } else if (key === "style") {
+    target.style = {};
+  } else if (value === true || value === false) {
+    delete target[key];
+  } else {
+    target.removeAttribute(key);
+  }
+}
+```
+
+### 정규화된 vNode를 기반으로 DOM 트리를 생성하는 함수
+
+createElement 함수는 정규화된 vNode를 기반으로 DOM 트리를 생성하는 함수이다. 자세한 순서는 주석을 참고하자.
+
+```js
+export function createElement(vNode) {
+  // Falsy 값들은 텍스트 노드로 변환한다.
+  if (vNode === undefined || vNode === null || typeof vNode === "boolean") {
+    return document.createTextNode("");
+  }
+
+  // 문자열 또는 숫자는 텍스트 노드로 변환한다.
+  if (typeof vNode === "string" || typeof vNode === "number") {
+    return document.createTextNode(vNode);
+  }
+
+  // 배열인 경우 프래그먼트로 감싸 재귀적으로 처리해 자식요소로 추가한다.
+  if (Array.isArray(vNode)) {
+    const fragment = document.createDocumentFragment();
+
+    vNode.forEach((child) => {
+      fragment.appendChild(createElement(child));
+    });
+
+    return fragment;
+  }
+
+  // 그 외 나머지는 요소는 노드로 변환한다.
+  const $element = document.createElement(vNode.type);
+
+  // props로 들어온 값들을 속성으로 넣어준다.
+  if (vNode.props) {
+    Object.entries(vNode.props).forEach(([key, value]) => {
+      setAttribute($element, key, value);
+    });
+  }
+
+  // 가장 상위 요소인 $element에 children을 재귀적으로 추가한다.
+  $element.append(...vNode.children.map((child) => createElement(child)));
+
+  return $element;
+}
+
+```
+
+## renderElement, updateElement
+
+### renderElement
+
+renderElement는 React로 보자면 render 함수와 비슷한 역할을 한다. 컴포넌트를 렌더링하는 함수이다.
+render 프로세스 중 컴포넌트를 넘겨받아 첫 렌더링이면 새로운 트리를 만들고 이미 렌더링된 트리가 있다면 이를 비교(diff) 하여 변경이 있는 부분만 업데이트한다.
+
+```js
+const currentNodeMap = new WeakMap();
+
+export function renderElement(vNode, container) {
+  const currentNodeTree = currentNodeMap.get(container);
+  const progressWorkInNodeTree = normalizeVNode(vNode);
+
+  if (!currentNodeTree) {
+    container.appendChild(createElement(progressWorkInNodeTree));
+  } else {
+    updateElement(container, progressWorkInNodeTree, currentNodeTree);
+  }
+
+  currentNodeMap.set(container, progressWorkInNodeTree);
+  setupEventListeners(container);
+}
+```
+
+WeakMap을 쓴 이유는 키로 사용한 객체가 사라지면 자동으로 가비지 컬렉션의 대상이 되기 때문이다. 근데 현재 코드를 곰곰히 다시 살펴보니 키로 저장된 container element (root element)는 제거되지 않기에 일반 Map을 사용해도 될 것 같다.
+
+> 💡 왜 WeakMap을 사용하는가?
+> 일반 Map을 사용할 경우 강한 참조로 인해 메모리 누수가 발생할 수 있다. 이를 방지하기 위해 WeakMap을 사용한다.
+> WeakMap은 키로 사용한 객체에 대한 참조가 없으면 자동으로 가비지 컬렉션의 대상이 된다.
+> 강한 참조를 방지하기 위해 WeakMap은 iterator를 지원하지 않는다. iterator가 지원되면 비결정적 동작이 될 수 있기 때문
+
+> ```js
+> const wm = new WeakMap();
+> let obj1 = {};
+> let obj2 = {};
+>
+> wm.set(obj1, 'value1');
+> wm.set(obj2, 'value2');
+>
+> obj1 = null; // 언제 GC될지 예측 불가능
+>
+> // 만약 iterator가 있다면?
+> setTimeout(() => {
+>   console.log([...wm.keys()].length); // 1일까 2일까? 예측 불가능!
+> }, 1000);
+> ```
+
+### updateElement
+
+updateElement는 이미 렌더링된 트리와 새로운 트리를 비교하여 변경이 있는 부분만 업데이트하는 함수이다. (React의 diff 알고리즘을 담당하는 부분)
+
+```js
+// 속성을 업데이트 하는 함수
+function updateAttributes(target, newProps, oldProps) {
+  // newProps, oldProps가 없을경우 빈 객체로 초기화
+  const safeNewProps = newProps || {};
+  const safeOldProps = oldProps || {};
+
+  // 기존 속성 중 새 속성에 없는 것들 제거
+  Object.keys(safeOldProps).forEach((key) => {
+    if (!(key in safeNewProps)) {
+      removeAttribute(target, key, safeOldProps[key]);
+    }
+  });
+
+  // 새 속성 추가/업데이트
+  Object.keys(safeNewProps).forEach((key) => {
+    if (key.startsWith("on")) {
+      const eventType = key.slice(2).toLowerCase();
+      if (safeOldProps[key]) {
+        removeEvent(target, eventType, safeOldProps[key]);
+      }
+
+      if (safeNewProps[key]) {
+        addEvent(target, eventType, safeNewProps[key]);
+      }
+    } else {
+      setAttribute(target, key, safeNewProps[key]);
+    }
+  });
+}
+
+export function updateElement(parentElement, newNode, oldNode, index = 0) {
+  const currentElement = parentElement.childNodes[index];
+
+  // 기존 노드가 있는데 새 노드가 없으면 제거
+  if (oldNode && !newNode) {
+    parentElement.removeChild(currentElement);
+    return;
+  }
+
+  // 기존 노드가 없는데 새 노드가 있으면 생성해서 추가
+  if (!oldNode && newNode) {
+    parentElement.appendChild(createElement(newNode));
+    return;
+  }
+
+  // 둘 다 텍스트/숫자 노드인데 값이 다르면 textContent 업데이트
+  if (
+    (typeof newNode === "string" || typeof newNode === "number") &&
+    (typeof oldNode === "string" || typeof oldNode === "number")
+  ) {
+    if (newNode !== oldNode) {
+      currentElement.textContent = newNode;
+    }
+    return;
+  }
+
+  // Element의 타입이 다르면 변경된 것으로 간주하고 교체
+  if (typeof newNode !== typeof oldNode || newNode.type !== oldNode.type) {
+    parentElement.replaceChild(createElement(newNode), currentElement);
+    return;
+  }
+
+  // 여기까지 왔다면 속성(props) 업데이트 실행
+  updateAttributes(currentElement, newNode.props, oldNode.props);
+
+  // 자식 노드들 처리하기 (재귀를 이용한다.)
+  const newChildren = newNode.children || [];
+  const oldChildren = oldNode.children || [];
+  const minLength = Math.min(newChildren.length, oldChildren.length);
+
+  // 먼저 겹치는 인덱스 요소까지 업데이트하기
+  for (let i = 0; i < minLength; i++) {
+    updateElement(currentElement, newChildren[i], oldChildren[i], i);
+  }
+
+  // 이후 newChildren이 length가 더 길면 추가
+  if (newChildren.length > oldChildren.length) {
+    for (let i = oldChildren.length; i < newChildren.length; i++) {
+      updateElement(currentElement, newChildren[i], oldChildren[i], i);
+    }
+  }
+
+  // 만약 oldChildren이 newChildren보다 많으면 뒤에서부터 제거
+  else if (oldChildren.length > newChildren.length) {
+    for (let i = oldChildren.length - 1; i >= newChildren.length; i--) {
+      updateElement(currentElement, newChildren[i], oldChildren[i], i);
+    }
+  }
+}
+```
+
+이렇게 구현했다. 자세한 내용은 주석에 적어놨으며 사실 React의 diff 알고리즘과는 좀 다르다.
+잠시 React의 diff 알고리즘을 살펴보자면 [Reeact의 diff 알고리즘](https://ko.legacy.reactjs.org/docs/reconciliation.html)은 두 트리를 비교하여 변경이 있는 부분만 업데이트하는 알고리즘이다. 크게 보자면 3가지로 나눌 수 있다.
+
+1. 다른 타입의 요소: 완전히 새로 만들어 교체
+
+```jsx showLineNumbers
+<div>Hello</div> → <span>Hello</span>  // div 제거 후 span 생성
+```
+
+2. 같은 타입의 요소: 속성만 업데이트
+```jsx showLineNumbers
+<div className="old">Hello</div> → <div className="new">Hello</div>  // 속성만 업데이트
+```
+
+3. 자식 요소: key를 활용해 효율적으로 비교
+```jsx showLineNumbers
+<ul>
+  <li key="2015">Duke</li>
+  <li key="2016">Villanova</li>
+</ul>
+
+// React는 2014 key를 가진 element가 추가되었고,
+// 2015, 2016 key를 가진 element는 이동만 시키면 된다는 걸 React는 알고 있다.
+
+<ul>
+  <li key="2014">Connecticut</li>
+  <li key="2015">Duke</li>
+  <li key="2016">Villanova</li>
+</ul>
+```
+
+4. key를 index로 사용하면 안 되는 이유
+
+```jsx showLineNumbers
+// 초기 상태
+items = ['사과', '바나나', '오렌지'];
+
+// 렌더링 결과 (index를 key로 사용)
+<li key={0}>사과</li>     // key: 0
+<li key={1}>바나나</li>   // key: 1  
+<li key={2}>오렌지</li>   // key: 2
+
+// 첫 번째 항목 삭제 후
+items = ['바나나', '오렌지'];
+
+// 렌더링 결과
+<li key={0}>바나나</li>   // key: 0 (이전의 '사과'였던 key)
+<li key={1}>오렌지</li>   // key: 1 (이전의 '바나나'였던 key)
+```
+
+- React는 key가 같으면 같은 요소라고 판단
+- key={0}인 요소의 내용이 '사과' → '바나나'로 변경되었다고 인식
+- 실제로는 삭제되어야 할 요소인데 내용만 업데이트됨
+
+이외에도 입력 필드, 애니메이션 오동작 같은 부분이 문제가 될 수 있지만 다음에 더 자세히 다루겠다.
+
+## eventManager
+
+이전 renderElement 함수를 보면 마지막에 setupEventListeners를 통해 container에 이벤트 리스너를 등록하는 과정이 있다. 이 부분을 자세히 살펴보자.
+
+### 전역 변수 및 이벤트 등록, 삭제 함수
+
+우선 이벤트 위임을 하는 과정은 이렇다.
+
+```bash showLineNumbers
+// 사용자가 버튼 클릭
+// ↓
+// 루트 요소의 eventDelegationHandler 실행
+// ↓  
+// 클릭된 요소부터 시작해서 부모로 올라가며 핸들러 찾기 (이벤트 버블링)
+// ↓
+// 핸들러 발견시 실행
+```
+
+```js
+// 전역 상태
+const eventContext = new WeakMap();
+const registeredEventTypes = new Set(); // 등록된 이벤트 타입들만 추적
+let currentRoot = null;
+
+// 이벤트 등록 함수
+export function addEvent(element, eventType, handler) {
+  // 이벤트 매니저에 등록된 이벤트 타입이 없으면 초기화
+  if (!eventContext.has(element)) {
+    eventContext.set(element, {});
+  }
+
+  const handlers = eventContext.get(element);
+
+  // 이벤트 타입이 없으면 초기화
+  if (!handlers[eventType]) {
+    handlers[eventType] = {};
+  }
+
+  // 이벤트 타입에 핸들러 등록
+  handlers[eventType][handler.name] = handler;
+  registeredEventTypes.add(eventType);
+}
+
+export function removeEvent(element, eventType, handler) {
+  // 이벤트 매니저에 등록된 element가 없으면 종료
+  if (!eventContext.has(element)) {
+    return;
+  }
+
+  // 이벤트 매니저에서 핸들러 찾기
+  const handlers = eventContext.get(element);
+
+  // 핸들러가 있으면 삭제
+  if (handlers[eventType]) {
+    delete handlers[eventType][handler.name];
+
+    // 핸들러가 없으면 이벤트 타입 삭제
+    if (!Object.keys(handlers[eventType]).length) {
+      delete handlers[eventType];
+      registeredEventTypes.delete(eventType);
+    }
+
+    // 이벤트 매니저에 등록된 핸들러가 없으면 삭제
+    if (!Object.keys(handlers).length) {
+      eventContext.delete(element);
+    }
+  }
+}
+
+```
+먼저 전역에 registeredEventTypes 변수에 활성화된 이벤트의 타입만을 담고 eventContext인 WeakMap에 element를 키로 넣어줬다. 이렇게 하면 참조 관계가 엮이지 않고 element가 없어질 때 삭제하면 자동으로 가비지 컬렉션의 대상이 된다.
+
+### setupEventListeners
+
+```js
+export function setupEventListeners(root) {
+  // 기존 리스너들 제거
+  if (currentRoot) {
+    registeredEventTypes.forEach((eventType) => {
+      currentRoot.removeEventListener(eventType, eventDelegationHandler);
+    });
+  }
+
+  currentRoot = root;
+
+  registeredEventTypes.forEach((eventType) => {
+    root.addEventListener(eventType, eventDelegationHandler);
+  });
+}
+
+export const eventDelegationHandler = (e) => {
+  let currentElement = e.target;
+
+  // 이벤트 버블링 처리 추가 currentElement가 있고 e.currentTarget.parentElement가 currentElement와 다르면 계속 반복
+  while (currentElement && currentElement !== e.currentTarget.parentElement) {
+    const elementHandlers = eventContext.get(currentElement);
+
+    if (elementHandlers) {
+      const eventHandlers = elementHandlers[e.type];
+
+      if (eventHandlers) {
+        Object.values(eventHandlers).forEach((handler) => {
+          try {
+            handler(e);
+          } catch (error) {
+            console.error(`Error in ${e.type} handler:`, error);
+          }
+        });
+        return;
+      }
+    }
+
+    currentElement = currentElement.parentElement;
+  }
+};
+
+```
+
+이벤트 리스너는 setup할 때 기존 리스너들을 모두 제거하고 새로 등록해주는 방향으로 진행했다.
+currentRoot는 기존에 이벤트 등록을 했는지 확인하는 변수이다.
+eventDelegationHandler 함수는 event 객체를 받아 targetElement가 eventContext에 등록된 핸들러가 있는지 확인하고 있으면 실행한다. 없다면 부모 엘리먼트로 재할당하며 반복한다. (이벤트 버블링)
+
+## 회고
+
+후 어느새 2주차가 끝나고 3주차 과제를 진행하고 있다. 이번에는 기록이 쬐끔 늦어졌는데 3주차 과제부터는 금요일에 기록 및 회고를 모두 작성하는걸 목표로 해야겠다.
+
+전체적인 플로우를 이해하려고 코드를 복기하고 기록한 점은 계속 유지 하고 (Keep)
+
+사실 이번 2주차 과제를 꽤 빠르게 작성했는데 BP를 노려볼 법 했지만 피곤이 쌓여 나태하게 조금 쉬어버렸다. (Problem)
+
+3주차 과제는 PR도 더 깊이 있게 쓰고 회고도 해당 주차가 지나기 전에 작성을 완료해야지.. (Try)
+
