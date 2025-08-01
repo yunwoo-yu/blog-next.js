@@ -1,0 +1,122 @@
+---
+title: "항해플러스 4주차 - 클린 코드"
+createdAt: 2025-08-01
+description: 클린 코드에 대해 알아보기
+thumbnail: /images/activities/hh_plus_4/thumbnail.png
+tags: [클린코드, 항해플러스]
+---
+
+## 4주차 클린 코드
+
+> 항해플러스 4주차 클린 코드 챕터 회고
+> 클린 코드에 대해 알아보기
+
+클린코드 챕터에서는 JavaScript로 작성된 레거시 코드를 개선하는 과제를 진행했다. 먼저 코드를 역할에 따라 분리했다.
+
+```js
+var prodList
+var bonusPts = 0
+var stockInfo
+var itemCnt
+var lastSel
+var sel
+var addBtn
+var totalAmt = 0
+var PRODUCT_ONE = 'p1'
+var p2 = 'p2'
+var product_3 = 'p3'
+var p4 = "p4"
+var PRODUCT_5 = `p5`
+var cartDisp
+```
+
+더티 코드 중 전역에 선언되어 있던 변수만 가져와봤다 ^^..
+
+SOLID 원칙, 의미 있는 네이밍, 복잡한 조건문 개선, 중복 코드 제거 등 클린코드 핵심 원칙들은 이미 알고있었다. 하지만 이론으로 알고 있던 원칙들을 실제 코드에 적용하는 것은 생각보다 어려웠다..
+
+1주차 과제를 진행하며 "하나만 건드려도 문제가 다발적으로 퍼지는 함수를 어떻게 리팩토링 해야할까요?" 라고 질문을 했던 적이 있다. 그때 코치님이 정말 정말 작은 문제들로 나누어 하나씩 해결하는 법을 추천해주신게 기억에 남았다.
+
+```js
+// 이 더티 코드는
+leftColumn = document.createElement("div");
+leftColumn['className'] = 'bg-white border border-gray-200 p-8 overflow-y-auto'
+
+// 처음에는 이렇게 이동했다.
+export function createLeftColumn() {
+  const leftColumn = document.createElement('div');
+
+  leftColumn.className = 'bg-white border border-gray-200 p-8 overflow-y-auto';
+
+  return leftColumn;
+}
+
+// main.js 에서 호출
+const leftColumn = createLeftColumn();
+```
+
+그래서 우선 기능과 연관이 없는 DOM을 생성하는 부분(views)부터 분리를 시작했다. 이때 기존 코드와의 호환을 위해 하나를 변경하고 테스트를 돌려보는 방식으로 진행했는데, **DOM 생성** 이라는 문제를 분리하기 위해 다른곳에서 사이드이펙트가 생길만한 부분은 건드리지 않았다. (처음엔 네이밍도 변경하지 않고 그대로 가져갔다)
+
+### 계층화 아키텍처 도입의 어려움
+
+처음에는 아키텍처 패턴을 고려했다. MVC 패턴을 적용해볼까? 혹은 React로 마이그레이션이 예정되어있으니 Hooks 패턴처럼 만들어볼까? 그렇게 여러가지 시도를 해봤지만 해당 패턴을 적용하기 위해 하나의 덩어리를 건드려보려 하면 수많은 에러를 마주했다.
+
+- 이 함수가 DOM을 직접 조작하나? → Views
+- 비즈니스 규칙이나 도메인 지식이 필요한가? → Services
+- 순수하게 데이터만 변환하나? → Utils
+- 여러 곳에서 재사용되는가? → Utils (순수함수라면)
+
+거창한 아키텍처 패턴을 적용하기보다는 레이어 계층으로 나누어 분리를 진행했다. 프로젝트에서는 분리 기준도 중요하지만 일관성이 가장 중요한 것 같다고 생각한다. 이렇게 진행하니 조금씩 조금씩 main 파일이 가벼워지는 게 느껴졌다.
+
+### SOLID 원칙의 현실적 적용
+
+- SRP(Single Responsibility Principle): 단일 책임 원칙
+- OCP(Open/Closed Principle): 개방-폐쇄 원칙
+- LSP(Liskov Substitution Principle): 리스코프 치환 원칙
+- ISP(Interface Segregation Principle): 인터페이스 분리 원칙
+- DIP(Dependency Inversion Principle): 의존성 역전 원칙
+
+```js
+// ❌ BAD : SRP 위반 - 재고 감소 + 로깅 + 알림을 한 함수가 처리
+export function removeStockBad(productId, quantity = 1) {
+  const product = findProductById(productId);
+
+  if (!product || product.quantity < quantity) return false;
+
+  product.quantity -= quantity;
+  
+  // 로깅 책임도 같이 처리
+  console.log(`Stock reduced for ${productId}. Remaining: ${product.quantity}`);
+  
+  // 알림 책임도 같이 처리
+  if (product.quantity < 5) {
+    sendLowStockAlert(productId);
+  }
+  
+  return true;
+}
+
+// ✅ GOOD : SRP 준수 - 재고 감소만 담당
+export function removeStock(productId, quantity = 1) {
+  const product = findProductById(productId);
+
+  if (!product || product.quantity < quantity) return false;
+
+  product.quantity -= quantity;
+  
+  return true;
+}
+```
+
+단일 책임 원칙(SRP)을 적용하면서 가장 고민됐던 부분은 어디까지가 하나의 책임인가? 였다. 이건 최대한 순수함수를 염두하며 두가지 일을 하지 않도록 분리를 진행했다.
+
+의존성 역전 원칙(DIP)은 React 마이그레이션을 염두에 두고 적용했다. 비즈니스 로직이 DOM에 직접 의존하지 않도록 하고, UI 업데이트는 별도의 service를 통해 처리하도록 설계했다.
+
+이후 React로 마이그레이션까지 진행했는데 간단하게 components(views), hooks(services), utils(순수함수) 등으로 나누어 진행했다. 아쉬운게 있다면 React 마이그레이션을 고려했다고 생각했지만 실제로 적용하는 것은 쉽지 않았다.
+
+### 클린 코드에 대한 생각
+
+클린 코드는 분명 중요하다. 과제 코드만 봐도 네이밍, 응집도, 결합도를 고려하지 않은 코드는 스크롤을 몇번이나 넘기며 연관 코드를 찾아 다녀야해서 너무나 맥락을 파악하기가 어려웠다.
+
+클린 코드는 한번에 적용하는게 아니라 주기적으로 동료들과 얘기하며 프로젝트에 적합한 구조와 함께 컨벤션을 잡아가며 여러 이론적인 내용들을 기반으로 **일관성 있는 코드**를 작성하는게 굉장히 중요하다고 생각하게 된 챕터였다.
+
+많은 코드를 작성하면서 일관성을 유지하는 것은 매우 어려운 일이다. 하지만 지속적으로 클린코드 원칙을 염두에 두고, 좋은 동료들과 활발하게 피드백을 주고받으며 코드를 개선해나간다면, 화려하지는 않더라도 누구나 쉽게 이해할 수 있는 명확한 코드를 작성할 수 있다. 이런 코드야말로 진정한 클린 코드가 아닐까? 생각한다.
