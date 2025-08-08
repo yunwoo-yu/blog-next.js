@@ -1,0 +1,362 @@
+---
+title: "항해플러스 5주차 - 디자인 패턴과 함수형 프로그래밍"
+createdAt: 2025-08-08
+description: 디자인 패턴과 함수형 프로그래밍
+thumbnail: /images/activities/hh_plus_5/thumbnail.jpg
+tags: [디자인패턴, 함수형프로그래밍, 항해플러스]
+---
+
+
+## 5주차 디자인 패턴
+
+디자인 패턴은 소프트웨어 개발에서 발생하는 문제들에 대한 해결책을 제공하는 설계 방식이다.
+싱글톤, 옵저버, MVC, MVVM 등 현대 디자인 패턴은 굉장히 다양하지만 실제로 프레임워크를 통해 개발을 하며 이런 패턴들을 접하긴 쉽지 않다.
+이번 디자인 패턴 챕터에서는 객체 지향 디자인 패턴 적용 보다는 함수형 사고를 기반으로 현대 프론트엔드 개발에서 자주 사용되는 디자인 패턴을 학습했다.
+
+## 디자인 패턴의 종류
+
+위에서 말했듯 과제 자체는 entities를 기준으로 컴포넌트, 훅, 순수함수 등을 분리했지만 그래도 내가 모르는 디자인 패턴이 굉장히 많았기에 각 패턴의 몇몇 패턴 예제를 작성해두려 한다. Dive Into Design Patterns라는 책에서 자세하게 설명이 되어있기에 유명한 패턴 몇가지만 예시를 살펴보자. 이 패턴들은 모두 널리 알려진 GoF(Gang of Four)의 23가지 패턴 중 일부이다.
+
+### 생성 패턴 (Creational Patterns)
+
+생성 패턴은 객체 생성 메커니즘을 다루며, 상황에 적합한 방식으로 객체를 생성할 수 있게 해준다.
+
+<details>
+<summary><strong>1. Factory Method Pattern</strong></summary>
+
+- 어떤 클래스의 인스턴스를 만들지 미리 알 수 없을 때
+- 비슷한 객체들을 조건에 따라 다르게 생성해야 할 때
+
+```javascript
+class Button {
+  render() {
+    throw new Error("render method must be implemented");
+  }
+}
+
+class WindowsButton extends Button {
+  render() {
+    return "Windows 스타일 버튼";
+  }
+}
+
+class MacButton extends Button {
+  render() {
+    return "Mac 스타일 버튼";
+  }
+}
+
+class ButtonFactory {
+  static createButton(type) {
+    switch(type) {
+      case 'windows': return new WindowsButton();
+      case 'mac': return new MacButton();
+      default: throw new Error("Unknown button type");
+    }
+  }
+}
+
+const button = ButtonFactory.createButton('windows');
+
+console.log(button.render());
+```
+
+</details>
+
+<details>
+<summary><strong>2. Singleton Pattern</strong></summary>
+
+- 클래스의 인스턴스가 오직 하나만 필요할 때
+- 전역 상태를 관리해야 할 때
+
+```javascript
+class Singleton {
+  constructor() {
+    if (Singleton.instance) {
+      return Singleton.instance;
+    }
+    
+    this.data = "싱글톤 데이터";
+    Singleton.instance = this;
+  }
+  
+  getData() {
+    return this.data;
+  }
+}
+
+const singleton1 = new Singleton();
+const singleton2 = new Singleton();
+
+console.log(singleton1 === singleton2); // true
+```
+
+</details>
+
+### 구조 패턴 (Structural Patterns)
+
+구조 패턴은 클래스나 객체를 조합해 더 큰 구조를 만드는 방법을 제공한다.
+
+<details>
+<summary><strong>1. Adapter Pattern</strong></summary>
+
+- 기존 클래스를 수정하지 않고 다른 인터페이스로 사용하고 싶을 때
+- 호환되지 않는 인터페이스를 가진 클래스들을 함께 사용해야 할 때
+
+```javascript
+class OldPrinter {
+  oldPrint(text) {
+    return `Old Printer: ${text}`;
+  }
+}
+
+class PrinterAdapter {
+  constructor(oldPrinter) {
+    this.oldPrinter = oldPrinter;
+  }
+  
+  print(text) {
+    return this.oldPrinter.oldPrint(text);
+  }
+}
+
+const oldPrinter = new OldPrinter();
+const adapter = new PrinterAdapter(oldPrinter);
+
+console.log(adapter.print("Hello World")); // "Old Printer: Hello World"
+```
+
+</details>
+
+<details>
+<summary><strong>2. Decorator Pattern</strong></summary>
+
+- 객체에 동적으로 새로운 기능을 추가하고 싶을 때
+- 상속으로 인한 클래스 폭발을 피하고 싶을 때
+
+```javascript
+class Coffee {
+  cost() { return 5; }
+  description() { return "Simple coffee"; }
+}
+
+class CoffeeDecorator {
+  constructor(coffee) {
+    this.coffee = coffee;
+  }
+  
+  cost() { return this.coffee.cost(); }
+  description() { return this.coffee.description(); }
+}
+
+class MilkDecorator extends CoffeeDecorator {
+  cost() { return this.coffee.cost() + 2; }
+  description() { return this.coffee.description() + ", milk"; }
+}
+
+let coffee = new Coffee();
+coffee = new MilkDecorator(coffee);
+
+console.log(`${coffee.description()}: $${coffee.cost()}`); // "Simple coffee, milk: $7"
+```
+
+</details>
+
+### 행동 패턴 (Behavioral Patterns)
+
+행동 패턴은 객체나 클래스 사이의 알고리즘이나 책임 분배에 관련된 패턴이다.
+
+<details>
+<summary><strong>1. Observer Pattern</strong></summary>
+
+- 한 객체의 상태 변화에 따라 다른 객체들이 알림을 받아야 할 때
+- 발행-구독(Publish-Subscribe) 관계를 구현하고 싶을 때
+
+```javascript
+class Subject {
+  constructor() {
+    this.observers = [];
+  }
+  
+  subscribe(observer) {
+    this.observers.push(observer);
+  }
+  
+  unsubscribe(observer) {
+    this.observers = this.observers.filter(obs => obs !== observer);
+  }
+  
+  notify(data) {
+    this.observers.forEach(observer => observer.update(data));
+  }
+}
+
+class Observer {
+  constructor(name) {
+    this.name = name;
+  }
+  
+  update(data) {
+    console.log(`${this.name}이 알림을 받음: ${data}`);
+  }
+}
+
+const subject = new Subject();
+const observer1 = new Observer('Observer 1');
+const observer2 = new Observer('Observer 2');
+
+subject.subscribe(observer1);
+subject.subscribe(observer2);
+subject.notify('새로운 데이터가 도착했습니다!');
+// Observer 1이 알림을 받음: 새로운 데이터가 도착했습니다!
+// Observer 2이 알림을 받음: 새로운 데이터가 도착했습니다!
+```
+
+</details>
+
+<details>
+<summary><strong>2. Iterator Pattern</strong></summary>
+
+- 컬렉션의 내부 구조를 노출하지 않고 순차적으로 접근하고 싶을 때
+- 다양한 타입의 컬렉션을 동일한 방식으로 순회하고 싶을 때
+
+```javascript
+class NumberIterator {
+  constructor(numbers) {
+    this.numbers = numbers;
+    this.index = 0;
+  }
+  
+  next() {
+    if (this.index < this.numbers.length) {
+      return { value: this.numbers[this.index++], done: false };
+    }
+    return { done: true };
+  }
+  
+  [Symbol.iterator]() {
+    return this;
+  }
+}
+
+const numbers = new NumberIterator([1, 2, 3, 4, 5]);
+
+for (const num of numbers) {
+  console.log(num); // 1, 2, 3, 4, 5를 순차적으로 출력
+}
+```
+
+</details>
+
+> 다 외우기는 어려울 것 같긴한데.. 일단 책부터 정독해야겠다. 위와 같은 패턴을 나도 모르게 사용하고 있었을지도 모른다. 실제로 팩토리 패턴을 보고 어? 나 팩토리 패턴 썼었네? 하는 경우도 있었다. (아는게 힘! 💪)
+
+## 함수형 프로그래밍
+
+프론트엔드 개발자로 일하며 Class를 거의 사용하지 않았던 것 같다. JavaScript는 프로토타입 기반의 언어지만 멀티패러다임 언어로 객체 지향적 특성과 함수형 특성을 모두 가지고있다.
+가장 많이들 사용하는 React만 봐도 함수형 프로그래밍을 지향하고 있다. 그렇다보니 위와 같은 패턴은 쉽게 접할 수 없다. 그럼 JavaScript에서는 불가능하냐? 그건 아니다. 오히려 일급객체인 함수를 이용해 더 쉽게 패턴을 만들어 내는 경우도 있다.
+물론 전통적인 디자인 패턴도 공부를 해야하지만 지금 우리는 **함수형 사고**를 키우면 현대 프론트엔드 개발에서 더 효율적으로 개발할 수 있을 것이다. 아래는 함수형 프로그래밍의 특징으로 가볍게 살펴보자.
+
+### 일급 객체 (First-Class Object)
+
+```javascript
+// ✅ 일급 객체의 특징들
+
+// 1. 변수에 할당 가능
+const greet = function(name) {
+  return `Hello, ${name}!`;
+};
+
+// 2. 함수의 인자로 전달 가능
+const executeFunction = (fn, value) => fn(value);
+
+console.log(executeFunction(greet, "Alice")); // "Hello, Alice!"
+
+// 3. 함수의 반환값으로 사용 가능
+const createGreeter = (greeting) => {
+  return (name) => `${greeting}, ${name}!`;
+};
+
+const sayHi = createGreeter("Hi");
+
+console.log(sayHi("Bob")); // "Hi, Bob!"
+```
+
+일급 객체는 변수에 할당, 함수의 인자로 전달, 함수의 반환값으로 사용할 수 있는 객체를 말한다. JavaScript에서 함수는 일급 객체이다. 함수형 프로그래밍 패러다임 지원, 콜백과 고차 함수 구현, 동적이고 유연한 프로그래밍이 가능하다.
+
+### 순수 함수 (Pure Function)
+
+```javascript
+// ✅ 순수 함수 - 항상 같은 입력에 같은 출력, 부작용 없음
+const add = (a, b) => a + b;
+
+console.log(add(2, 3)); // 항상 5
+console.log(add(2, 3)); // 항상 5
+
+// ❌ 비순수 함수 - 외부 변수에 의존하거나 부작용 있음
+let count = 0;
+
+const impureAdd = (a, b) => {
+  count++; // 부작용: 외부 상태 변경
+  return a + b + count;
+};
+
+console.log(impureAdd(2, 3)); // 6 (2+3+1)
+console.log(impureAdd(2, 3)); // 7 (2+3+2) - 같은 입력, 다른 출력
+```
+
+순수 함수는 동일한 입력에 대해 항상 동일한 출력을 반환하며, 부작용(side effect)이 없는 함수다. 순수 함수는 예측 가능하고, 테스트하기 쉬우며 재사용에 용이하다.
+
+### 불변성 (Immutability)
+
+```javascript
+const person = { name: 'John', age: 30 };
+
+const newPerson = { ...person, age: 31 };
+```
+
+불변성은 객체같은 참조형 데이터의 상태를 변경하지 않고 새로운 객체를 생성하는 것을 말한다. 불변성이 지켜지면 예측 가능하고, 테스트하기 쉬우며 재사용에 용이하다.
+
+### 고차 함수 (Higher-Order Function)
+
+```javascript
+// ✅ 고차 함수 - 함수를 인자로 받는 경우
+const numbers = [1, 2, 3, 4, 5];
+
+const doubled = numbers.map(x => x * 2);        // map은 고차 함수
+const evens = numbers.filter(x => x % 2 === 0); // filter도 고차 함수
+
+console.log(doubled); // [2, 4, 6, 8, 10]
+console.log(evens);   // [2, 4]
+
+// ✅ 고차 함수 - 함수를 반환하는 경우
+const createMultiplier = (factor) => {
+  return (number) => number * factor; // 함수를 반환
+};
+
+const double = createMultiplier(2);
+const triple = createMultiplier(3);
+
+console.log(double(5)); // 10
+console.log(triple(5)); // 15
+
+// ❌ 일반 함수 - 값만 처리
+const simpleAdd = (a, b) => a + b;
+console.log(simpleAdd(2, 3)); // 5
+
+```
+
+고차 함수는 다른 함수를 인자로 받거나 함수를 반환하는 함수로, 함수를 일급 객체로 다루는 함수형 프로그래밍의 핵심이다. 코드 재사용성 향상, 추상화 수준 증가, 함수 조합을 통한 유연한 프로그래밍이 가능하다.
+
+## 정리
+
+- 엔티티를 다루는 훅 : useProduct, useCart 등
+- 엔티티를 다루지 않는 훅 : useLocalStorage, useDebounce 등
+- 순수한 계산이 담긴 함수 : calculateDiscount, formatPrice 등
+- 액션이 담긴 함수(실행할 때마다 다를 수 있음) : 외부 API 호출, 데이터 저장 등
+
+이번 디자인 패턴 챕터에서는 과제 내용은 적지 않았다. 간단하게 설명만 해보자면 App.tsx에 몰려있는 코드를 VAC 패턴(View, Asset, Component)으로 분리하는 과제였다.
+엔티티 관심사별로 훅, 컴포넌트 그리고 순수함수인 계산, 검증, 포맷팅으로 분리한 후 Props Drilling을 최소화하는 방향으로 개발했다. 이후 전역 상태 관리 라이브러리 or Context로 개선하는 방향으로 진행했으며 약간 리팩토링(?)에 더 가까운 느낌을 받았다.
+
+과제를 다 제출한 후 든 생각은 좀 더 기준이 명확해지고 조금 더 재사용이 가능한 코드들을 분리하는 눈이 넓어진 것 같다. 기존에는 회사 업무를 진행하며 엔티티와 UI만을 다루는 상태를 분리하는것에 굉장히 무지했구나라고 생각이 팍..
+이런 세분화 된 규칙을 따라 코드를 작성한다면 자연스레 현대적인 디자인 패턴뿐만 아니라 클린 코드에도 가까워 지지 않을까? 생각한다.
+다음 주차에는 핫한 디자인 패턴인 FSD에 대해 학습한다. 잠을 너무 못자고 있는데 @_@ 아프니까 청춘이다 힘내보자!!🔥🔥
