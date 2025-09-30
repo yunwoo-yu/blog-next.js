@@ -1,0 +1,165 @@
+---
+title: "항해플러스 9~10주차 - 프론트엔드 성능 최적화"
+createdAt: 2025-09-29
+description: 프론트엔드 성능 최적화 알아보기
+thumbnail: /images/activities/hh_plus_8/thumbnail.jpg
+tags: [성능 최적화, 항해플러스]
+---
+
+> 9~10 주차는 성능 최적화 파트였다. 근데 9주차는 원래 AWS를 이용해 CDN을 적용하여 배포해보는 과제였는데 얘는 1시간만에 해결하는 팀 과제로 전락하고 난이도가 높은 SSG, SSR 구현 과제로 변경됐다^^.. 어메이징 6기
+> 10주차 과제는 리액트 어플리케이션에서 불필요한 연산과 불필요한 렌더링을 개선해보는 과제! 정말 오랜만에 리액트 그 자체를 이용하는 과제여서 어렵지만 즐겁게 했다.
+
+## 9주차 SSR과 SSG 구현하기
+
+Vanilla, React 두 방식으로 구현하는 과제였다. 별도의 express 서버를 실행시키고 path에 따라 분기된 html을 만들어 내려보낸 후 클라이언트에서는 첫 렌더링을 진행한 후 CSR로 동작하는 방식이다.
+과제는 1주차에 만든 쇼핑몰을 이용!
+
+### SSR (Server-Side Rendering) 구현
+
+기존의 CSR(Client-Side Rendering)은 브라우저에서 JavaScript가 실행되어야 비로소 화면이 그려진다. 하지만 SSR은 서버에서 미리 HTML을 완성해서 브라우저에 전달하는 방식이다.
+
+왜 SSR이 필요할까?
+
+1. SEO 최적화: 검색엔진 크롤러가 완성된 HTML을 바로 읽을 수 있음
+2. 초기 로딩 성능: JavaScript 다운로드/파싱 없이도 화면이 보임
+3. 사용자 경험: 느린 네트워크에서도 빠른 첫 화면 표시
+
+```html
+<head>
+  <!--app-head-->
+  <!--app-data-->
+</head>
+<body>
+  <div id="root"><!--app-html--></div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+```
+
+서버사이드 렌더링은 서버(express)에서 요청이 들어오면 해당 URL에 맞는 데이터를 미리 패칭해서 HTML을 완성시켜 보내주는 방식이다.
+
+핵심은 **서버에서도 클라이언트와 똑같은 DOM 구조를 만들어야 한다**는 점이었다. 특히 loading 상태나 조건부 렌더링 부분에서 서버와 클라이언트가 다르면 Hydration 에러가 난다. 그리고 서버에서 설정한 데이터를 클라이언트에 넘겨주기 위해서 fs로 index.html을 읽어서 `template.replace(<!--app-data-->, <script>window.__INITIAL_DATA__ = ${rendered.data}</script>)`형태로 넘겨준 후 클라이언트에서 초기 상태를 Store에 넣어 동기화 해준다.
+
+Next.js에서는 이런 데이터를 props로 받을 수 있게 해주는데 브라우저에서 리소스를 확인해보면 다른 네이밍으로 똑같이 데이터가 넘어오는걸 확인할 수 있다. 이렇게 넘어온 데이터를 props로 전달해주는걸로 파악했다.
+
+### SSG (Static Site Generation) 구현
+
+SSG는 빌드할 때 미리 HTML 파일들을 다 만들어두는 방식이다. 요청이 와도 서버에서 뭘 할 필요 없이 이미 만들어진 파일만 주면 된다.
+
+```js
+// 주요 상품들 정적 페이지 생성
+const productIds = items.slice(100, 130).map((p) => p.productId);
+
+for (const id of productIds) {
+  const { html, head, data } = await render(`/product/${id}/`, {});
+  
+  const result = template
+    .replace(`<!--app-html-->`, html)
+    .replace(`<!--app-data-->`, `<script>window.__INITIAL_DATA__ = ${data}</script>`)
+    // ... etc
+  
+  await fs.writeFile(`${outDir}/index.html`, result);
+}
+```
+
+SSR과 거의 동일한 과정을 거치는데, 다른 점은 런타임이 아니라 빌드 타임에 한다는 것이다. CDN에 올리기도 좋고 서버 부하도 없어서 성능상 최고지만, 빌드 시점 데이터만 반영되는 한계가 있다.
+
+### Hydration
+
+서버에서 만든 HTML에 클라이언트에서 JavaScript 이벤트를 붙이는 과정이다. 이때 서버 HTML과 클라이언트 첫 렌더링 결과가 100% 일치해야 한다.
+
+```ts
+// 서버에서 넘겨준 데이터로 클라이언트 상태 초기화
+const initialData = (window as any).__INITIAL_DATA__;
+if (initialData) {
+  productStore.dispatch({
+    type: PRODUCT_ACTIONS.SETUP,
+    payload: initialData,
+  });
+}
+```
+
+SSR에서 넘겨준 데이터를 토대로 클라이언트 Store 데이터들을 동기화해주는 작업이다. 그래야 조건부 렌더링된 부분들을 클라이언트에서 그대로 이어받을 수 있다.
+
+## 10주차 렌더링 성능 최적화
+
+### 클로저로 캐시 구현하기
+
+시간표 제작 서비스에서 성능 문제들을 찾아서 최적화하는 과제였다. React DevTools Profiler로 병목 지점들을 찾아냈다.
+
+```tsx
+// 🚫 개선 전: 동일한 API를 6번이나 호출
+const fetchAllLectures = async () =>
+  await Promise.all([
+    await fetchMajors(), await fetchLiberalArts(),
+    await fetchMajors(), await fetchLiberalArts(), // 불필요한 호출
+    await fetchMajors(), await fetchLiberalArts(), // 불필요한 호출
+  ]);
+```
+
+기존 코드를 보니 Promise.all을 완전히 잘못 쓰고 있었다. 과제 특성 상 3번씩 호출하는걸 둔 상태로 개선해야했다.
+
+```ts
+// ✅ 개선 후: 동일한 API를 3번만 호출
+export const createCachedFetcher = <T>(
+  fetchFn: () => Promise<AxiosResponse<T>>
+) => {
+  let cache: Promise<AxiosResponse<T>> | null = null;
+
+  return (): Promise<AxiosResponse<T>> => {
+    if (cache) {
+      console.log("캐시 사용");
+      return cache;
+    }
+
+    console.log("새로운 Promise 생성");
+    cache = fetchFn();
+
+    return cache;
+  };
+};
+
+const fetchMajors = createCachedFetcher(() =>
+  axios.get<Lecture[]>(`${base}schedules-majors.json`)
+);
+const fetchLiberalArts = createCachedFetcher(() =>
+  axios.get<Lecture[]>(`${base}schedules-liberal-arts.json`)
+);
+
+const fetchAllLectures = async () =>
+  await Promise.all([
+    (console.log("API Call 1", performance.now()), fetchMajors()),
+    (console.log("API Call 2", performance.now()), fetchLiberalArts()),
+    (console.log("API Call 3", performance.now()), fetchMajors()),
+    (console.log("API Call 4", performance.now()), fetchLiberalArts()),
+    (console.log("API Call 5", performance.now()), fetchMajors()),
+    (console.log("API Call 6", performance.now()), fetchLiberalArts()),
+  ]);
+```
+
+클로저를 이용해 캐시를 구현해 한번만 호출되도록 Promise.all을 개선했다.
+
+### 검색 다이얼로그 최적화
+
+검색어를 입력할 때마다 수천 개 강의 데이터를 전체 필터링하고 있었다. "리액트"를 치면 "ㄹ", "리", "리ㅇ"... 이런 식으로 글자 하나하나마다 필터링이 돌아가는 상황이었다.
+
+```ts
+const debouncedQuery = useDebounce(searchOptions.query, 300);
+```
+
+300ms 기다렸다가 검색하도록 해서 불필요한 검색을 대폭 줄였다.
+
+이후에 다른 부분은 context와 컴포넌트간의 결합을 최적화 훅들과 HOC인 React.memo를 이용해 리렌더링 되지 않도록 해줬다. 리스트 가상화(windowing)도 적용했었었다. 메모이제이션과 가상화 중 무엇이 더 좋을지 질문을 남겼는데
+
+> 다만 성능에 대한 격차가 크지 않으면, 가령 1회 렌더링에 200ms 이상 걸리는게 아니라면 굳이 적용할필요는 없다고 생각해요!
+
+라는 답변을 받았다. 굳이 필요하지 않다면 가상화 레벨까지 갈 필요는 없다고 이해했다!
+
+## 회고
+
+사실 9~10주차 쯤 됐을 때 굉장히 지쳐있었다. 특히 9주차는 갑자기 급상승 된 난이도의 과제로 꽤 많이 fail을 받기도 했다.
+매주 과제가 끝나고 BP(Best Practice)를 선정하는데 이 기준이 과제를 명확히 이해하고 작성한 코드레벨보다는 PR을 과제를 제대로 이해했는지 잘 작성하고 한발 더 나아간 학습을 진행하고 그걸 잘 작성했는지가 꽤 많은 비중을 차지했다. 글쓰기를 잘 못해서 9주차까지 나름 몇번 도전했지만 매번 BP를 받지 못했는데,
+
+<img src="/images/activities/hh_plus_8/1.png"/>
+
+마지막에는 드디어 유종의 미를 거둘 수 있었다! 모든걸 흡수할 수 있는 10주는 아니였지만 많은것들을 배우고 많은 분들과 네트워킹까지 하게 되는 알찬 10주였다고 생각한다.
+이번에 얻은 인연들이 오래오래 이어갔으면 좋겠다! 7기 학생메이트는 이미 정해졌지만 추후에 8기 학습메이트를 구한다면 한번 도전해볼까 한다.. 우선은 이직부터!!!
