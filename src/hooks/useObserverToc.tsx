@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 const useObserverToc = () => {
-	const observerRef = useRef<IntersectionObserver>();
+	const observerRef = useRef<IntersectionObserver | null>(null);
 	const [activeIds, setActiveIds] = useState<string[]>([]);
 
 	useEffect(() => {
