@@ -1,4 +1,4 @@
-import { Mail } from 'lucide-react';
+import { Globe, Mail } from 'lucide-react';
 
 import { GitHubIcon } from '@/components/common/Icons';
 
@@ -12,6 +12,11 @@ const ADDRESS_DATA = [
 		icon: <GitHubIcon width={14} height={14} />,
 		label: '깃허브',
 		href: 'https://github.com/yunwoo-yu',
+	},
+	{
+		icon: <Globe size={14} />,
+		label: '블로그',
+		href: 'https://www.ycow-dev.com',
 	},
 ];
 

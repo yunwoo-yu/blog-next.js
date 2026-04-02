@@ -5,6 +5,7 @@ export default function robots(): MetadataRoute.Robots {
 		rules: {
 			userAgent: '*',
 			allow: '/',
+			disallow: ['/career', '/resume'],
 		},
 		sitemap: 'https://ycow-dev.com/sitemap.xml',
 	};

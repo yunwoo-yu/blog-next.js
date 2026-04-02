@@ -58,12 +58,4 @@ export const WEB_PATH = {
 		path: () => '/blog/posts',
 		label: 'Posts',
 	},
-	// RESUME: {
-	// 	path: () => '/resume',
-	// 	label: 'Resume',
-	// },
-	// LOBBY: {
-	// 	path: () => '/blog/lobby',
-	// 	label: 'Lobby',
-	// },
 };

@@ -1,18 +1,61 @@
+import type { Metadata } from 'next';
+
+import CareerDetail from '@/components/career/CareerDetail';
+import Activities from '@/components/resume/Activities';
 import Careers from '@/components/resume/Careers';
-import Divider from '@/components/ui/divider';
+import Education from '@/components/resume/Education';
+import Introduce from '@/components/resume/Introduce';
+import ResumeFooter from '@/components/resume/ResumeFooter';
+import ResumeHeader from '@/components/resume/ResumeHeader';
 
-import Introduce from '../../components/resume/Introduce';
-import ResumeHeader from '../../components/resume/ResumeHeader';
+export const metadata: Metadata = {
+	robots: { index: false, follow: false },
+};
 
-export default function ResumePage() {
+interface ResumePageProps {
+	searchParams: Promise<{ full?: string; detail?: string }>;
+}
+
+export default async function ResumePage({ searchParams }: ResumePageProps) {
+	const { full, detail } = await searchParams;
+	const isFull = full === 'true';
+	const isDetailOnly = detail === 'true';
+
+	if (isDetailOnly) {
+		return (
+			<div className="mx-auto max-w-5xl px-6 py-16 sm:px-16 print:max-w-none print:bg-white print:px-10 print:py-6 dark:print:bg-black">
+				<section className="rounded-lg bg-secondary px-8 py-12 sm:px-14 sm:py-14 print:rounded-none print:bg-white print:px-0 print:py-0 dark:print:bg-black">
+					<div className="mb-8 print:mb-6">
+							<h2 className="text-3xl font-bold print:text-2xl">경력기술서</h2>
+							<p className="mt-2 text-sm text-gray-500 dark:text-gray-400">유윤우 — 프론트엔드 개발자</p>
+						</div>
+					<CareerDetail />
+				</section>
+			</div>
+		);
+	}
+
 	return (
-		<div className="mx-auto max-w-6xl px-20 py-20 print:bg-white print:p-0 dark:print:bg-black">
-			<section className="bg-secondary px-16 py-16 print:bg-white print:p-0 dark:print:bg-black">
+		<div className="mx-auto max-w-5xl px-6 py-16 sm:px-16 print:max-w-none print:bg-white print:px-10 print:py-6 dark:print:bg-black">
+			<section className="rounded-lg bg-secondary px-8 py-12 sm:px-14 sm:py-14 print:rounded-none print:bg-white print:px-0 print:py-0 dark:print:bg-black">
 				<ResumeHeader />
-				{/* <Divider strokeWidth={2} /> */}
 				<Introduce />
-				<Divider strokeWidth={2} />
 				<Careers />
+				<div className="print:break-before-page">
+					<Activities />
+				</div>
+				<Education />
+				{isFull ? (
+					<div className="mt-16 print:mt-8">
+						<div className="mb-8 print:mb-6">
+							<h2 className="text-3xl font-bold print:text-2xl">경력기술서</h2>
+							<p className="mt-2 text-sm text-gray-500 dark:text-gray-400">유윤우 — 프론트엔드 개발자</p>
+						</div>
+						<CareerDetail />
+					</div>
+				) : (
+					<ResumeFooter />
+				)}
 			</section>
 		</div>
 	);

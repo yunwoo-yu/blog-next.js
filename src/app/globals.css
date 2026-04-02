@@ -80,8 +80,20 @@
 
   @page {
     size: A4;
-    margin-bottom: 10mm;
+    margin: 8mm 10mm;
   }
+
+  /* 제목이 페이지 하단에 혼자 남는 것 방지 */
+  h3, h4, h6 {
+    break-after: avoid;
+  }
+
+  /* 프로젝트 블록은 가능하면 안 끊기되, 너무 길면 허용 */
+  article {
+    break-inside: avoid;
+  }
+
+  /* li 끊김 방지 해제 — 긴 불릿이 있으면 오히려 빈공간 생김 */
 }
 
 @layer base {
