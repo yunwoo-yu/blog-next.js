@@ -13,10 +13,7 @@ export default function CareerDetail() {
 								const { text, duration, isOngoing } = getCareerPeriod(career);
 								return (
 									<>
-										{text}{' '}
-										{duration && (
-											<span className={isOngoing ? 'print:hidden' : ''}>({duration})</span>
-										)}
+										{text} {duration && <span className={isOngoing ? 'print:hidden' : ''}>({duration})</span>}
 									</>
 								);
 							})()}
