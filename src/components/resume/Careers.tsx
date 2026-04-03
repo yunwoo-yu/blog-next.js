@@ -1,4 +1,4 @@
-import RESUME, { getCareerPeriodText } from '@/constant/resume';
+import RESUME, { getCareerPeriod } from '@/constant/resume';
 
 import ResumeContainer from './ResumeContainer';
 
@@ -13,7 +13,17 @@ export default function Careers() {
 						<div className="w-48 shrink-0 print:w-40">
 							<h4 className="text-xl font-medium print:text-lg">{career.organization}</h4>
 							<p className="text-sm font-light leading-6 text-gray-500 dark:text-gray-400">
-								{getCareerPeriodText(career)}
+								{(() => {
+									const { text, duration, isOngoing } = getCareerPeriod(career);
+									return (
+										<>
+											{text}{' '}
+											{duration && (
+												<span className={isOngoing ? 'print:hidden' : ''}>({duration})</span>
+											)}
+										</>
+									);
+								})()}
 							</p>
 							<p className="mt-1 text-sm">{career.position}</p>
 						</div>

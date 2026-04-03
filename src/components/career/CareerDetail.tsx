@@ -1,5 +1,5 @@
 import { ResumeLink } from '@/components/resume/ResumeLink';
-import RESUME, { getCareerPeriodText } from '@/constant/resume';
+import RESUME, { getCareerPeriod } from '@/constant/resume';
 
 export default function CareerDetail() {
 	return (
@@ -8,7 +8,19 @@ export default function CareerDetail() {
 				<section key={career.organization}>
 					<div className="mb-6 flex items-baseline gap-3 print:mb-4">
 						<h2 className="text-2xl font-semibold print:text-xl">{career.organization}</h2>
-						<span className="text-sm text-gray-500 dark:text-gray-400">{getCareerPeriodText(career)}</span>
+						<span className="text-sm text-gray-500 dark:text-gray-400">
+							{(() => {
+								const { text, duration, isOngoing } = getCareerPeriod(career);
+								return (
+									<>
+										{text}{' '}
+										{duration && (
+											<span className={isOngoing ? 'print:hidden' : ''}>({duration})</span>
+										)}
+									</>
+								);
+							})()}
+						</span>
 					</div>
 
 					{career.serviceGroups.map(group => (

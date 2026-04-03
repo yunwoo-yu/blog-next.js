@@ -5,6 +5,7 @@ import Activities from '@/components/resume/Activities';
 import Careers from '@/components/resume/Careers';
 import Education from '@/components/resume/Education';
 import Introduce from '@/components/resume/Introduce';
+import PrintButton from '@/components/resume/PrintButton';
 import ResumeFooter from '@/components/resume/ResumeFooter';
 import ResumeHeader from '@/components/resume/ResumeHeader';
 
@@ -25,9 +26,12 @@ export default async function ResumePage({ searchParams }: ResumePageProps) {
 		return (
 			<div className="mx-auto max-w-5xl px-6 py-16 sm:px-16 print:max-w-none print:bg-white print:px-10 print:py-6 dark:print:bg-black">
 				<section className="rounded-lg bg-secondary px-8 py-12 sm:px-14 sm:py-14 print:rounded-none print:bg-white print:px-0 print:py-0 dark:print:bg-black">
-					<div className="mb-8 print:mb-6">
-						<h2 className="text-3xl font-bold print:text-2xl">경력기술서</h2>
-						<p className="mt-2 text-sm text-gray-500 dark:text-gray-400">유윤우 — 프론트엔드 개발자</p>
+					<div className="mb-8 flex items-start justify-between print:mb-6">
+						<div>
+							<h2 className="text-3xl font-bold print:text-2xl">경력기술서</h2>
+							<p className="mt-2 text-sm text-gray-500 dark:text-gray-400">유윤우 — 프론트엔드 개발자</p>
+						</div>
+						<PrintButton />
 					</div>
 					<CareerDetail />
 				</section>

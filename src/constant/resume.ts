@@ -34,9 +34,9 @@ export type Careers = {
 	serviceGroups: ServiceGroup[];
 };
 
-export function getCareerPeriodText(career: Careers): string {
-	if (career.period) return career.period;
-	if (!career.startDate) return '';
+export function getCareerPeriod(career: Careers) {
+	if (career.period) return { text: career.period, duration: '', isOngoing: false };
+	if (!career.startDate) return { text: '', duration: '', isOngoing: false };
 
 	const start = new Date(career.startDate.replace('.', '-') + '-01');
 	const end = career.endDate ? new Date(career.endDate.replace('.', '-') + '-01') : new Date();
@@ -54,7 +54,12 @@ export function getCareerPeriodText(career: Careers): string {
 	const startStr = career.startDate;
 	const endStr = isOngoing ? '재직 중' : career.endDate!;
 
-	return `${startStr} ~ ${endStr} (${duration})`;
+	return { text: `${startStr} ~ ${endStr}`, duration, isOngoing };
+}
+
+export function getCareerPeriodText(career: Careers): string {
+	const { text, duration } = getCareerPeriod(career);
+	return duration ? `${text} (${duration})` : text;
 }
 
 export type Education = {
@@ -85,7 +90,7 @@ const CAREERS: Careers[] = [
 		highlights: [
 			{ text: '마이데이터 연동 서비스(의료·통신·신용) 3개 기관 공통 구조 설계·구현' },
 			{ text: '커머스 결제·주문 플로우 + 관리자 백오피스 구축 (나이스페이 PG 연동)' },
-			{ text: '고향사랑기부 플랫폼 인증 개선, 서드파티 SDK 교체 등 기능 개선' },
+			{ text: '고향사랑기부 플랫폼 인증·내비게이션 개선 등 기능 개선' },
 			{
 				text: 'React 19 + Next.js 16 업그레이드, UI 라이브러리 전환, 번들 최적화 등 DX 대규모 개선',
 			},
@@ -129,11 +134,11 @@ const CAREERS: Careers[] = [
 						achievements: [
 							{
 								title:
-									'PG 결제 실패나 이탈 시 주문이 잔류하지 않도록 단계별 상태 관리를 설계하고, 주문 상태별 UI 분기와 배송 추적까지 포함한 사용자 주문 플로우 전 구간을 구현했습니다.',
+									'나이스페이 PG 연동 기반으로 장바구니 → 쿠폰/포인트 적용 → 결제 → 주문 완료 → 주문 내역(상태별 UI 분기 · 배송 추적) → 후기 작성까지 사용자 구매 플로우 전 구간을 구현했습니다.',
 							},
 							{
 								title:
-									'영역별로 각각 구현하면 코드 중복이 심해질 것으로 판단하여, 5개 영역의 CRUD 플로우와 검색 필터를 공통 패턴으로 추상화한 관리자 백오피스를 설계했습니다.',
+									'웰포인트, 프로모션, 입점업체, 타임세일, 고객센터 등 5개 영역의 관리자 백오피스를 구축하고, 각 영역을 목록 조회 → 검색 필터 → 상세 → 등록/수정의 일관된 구조로 설계하여 신규 영역 추가 시 빠르게 확장할 수 있도록 했습니다.',
 							},
 						],
 					},
@@ -141,15 +146,15 @@ const CAREERS: Careers[] = [
 						title: '고향사랑기부 기능 개선',
 						date: '2025.11 ~ 2026.03',
 						description:
-							'입사 후 행정안전부 선정 고향사랑기부 플랫폼을 파악하는 과정에서, 인증 후 세션이 불안정하게 유지되는 문제와 FlareLane SDK가 시스템 전반의 복잡도를 높이고 있는 문제를 발견하여 우선적으로 해결했습니다.',
+							'입사 후 행정안전부 선정 고향사랑기부 플랫폼을 파악하는 과정에서, 인증 세션 불안정과 페이지 전환 시 깜빡임 문제를 발견하여 우선적으로 해결했습니다.',
 						achievements: [
 							{
 								title:
-									'OAuth 콜백 후 클라이언트 내비게이션으로 리다이렉트하면 서버가 새 인증 쿠키를 읽지 못해 세션이 갱신되지 않는 문제 → 풀 페이지 내비게이션으로 변경하여 서버 라운드트립을 강제, 인증 세션을 정상 수립했습니다.',
+									'인증 상태 변경(로그인/로그아웃) 후 클라이언트 내비게이션으로 이동하면, Router Cache가 이전 상태의 RSC payload를 반환하고 partial rendering으로 layout이 재실행되지 않아 쿠키 변경이 반영되지 않는 문제 → 하드 내비게이션으로 전환하여 캐시를 우회하고, 서버가 변경된 쿠키를 읽어 인증 상태를 정상 반영했습니다.',
 							},
 							{
 								title:
-									'FlareLane SDK 코드를 분석한 결과 폴링 기반 초기화(interval + 15초 타임아웃)가 서비스 워커·인앱 메시지와 얽혀 시스템 복잡도의 주요 원인이었음 → Channel Talk SDK 기반 경량 컴포넌트로 교체하여 폴링·서비스 워커 의존성을 전체 제거했습니다.',
+									'루트 loading.tsx의 instant loading state가 페이지 전환 시 깜빡임을 유발하는 문제 → App Router의 내비게이션이 React transition 기반으로 동작하여 이미 표시된 Suspense fallback을 다시 트리거하지 않는 점을 활용, loading.tsx를 제거하고 Suspense boundary로 전환하여 이전 페이지를 유지한 채 새 페이지가 준비되면 전환되도록 개선했습니다.',
 							},
 						],
 					},
@@ -350,7 +355,7 @@ const CAREERS: Careers[] = [
 						achievements: [
 							{
 								title:
-									'SSR용(Webpack v5)과 SPA CMS용(Vite) 보일러플레이트를 각각 제작하고, CMS 전용 UI 라이브러리를 Rollup.js CJS/ESM으로 구축했습니다. Storybook + Chromatic으로 시각적 회귀 테스트 환경까지 갖췄습니다.',
+									'SSR용(Webpack v5)과 SPA CMS용(Vite) 보일러플레이트를 각각 제작하고, CMS 전용 UI 라이브러리를 Rollup.js 기반 CJS/ESM 양방향 빌드로 구축했습니다. Storybook + Chromatic으로 시각적 회귀 테스트 환경까지 갖췄습니다.',
 							},
 							{
 								title:
