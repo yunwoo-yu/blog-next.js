@@ -1,5 +1,5 @@
-import { ResumeItemProps } from '@/components/resume/ResumeItem';
-import { ResumeLinkProps } from '@/components/resume/ResumeLink';
+import type { ResumeItemProps } from '@/components/resume/ResumeItem';
+import type { ResumeLinkProps } from '@/components/resume/ResumeLink';
 
 export type Project = {
 	title: string;
@@ -38,8 +38,8 @@ export function getCareerPeriod(career: Careers) {
 	if (career.period) return { text: career.period, duration: '', isOngoing: false };
 	if (!career.startDate) return { text: '', duration: '', isOngoing: false };
 
-	const start = new Date(career.startDate.replace('.', '-') + '-01');
-	const end = career.endDate ? new Date(career.endDate.replace('.', '-') + '-01') : new Date();
+	const start = new Date(`${career.startDate.replace('.', '-')}-01`);
+	const end = career.endDate ? new Date(`${career.endDate.replace('.', '-')}-01`) : new Date();
 	const isOngoing = !career.endDate;
 
 	const months = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth());

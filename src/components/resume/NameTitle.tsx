@@ -1,5 +1,3 @@
-import React from 'react';
-
 const NAME_TITLE = {
 	이름: '유윤우',
 	직업: 'Front-End Developer',

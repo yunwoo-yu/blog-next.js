@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { CompileMdxTypes } from '@/types/common.types';
+import type { CompileMdxTypes } from '@/types/common.types';
 import { cn } from '@/utils/utils';
 
 interface PostListTypeProps {

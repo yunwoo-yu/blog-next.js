@@ -1,6 +1,6 @@
 import { CalendarDays } from 'lucide-react';
 
-import { CompileMdxTypes } from '@/types/common.types';
+import type { CompileMdxTypes } from '@/types/common.types';
 import { cn } from '@/utils/utils';
 
 interface PostDetailHeaderProps {

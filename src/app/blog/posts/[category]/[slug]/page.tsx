@@ -1,5 +1,5 @@
 import markdownToTxt from 'markdown-to-txt';
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
 
 import CustomMDXRemote from '@/components/common/CustomMDXRemote';
 import Comments from '@/components/postDetail/Comments';
@@ -7,6 +7,7 @@ import PostDetailHeader from '@/components/postDetail/PostDetailHeader';
 import PostProgressScroll from '@/components/postDetail/PostProgressScroll';
 import Toc from '@/components/postDetail/Toc';
 import { getAllPosts, getAllPostsPath, getHeaderNavigationList, getPostDetail } from '@/utils/post-utils';
+
 interface Params {
 	params: Promise<{ category: string; slug: string }>;
 }
@@ -22,11 +23,10 @@ export const generateMetadata = async ({ params }: Params) => {
 	const { category, slug } = await params;
 
 	const post = await getPostDetail(category, slug);
-	const description =
-		markdownToTxt(post.source)
-			.replace(/\s{2,}/gi, ' ')
-			.slice(0, 160)
-			.trim() + '...';
+	const description = `${markdownToTxt(post.source)
+		.replace(/\s{2,}/gi, ' ')
+		.slice(0, 160)
+		.trim()}...`;
 
 	const dynamicMetadata: Metadata = {
 		title: `${post.frontmatter.title}`,

@@ -1,4 +1,4 @@
-import { ResumeLink, ResumeLinkProps } from './ResumeLink';
+import { ResumeLink, type ResumeLinkProps } from './ResumeLink';
 
 export interface ResumeItemProps {
 	title: string;
@@ -12,7 +12,9 @@ export const ResumeItem = ({ item, depth = 0 }: { item: ResumeItemProps; depth?:
 		<li className={`my-1 ${depth > 0 ? '-ml-1' : ''}`}>
 			<div className="block text-sm">
 				<span>{item.title}</span>
-				{item.links && item.links.map((link, index) => <ResumeLink key={index} title={link.title} url={link.url} />)}
+				{item.links?.map((link, index) => (
+					<ResumeLink key={index} title={link.title} url={link.url} />
+				))}
 			</div>
 
 			{item.children && item.children.length > 0 && (

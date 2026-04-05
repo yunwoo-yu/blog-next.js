@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-import { CategoryDataTypes } from '@/types/common.types';
+import type { CategoryDataTypes } from '@/types/common.types';
 import { cn } from '@/utils/utils';
 
 interface CategoryVerticalListProps {

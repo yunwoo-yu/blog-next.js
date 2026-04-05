@@ -1,6 +1,6 @@
 import { AlignLeft, Grid2x2 } from 'lucide-react';
 
-import { ViewType } from '@/hooks/useViewTypesTab';
+import type { ViewType } from '@/hooks/useViewTypesTab';
 import { cn } from '@/utils/utils';
 
 interface ViewToggleProps {

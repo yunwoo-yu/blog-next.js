@@ -32,7 +32,8 @@ export default function Address() {
 						<a
 							href={label === '이메일' ? `mailto:${href}` : href}
 							target="_blank"
-							className="underline hover:text-destructive">
+							className="underline hover:text-destructive"
+							rel="noopener">
 							{href}
 						</a>
 					</div>

@@ -3,7 +3,7 @@
 import { Fragment } from 'react';
 
 import useViewTypesTab from '@/hooks/useViewTypesTab';
-import { PostListTypes } from '@/types/common.types';
+import type { PostListTypes } from '@/types/common.types';
 import { cn } from '@/utils/utils';
 
 import PostCardType from './PostCardType';

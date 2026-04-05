@@ -2,7 +2,7 @@ import './globals.css';
 
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
 
 import { pretendard } from '@/assets/fonts/fonts';
 import Footer from '@/components/common/Footer';

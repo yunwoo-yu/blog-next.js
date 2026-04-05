@@ -19,7 +19,7 @@ const useScrollDirection = () => {
 
 			lastScrollYRef.current = currentScrollY;
 		}
-	}, [lastScrollYRef, scrollThreshold]);
+	}, []);
 
 	useEffect(() => {
 		window.addEventListener('scroll', handleScroll);

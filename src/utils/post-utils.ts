@@ -1,11 +1,11 @@
-import { readFileSync } from 'fs';
-import { readdir } from 'fs/promises';
+import { readFileSync } from 'node:fs';
+import { readdir } from 'node:fs/promises';
 import { globSync } from 'glob';
 import { compileMDX } from 'next-mdx-remote/rsc';
 
-import { CompileMdxTypes, HeadingTypes } from '@/types/common.types';
+import type { CompileMdxTypes, HeadingTypes } from '@/types/common.types';
 
-const PATH = process.cwd() + '/src/mdx';
+const PATH = `${process.cwd()}/src/mdx`;
 
 export const getAllPostsPath = (category?: string) => {
 	return globSync(`${PATH}/${category ? category : '**'}/**/*.mdx`);
@@ -71,7 +71,7 @@ export const getHeaderNavigationList = (source: string) => {
 		return text
 			.replace(/[\u{1F600}-\u{1F6FF}]/gu, '')
 			.replace(/\p{Emoji_Presentation}/gu, '')
-			.replace(/[\[\]:!@#$/%^&*()+=,.]/g, '')
+			.replace(/[[\]:!@#$/%^&*()+=,.]/g, '')
 			.replace(/ /g, '-')
 			.replace(/\?/g, '')
 			.toLowerCase();
@@ -83,7 +83,7 @@ export const getHeaderNavigationList = (source: string) => {
 
 			currentSection = {
 				text: textH2,
-				href: '#' + parseHref(textH2),
+				href: `#${parseHref(textH2)}`,
 				children: [],
 			};
 
@@ -96,12 +96,12 @@ export const getHeaderNavigationList = (source: string) => {
 			if (currentSection?.children) {
 				currentSection.children.push({
 					text: textH3,
-					href: '#' + parseHref(textH3),
+					href: `#${parseHref(textH3)}`,
 				});
 			} else {
 				result.push({
 					text: textH3,
-					href: '#' + parseHref(textH3),
+					href: `#${parseHref(textH3)}`,
 				});
 			}
 		}
