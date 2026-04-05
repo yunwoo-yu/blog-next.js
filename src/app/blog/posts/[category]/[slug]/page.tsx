@@ -25,7 +25,7 @@ export const generateMetadata = async ({ params }: Params) => {
 	const description = `${post.source
 		.replace(/```[\s\S]*?```/g, '')
 		.replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
-		.replace(/[#*_~`>|\\-]/g, '')
+		.replace(/[#*_~`>|-]/g, '')
 		.replace(/\s{2,}/g, ' ')
 		.trim()
 		.slice(0, 160)}...`;
