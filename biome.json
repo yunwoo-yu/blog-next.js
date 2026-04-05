@@ -9,6 +9,8 @@
 			"**/*.json",
 			"!node_modules",
 			"!.next",
+			"!.claude",
+			"!next-env.d.ts",
 			"!src/utils/utils.ts",
 			"!src/components/ui"
 		]
