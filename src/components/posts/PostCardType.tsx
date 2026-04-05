@@ -1,6 +1,7 @@
 import { CalendarDays } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { ViewTransition } from 'react';
 
 import type { CompileMdxTypes } from '@/types/common.types';
 
@@ -24,12 +25,18 @@ const PostCardType = ({ data, category, slug }: PostCardTypeProps) => {
 					/>
 				</div>
 				<div className="p-4">
-					<h3 className="text-xl">{data.title}</h3>
-					<p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{data.description}</p>
-					<p className="mt-2 flex items-center text-xs text-gray-400">
-						<CalendarDays className="mr-1 size-4" />
-						{data.createdAt}
-					</p>
+					<ViewTransition name={`post-title-${category}-${slug}`}>
+						<h3 className="text-xl">{data.title}</h3>
+					</ViewTransition>
+					<ViewTransition name={`post-desc-${category}-${slug}`}>
+						<p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{data.description}</p>
+					</ViewTransition>
+					<ViewTransition name={`post-date-${category}-${slug}`}>
+						<p className="mt-2 flex items-center text-xs text-gray-400">
+							<CalendarDays className="mr-1 size-4" />
+							{data.createdAt}
+						</p>
+					</ViewTransition>
 				</div>
 			</Link>
 		</li>

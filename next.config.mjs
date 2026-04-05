@@ -6,6 +6,7 @@ const nextConfig = {
 	images: {
 		formats: ['image/avif', 'image/webp'], // default: ['image/webp']
 	},
+	viewTransition: true,
 };
 
 const withMDX = createMDX({

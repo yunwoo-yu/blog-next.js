@@ -50,7 +50,7 @@ const PostDetailPage = async ({ params }: Params) => {
 	return (
 		<>
 			<PostProgressScroll />
-			<PostDetailHeader frontmatter={frontmatter} />
+			<PostDetailHeader frontmatter={frontmatter} category={category} slug={slug} />
 			<article className="mx-auto max-w-3xl px-5 transition xl:fixed xl:left-[80%] xl:top-64 xl:mx-0 xl:max-w-72">
 				<Toc headerNavigationList={headerNavigationList} />
 			</article>

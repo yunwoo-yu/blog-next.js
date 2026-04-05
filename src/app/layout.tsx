@@ -3,6 +3,7 @@ import './globals.css';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import type { Metadata } from 'next';
+import { ViewTransition } from 'react';
 
 import { pretendard } from '@/assets/fonts/fonts';
 import Footer from '@/components/common/Footer';
@@ -27,7 +28,9 @@ export default function RootLayout({
 			<body className="flex min-h-screen flex-col">
 				<ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
 					<Header />
-					<main className="mt-[97px] flex-1 print:mt-0">{children}</main>
+					<ViewTransition>
+						<main className="mt-[97px] flex-1 print:mt-0">{children}</main>
+					</ViewTransition>
 					<Footer />
 				</ThemeProvider>
 				<SpeedInsights />

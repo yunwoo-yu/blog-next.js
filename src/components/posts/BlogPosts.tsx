@@ -1,6 +1,6 @@
 'use client';
 
-import { Fragment } from 'react';
+import { ViewTransition } from 'react';
 
 import useViewTypesTab from '@/hooks/useViewTypesTab';
 import type { PostListTypes } from '@/types/common.types';
@@ -20,21 +20,23 @@ const BlogPosts = ({ posts }: BlogPostsProps) => {
 	return (
 		<section className="flex-1">
 			<ViewToggle viewType={viewType} onChangeViewType={onChangeViewType} />
-			<ul
-				className={cn(
-					'w-full pt-5',
-					viewType === 'list' ? 'flex flex-col' : 'grid gap-5 sm:grid-cols-1 md:grid-cols-2',
-				)}>
-				{posts.map(post => (
-					<Fragment key={post.frontmatter.title}>
-						{viewType === 'list' ? (
-							<PostListType data={post.frontmatter} category={post.category} slug={post.slug} />
-						) : (
-							<PostCardType data={post.frontmatter} category={post.category} slug={post.slug} />
-						)}
-					</Fragment>
-				))}
-			</ul>
+			<ViewTransition>
+				<ul
+					className={cn(
+						'w-full pt-5',
+						viewType === 'list' ? 'flex flex-col' : 'grid gap-5 sm:grid-cols-1 md:grid-cols-2',
+					)}>
+					{posts.map(post => (
+						<ViewTransition key={post.frontmatter.title} name={`post-item-${post.category}-${post.slug}`}>
+							{viewType === 'list' ? (
+								<PostListType data={post.frontmatter} category={post.category} slug={post.slug} />
+							) : (
+								<PostCardType data={post.frontmatter} category={post.category} slug={post.slug} />
+							)}
+						</ViewTransition>
+					))}
+				</ul>
+			</ViewTransition>
 			{/* <KakaoAdFit
 				unit="DAN-CjB92EFr1OIV22WH"
 				width="728"
