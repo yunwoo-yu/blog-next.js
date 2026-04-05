@@ -1,4 +1,3 @@
-import markdownToTxt from 'markdown-to-txt';
 import type { Metadata } from 'next';
 
 import CustomMDXRemote from '@/components/common/CustomMDXRemote';
@@ -23,10 +22,13 @@ export const generateMetadata = async ({ params }: Params) => {
 	const { category, slug } = await params;
 
 	const post = await getPostDetail(category, slug);
-	const description = `${markdownToTxt(post.source)
-		.replace(/\s{2,}/gi, ' ')
-		.slice(0, 160)
-		.trim()}...`;
+	const description = `${post.source
+		.replace(/```[\s\S]*?```/g, '')
+		.replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
+		.replace(/[#*_~`>|\\-]/g, '')
+		.replace(/\s{2,}/g, ' ')
+		.trim()
+		.slice(0, 160)}...`;
 
 	const dynamicMetadata: Metadata = {
 		title: `${post.frontmatter.title}`,
