@@ -5,6 +5,7 @@ import Activities from '@/components/resume/Activities';
 import Careers from '@/components/resume/Careers';
 import Education from '@/components/resume/Education';
 import Introduce from '@/components/resume/Introduce';
+import MobileUnsupported from '@/components/resume/MobileUnsupported';
 import PrintButton from '@/components/resume/PrintButton';
 import ResumeFooter from '@/components/resume/ResumeFooter';
 import ResumeHeader from '@/components/resume/ResumeHeader';
@@ -24,43 +25,49 @@ export default async function ResumePage({ searchParams }: ResumePageProps) {
 
 	if (isDetailOnly) {
 		return (
-			<div className="mx-auto max-w-5xl px-6 py-16 sm:px-16 print:max-w-none print:bg-white print:px-10 print:py-6 dark:print:bg-black">
-				<section className="rounded-lg bg-secondary px-8 py-12 sm:px-14 sm:py-14 print:rounded-none print:bg-white print:px-0 print:py-0 dark:print:bg-black">
-					<div className="mb-8 flex items-start justify-between print:mb-6">
-						<div>
-							<h2 className="text-3xl font-bold print:text-2xl">경력기술서</h2>
-							<p className="mt-2 text-sm text-gray-500 dark:text-gray-400">유윤우 — 프론트엔드 개발자</p>
+			<>
+				<MobileUnsupported />
+				<div className="mx-auto hidden max-w-5xl px-6 py-16 sm:px-16 md:block print:block print:max-w-none print:bg-white print:px-10 print:py-6 dark:print:bg-black">
+					<section className="rounded-lg bg-secondary px-8 py-12 sm:px-14 sm:py-14 print:rounded-none print:bg-white print:px-0 print:py-0 dark:print:bg-black">
+						<div className="mb-8 flex items-start justify-between print:mb-6">
+							<div>
+								<h2 className="text-3xl font-bold print:text-2xl">경력기술서</h2>
+								<p className="mt-2 text-sm text-gray-500 dark:text-gray-400">유윤우 — 프론트엔드 개발자</p>
+							</div>
+							<PrintButton />
 						</div>
-						<PrintButton />
-					</div>
-					<CareerDetail />
-				</section>
-			</div>
+						<CareerDetail />
+					</section>
+				</div>
+			</>
 		);
 	}
 
 	return (
-		<div className="mx-auto max-w-5xl px-6 py-16 sm:px-16 print:max-w-none print:bg-white print:px-10 print:py-6 dark:print:bg-black">
-			<section className="rounded-lg bg-secondary px-8 py-12 sm:px-14 sm:py-14 print:rounded-none print:bg-white print:px-0 print:py-0 dark:print:bg-black">
-				<ResumeHeader />
-				<Introduce />
-				<Careers />
-				<div className="print:break-before-page">
-					<Activities />
-				</div>
-				<Education />
-				{isFull ? (
-					<div className="mt-16 print:mt-8">
-						<div className="mb-8 print:mb-6">
-							<h2 className="text-3xl font-bold print:text-2xl">경력기술서</h2>
-							<p className="mt-2 text-sm text-gray-500 dark:text-gray-400">유윤우 — 프론트엔드 개발자</p>
-						</div>
-						<CareerDetail />
+		<>
+			<MobileUnsupported />
+			<div className="mx-auto hidden max-w-5xl px-6 py-16 sm:px-16 md:block print:block print:max-w-none print:bg-white print:px-10 print:py-6 dark:print:bg-black">
+				<section className="rounded-lg bg-secondary px-8 py-12 sm:px-14 sm:py-14 print:rounded-none print:bg-white print:px-0 print:py-0 dark:print:bg-black">
+					<ResumeHeader />
+					<Introduce />
+					<Careers />
+					<div className="print:break-before-page">
+						<Activities />
 					</div>
-				) : (
-					<ResumeFooter />
-				)}
-			</section>
-		</div>
+					<Education />
+					{isFull ? (
+						<div className="mt-16 print:mt-8">
+							<div className="mb-8 print:mb-6">
+								<h2 className="text-3xl font-bold print:text-2xl">경력기술서</h2>
+								<p className="mt-2 text-sm text-gray-500 dark:text-gray-400">유윤우 — 프론트엔드 개발자</p>
+							</div>
+							<CareerDetail />
+						</div>
+					) : (
+						<ResumeFooter />
+					)}
+				</section>
+			</div>
+		</>
 	);
 }
