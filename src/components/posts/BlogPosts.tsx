@@ -2,6 +2,7 @@
 
 import { ViewTransition } from 'react';
 
+import AdSlot from '@/components/common/AdSlot';
 import useViewTypesTab from '@/hooks/useViewTypesTab';
 import type { PostListTypes } from '@/types/common.types';
 import { cn } from '@/utils/utils';
@@ -37,12 +38,7 @@ const BlogPosts = ({ posts }: BlogPostsProps) => {
 					))}
 				</ul>
 			</ViewTransition>
-			{/* <KakaoAdFit
-				unit="DAN-CjB92EFr1OIV22WH"
-				width="728"
-				height="90"
-				className="mx-auto mt-20 hidden xl:flex xl:justify-center"
-			/> */}
+			<AdSlot slot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_POST_LIST} className="mt-16" />
 		</section>
 	);
 };

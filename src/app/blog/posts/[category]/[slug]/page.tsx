@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 
+import AdSlot from '@/components/common/AdSlot';
 import CustomMDXRemote from '@/components/common/CustomMDXRemote';
 import Comments from '@/components/postDetail/Comments';
 import PostDetailHeader from '@/components/postDetail/PostDetailHeader';
@@ -58,6 +59,7 @@ const PostDetailPage = async ({ params }: Params) => {
 			</article>
 			<section className="mx-auto max-w-3xl px-5 pb-20 pt-10">
 				<CustomMDXRemote source={source} />
+				<AdSlot slot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_POST_DETAIL} className="my-12" />
 				<Comments />
 			</section>
 		</>
