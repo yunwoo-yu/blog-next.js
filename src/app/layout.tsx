@@ -26,6 +26,14 @@ export default function RootLayout({
 			lang="en"
 			suppressHydrationWarning
 			className={`${pretendard.variable} font-pretendard font-normal print:text-sm`}>
+			<head>
+				<Script
+					async
+					src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5735722585151965"
+					crossOrigin="anonymous"
+					strategy="beforeInteractive"
+				/>
+			</head>
 			<body className="flex min-h-screen flex-col">
 				<ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
 					<Header />
@@ -36,12 +44,6 @@ export default function RootLayout({
 				</ThemeProvider>
 				<SpeedInsights />
 				<Analytics />
-				<Script
-					async
-					src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5735722585151965"
-					crossOrigin="anonymous"
-					strategy="afterInteractive"
-				/>
 			</body>
 		</html>
 	);
