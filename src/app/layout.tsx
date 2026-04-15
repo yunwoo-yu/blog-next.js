@@ -3,6 +3,7 @@ import './globals.css';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import type { Metadata } from 'next';
+import Script from 'next/script';
 import { ViewTransition } from 'react';
 
 import { pretendard } from '@/assets/fonts/fonts';
@@ -35,6 +36,12 @@ export default function RootLayout({
 				</ThemeProvider>
 				<SpeedInsights />
 				<Analytics />
+				<Script
+					async
+					src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5735722585151965"
+					crossOrigin="anonymous"
+					strategy="afterInteractive"
+				/>
 			</body>
 		</html>
 	);
