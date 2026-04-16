@@ -24,6 +24,9 @@ const Footer = () => {
 					<LinkedInIcon width={16} height={16} />
 				</Link>
 			</article>
+			<Link href="/privacy" className="text-sm text-muted-foreground hover:underline">
+				개인정보처리방침
+			</Link>
 			<p className="text-sm">Ycow &bull; &copy; {dayjs().format('YYYY')}. All rights reserved</p>
 		</footer>
 	);
