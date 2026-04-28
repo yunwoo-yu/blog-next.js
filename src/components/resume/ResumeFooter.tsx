@@ -7,7 +7,7 @@ export default function ResumeFooter() {
 			<p className="mt-1 hidden print:block">
 				아래 링크에서도 확인할 수 있습니다: <span className="text-destructive">https://www.ycow-dev.com/resume</span>
 			</p>
-			<Link href="/career" className="mt-2 inline-block text-destructive hover:underline print:hidden">
+			<Link href="/resume?detail=true" className="mt-2 inline-block text-destructive hover:underline print:hidden">
 				경력기술서 보기 →
 			</Link>
 		</div>
