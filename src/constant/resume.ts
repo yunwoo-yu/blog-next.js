@@ -272,7 +272,7 @@ const CAREERS: Careers[] = [
 							},
 							{
 								title:
-									'Swiper를 Embla Carousel로, react-swipeable을 Pointer Events 기반 커스텀 드래그로, react-feather를 SVG 컴포넌트로 대체하고, yup 스키마를 zod로 전환해 라이브러리 표면적을 줄였습니다.',
+									'Swiper, react-swipeable, react-feather, yup 등 중복·대체 가능한 라이브러리를 정리하고, Embla Carousel·Pointer Events·SVG 컴포넌트·zod 기반으로 구현을 단순화했습니다.',
 							},
 							{
 								title:
