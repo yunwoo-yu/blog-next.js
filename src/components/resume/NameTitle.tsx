@@ -5,13 +5,13 @@ const NAME_TITLE = {
 
 export default function NameTitle() {
 	return (
-		<div className="flex flex-col gap-3">
+		<dl className="flex flex-col gap-3">
 			{Object.entries(NAME_TITLE).map(([key, value]) => (
 				<div key={key}>
 					<dt className="sr-only">{key}</dt>
 					<dd className={key !== '이름' ? 'text-2xl' : 'text-4xl font-bold'}>{value}</dd>
 				</div>
 			))}
-		</div>
+		</dl>
 	);
 }
