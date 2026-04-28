@@ -27,7 +27,7 @@ export default async function ResumePage({ searchParams }: ResumePageProps) {
 		return (
 			<>
 				<MobileUnsupported />
-				<div className="mx-auto hidden max-w-5xl px-6 py-16 sm:px-16 md:block print:block print:max-w-none print:bg-white print:px-10 print:py-6 dark:print:bg-black">
+				<div className="mx-auto hidden max-w-5xl px-6 py-16 sm:px-16 md:block print:block print:max-w-none print:bg-white print:px-6 print:py-4 dark:print:bg-black">
 					<section className="rounded-lg bg-secondary px-8 py-12 sm:px-14 sm:py-14 print:rounded-none print:bg-white print:px-0 print:py-0 dark:print:bg-black">
 						<div className="mb-8 flex items-start justify-between print:mb-6">
 							<div>
@@ -46,7 +46,7 @@ export default async function ResumePage({ searchParams }: ResumePageProps) {
 	return (
 		<>
 			<MobileUnsupported />
-			<div className="mx-auto hidden max-w-5xl px-6 py-16 sm:px-16 md:block print:block print:max-w-none print:bg-white print:px-10 print:py-6 dark:print:bg-black">
+			<div className="mx-auto hidden max-w-5xl px-6 py-16 sm:px-16 md:block print:block print:max-w-none print:bg-white print:px-6 print:py-4 dark:print:bg-black">
 				<section className="rounded-lg bg-secondary px-8 py-12 sm:px-14 sm:py-14 print:rounded-none print:bg-white print:px-0 print:py-0 dark:print:bg-black">
 					<ResumeHeader />
 					<Introduce />

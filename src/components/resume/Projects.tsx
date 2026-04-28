@@ -13,7 +13,15 @@ export default function Projects() {
 						{career.serviceGroups.map(group => (
 							<div key={group.service} className="flex flex-col gap-8 print:gap-5">
 								<div className="flex items-baseline gap-2">
-									<h5 className="text-base font-medium text-destructive">{group.service}</h5>
+									<h5 className="text-base font-medium text-destructive">
+										{group.serviceUrl ? (
+											<a href={group.serviceUrl} target="_blank" rel="noopener noreferrer" className="hover:underline">
+												{group.service}
+											</a>
+										) : (
+											group.service
+										)}
+									</h5>
 									{group.serviceDescription && (
 										<span className="text-xs text-gray-500 dark:text-gray-400">{group.serviceDescription}</span>
 									)}

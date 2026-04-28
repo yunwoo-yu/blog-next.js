@@ -1,5 +1,7 @@
 # blog-next
 
+`AGENTS.md` mirrors this file for Codex-oriented workflows. Keep both documents aligned when project rules change.
+
 ## Stack
 
 Next.js 16 | React 19 | TypeScript 5 | Biome 2 | Yarn

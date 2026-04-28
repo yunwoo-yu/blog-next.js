@@ -1,6 +1,7 @@
 import RESUME from '@/constant/resume';
 
 import ResumeContainer from './ResumeContainer';
+import { ResumeLink } from './ResumeLink';
 
 export default function Activities() {
 	return (
@@ -18,11 +19,18 @@ export default function Activities() {
 							</p>
 						</div>
 						<ul className="ml-5 flex-1 list-disc">
-							{activity.items.map((item, index) => (
-								<li key={index} className="my-1 text-sm">
-									{item}
-								</li>
-							))}
+							{activity.items.map((item, index) => {
+								const text = typeof item === 'string' ? item : item.text;
+								const links = typeof item === 'string' ? undefined : item.links;
+								return (
+									<li key={index} className="my-1 text-sm">
+										{text}
+										{links?.map((link, linkIndex) => (
+											<ResumeLink key={linkIndex} title={link.title} url={link.url} />
+										))}
+									</li>
+								);
+							})}
 						</ul>
 					</li>
 				))}
