@@ -1,4 +1,8 @@
 import createMDX from '@next/mdx';
+import { dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -6,7 +10,12 @@ const nextConfig = {
 	images: {
 		formats: ['image/avif', 'image/webp'], // default: ['image/webp']
 	},
-	viewTransition: true,
+	experimental: {
+		viewTransition: true,
+	},
+	turbopack: {
+		root: __dirname,
+	},
 };
 
 const withMDX = createMDX({

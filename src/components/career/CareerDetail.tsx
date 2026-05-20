@@ -1,10 +1,10 @@
 import { ResumeLink } from '@/components/resume/ResumeLink';
-import RESUME, { getCareerPeriod } from '@/constant/resume';
+import { CAREER_DETAILS, getCareerPeriod } from '@/constant/resume';
 
 export default function CareerDetail() {
 	return (
 		<div className="flex flex-col gap-12 print:block">
-			{RESUME.careers.map(career => (
+			{CAREER_DETAILS.map(career => (
 				<section key={career.organization} className="print:mb-4">
 					<div className="mb-6 flex items-baseline gap-3 print:mb-3">
 						<h2 className="text-2xl font-semibold print:text-lg">{career.organization}</h2>
@@ -55,19 +55,16 @@ export default function CareerDetail() {
 											)}
 										</div>
 
-										<p className="mb-4 text-sm leading-7 print:mb-1.5 print:text-[13px] print:leading-[1.45]">
-											{project.description}
-										</p>
-
-										<ul className="ml-5 list-disc">
-											{project.achievements.map((achievement, index) => (
-												<li
-													key={index}
-													className="my-2 text-sm leading-7 print:my-0.5 print:text-[13px] print:leading-[1.45]">
-													{achievement.title}
-													{achievement.links?.map((link, linkIndex) => (
-														<ResumeLink key={linkIndex} title={link.title} url={link.url} />
-													))}
+										<ul className="flex flex-col gap-3 print:gap-1.5">
+											{project.details.map((detail, index) => (
+												<li key={index} className="flex gap-3 text-sm leading-7 print:text-[13px] print:leading-[1.45]">
+													<span className="mt-[0.7em] size-1.5 shrink-0 rounded-full bg-foreground" />
+													<span>
+														{detail.title}
+														{detail.links?.map((link, linkIndex) => (
+															<ResumeLink key={linkIndex} title={link.title} url={link.url} />
+														))}
+													</span>
 												</li>
 											))}
 										</ul>

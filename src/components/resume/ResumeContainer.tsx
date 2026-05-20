@@ -1,12 +1,12 @@
 interface ResumeContainerProps {
-	title: string;
+	title?: string;
 	children: React.ReactNode;
 }
 
 export default function ResumeContainer({ title, children }: ResumeContainerProps) {
 	return (
 		<section className="[&_strong]:font-medium [&_strong]:text-destructive">
-			<h3 className="my-5 text-2xl font-semibold print:mb-4 print:mt-7 print:text-xl">{title}</h3>
+			{title && <h3 className="my-5 text-2xl font-semibold print:mb-4 print:mt-7 print:text-xl">{title}</h3>}
 			{children}
 		</section>
 	);

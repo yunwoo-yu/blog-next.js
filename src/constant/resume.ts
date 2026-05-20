@@ -35,7 +35,21 @@ export type Careers = {
 	serviceGroups: ServiceGroup[];
 };
 
-export function getCareerPeriod(career: Careers) {
+type CareerPeriodTarget = Pick<Careers, 'startDate' | 'endDate' | 'period'>;
+
+export type CareerDetailProject = Pick<Project, 'title' | 'date'> & {
+	details: ResumeItemProps[];
+};
+
+export type CareerDetailServiceGroup = Omit<ServiceGroup, 'projects'> & {
+	projects: CareerDetailProject[];
+};
+
+export type CareerDetailCareer = Pick<Careers, 'organization' | 'position' | 'startDate' | 'endDate' | 'period'> & {
+	serviceGroups: CareerDetailServiceGroup[];
+};
+
+export function getCareerPeriod(career: CareerPeriodTarget) {
 	if (career.period) return { text: career.period, duration: '', isOngoing: false };
 	if (!career.startDate) return { text: '', duration: '', isOngoing: false };
 
@@ -89,17 +103,19 @@ export type Resume = {
 const CAREERS: Careers[] = [
 	{
 		organization: '주식회사 웰로',
-		position: '매니저 | 제품실 개발팀',
+		position: '프론트엔드 개발자 | 제품실 개발팀',
 		startDate: '2025.11',
 		description:
-			'누적 이용자 500만의 AI 기반 정책 추천 플랫폼 Wello와 B2B SaaS Wello-biz의 프론트엔드를 담당하고 있습니다. 규제성 데이터 연동, 커머스 전환, 운영 백오피스처럼 제품 확장에 필요한 기능을 만들고, 레거시 정리·보안 대응·성능 개선으로 운영 품질을 높이고 있습니다.',
+			'누적 이용자 500만 규모의 Wello와 B2B SaaS Wello-biz에서 사용자 화면과 운영 어드민을 개발하고 있습니다.',
 		highlights: [
-			{ text: '의료·통신·신용 3개 기관의 마이데이터 연동 플로우와 연결 관리 체계를 설계하고 API 연동' },
-			{ text: '기부 중심 상품 도메인을 커머스 서비스로 확장하기 위한 결제·주문·후기·운영 백오피스 기반 구축' },
-			{ text: '모바일 중심 Wello 서비스를 PC 레이아웃으로 개편하며 통합검색과 주요 상세 페이지를 담당' },
-			{ text: '레거시 Vue/Next.js 공존 어드민의 401 토큰 갱신 파이프라인을 구현해 세션 단절 문제 해결' },
 			{
-				text: 'React 19·Next.js 16 업그레이드, OpenAPI 기반 타입 생성, 레거시 의존성 제거로 유지보수성 개선',
+				text: '웰마켙 NICE Payments PG 연동과 주문 단계별 구매·운영 플로우를 구축해, 오픈 이후 결제 금액 불일치 이슈 0건으로 운영했습니다.',
+			},
+			{
+				text: '의료·통신·신용 3개 기관 마이데이터 연동과 연결 관리 화면을 구축하고, 외부 인증·전자서명 SDK를 React 훅으로 분리했습니다.',
+			},
+			{
+				text: 'React 19·Next.js 16 업그레이드, Wello API 호출 래퍼 정리, 401 토큰 갱신 개선, 레거시 UI 제거를 진행했습니다.',
 			},
 		],
 		techStack: [
@@ -123,7 +139,7 @@ const CAREERS: Careers[] = [
 						title: '마이데이터 연동 및 연결 관리 구축',
 						date: '2025.12 ~ 2026.03',
 						description:
-							'AI 정책 추천의 정확도를 높이기 위해 의료(KHIS), 통신(KOSCOM), 신용(NICE) 데이터를 연동해야 했습니다. 외부 본인인증·전자서명 SDK와 규제성 동의 플로우가 포함된 도메인이라, 상태 모델링부터 API 연동, QA 대응까지 프론트엔드 전반을 담당했습니다.',
+							'의료(KHIS), 통신(KOSCOM), 신용(NICE) 3개 기관의 마이데이터 연동과 연결 관리 화면을 구축했습니다.',
 						achievements: [
 							{
 								title:
@@ -140,22 +156,22 @@ const CAREERS: Careers[] = [
 						],
 					},
 					{
-						title: '커머스 서비스 결제/주문 플로우 구축',
-						date: '2026.02 ~ 2026.04',
+						title: '웰마켙 PG 결제·주문 단계별 처리 플로우 구축',
+						date: '2026.02 ~ 2026.05',
 						description:
-							'기부 중심으로 운영되던 상품 도메인을 일반 커머스 형태로 확장해야 했습니다. 상품 선택 이후 결제, 쿠폰, 포인트, 주문 완료, 후기 작성까지 이어지는 핵심 구매 여정을 제품 출시 기준에 맞춰 구현했습니다.',
+							'고향사랑기부 답례품 기반 지역 상품을 웰마켙에서 판매할 수 있도록, NICE Payments PG 연동부터 주문 확인과 배송·반품·환불 운영까지 이어지는 주문 단계별 처리 흐름을 구축했습니다.',
 						achievements: [
 							{
 								title:
-									'상품, 배송지, 쿠폰, 포인트, 결제수단을 하나의 체크아웃 상태로 관리하고 주문 생성·결제 요청·주문 완료까지 이어지는 구매 파이프라인을 구현했습니다.',
+									'서버의 주문 준비 데이터를 기준으로 상품·배송 쿠폰, 웰포인트, 결제수단을 하나의 체크아웃 상태로 관리하고 최종 결제 금액을 계산했습니다.',
 							},
 							{
 								title:
-									'쿠폰 적용 정책이 옵션별에서 상품별로 바뀌는 요구사항 변경을 결제 상태 모델에 흡수했습니다. 쿠폰 할인액, 포인트 사용액, 최종 결제 금액이 일관되게 계산되도록 금액 산정 흐름을 재구성했습니다.',
+									'NICE Payments PG SDK 연동, 결제 요청 파라미터 구성, return URL 처리, 결제 전 예외 차단을 구현해 오픈 이후 결제 금액 불일치 이슈 0건으로 운영했습니다.',
 							},
 							{
 								title:
-									'주문 이후 별점·텍스트·이미지 업로드 기반 후기 작성 플로우를 구축해 구매 완료 후 사용자 생성 콘텐츠가 운영 백오피스와 이어질 수 있는 기반을 마련했습니다.',
+									'구매 이후 주문 단계에 따라 주문내역, 배송조회, 영수증, 후기 작성과 운영 어드민의 배송·반품·환불 처리를 연결했습니다.',
 							},
 						],
 					},
@@ -176,7 +192,7 @@ const CAREERS: Careers[] = [
 						],
 					},
 					{
-						title: '고향사랑기부 핵심 여정 안정화',
+						title: '고향사랑기부 지로 납부 연동 및 결제 안정화',
 						date: '2025.11 ~ 2026.04',
 						description:
 							'기부, 인증, 페이지 전환처럼 사용자가 바로 이탈하거나 중복 행동을 할 수 있는 지점을 우선 안정화했습니다. 단순 UI 수정이 아니라 Next.js App Router의 캐시·로딩 경계·인증 쿠키 반영 타이밍까지 원인을 추적했습니다.',
@@ -201,55 +217,23 @@ const CAREERS: Careers[] = [
 							},
 						],
 					},
-				],
-			},
-			{
-				service: 'Commerce Admin',
-				serviceDescription: '커머스 운영 백오피스',
-				projects: [
 					{
-						title: '커머스 운영 백오피스 구축',
-						date: '2026.01 ~ 2026.04',
+						title: 'Wello 구형 query factory 제거 및 API 호출 래퍼 정리',
+						date: '2025.11 ~ 2025.12',
 						description:
-							'커머스 도메인이 추가되면서 포인트, 입점업체, 프로모션, 타임세일, 고객센터, 주문 관리 기능을 운영팀이 직접 다룰 수 있는 백오피스가 필요했습니다. 서로 다른 운영 도메인의 목록·상세·등록·수정·검색 흐름을 일관된 관리 경험으로 묶었습니다.',
+							'Wello 서버 API가 v2 기준으로 정리되는 과정에서, v1 시절에 화면별로 만들던 구형 query factory 호출부를 제거했습니다. 화면 코드에서 실제 API 주소와 타입을 함께 확인할 수 있도록 Wello API 호출 래퍼를 정리했습니다.',
 						achievements: [
 							{
 								title:
-									'포인트 내역 조회, 관리자 지급·차감, 신용카드 프로모션, 입점업체, 타임세일, 1:1 문의, 후기 관리까지 7개 운영 도메인의 목록·상세·등록·수정·검색 필터·페이지네이션 패턴을 구축했습니다.',
+									'pathMapping을 기준으로 Auth·Unauth API, QueryOptions, QueryKey, Mutation을 get:/wello/v2/... 형태의 실제 주소 문자열로 호출할 수 있게 매핑했습니다.',
 							},
 							{
 								title:
-									'주문 완료, 배송 준비, 배송 완료, 취소, 반품 등 주문 상태별로 가능한 운영 액션을 정리했습니다. 현재 상태에서 수행할 수 있는 배송·취소·반품 처리만 노출되도록 구성해 잘못된 상태 변경을 줄이고, 주문 처리 UI를 일관된 패턴으로 확장할 수 있도록 했습니다.',
+									'생성기가 QueryOptions를 만들지 않는 POST 조회성 API도 createQueryOptionsWithPost로 감싸, 검색·검증 화면에서 같은 TanStack Query 패턴을 사용할 수 있게 했습니다.',
 							},
 							{
 								title:
-									'입점업체 데이터 복사, 암호화 필드 복호화 조회, 배송 조회, 날짜 범위 필터 등 운영자가 주문·정산·고객 응대 과정에서 반복적으로 쓰는 관리 기능을 안정화했습니다.',
-							},
-						],
-					},
-				],
-			},
-			{
-				service: 'Admin 공통',
-				serviceDescription: 'Wello · Wello-biz 운영 어드민',
-				projects: [
-					{
-						title: '어드민 인증·개인정보 보호 개선',
-						date: '2025.12 ~ 2026.03',
-						description:
-							'레거시 Vue admin과 Next.js admin이 iframe으로 공존하면서 토큰 만료 시 수동 재로그인이 필요했고, 개인정보 조회 화면은 ISMS-P 결함 조치가 필요했습니다. 운영 도구의 세션 안정성과 개인정보 보호 기준을 함께 개선했습니다.',
-						achievements: [
-							{
-								title:
-									'토큰 만료로 401이 발생하면 한 번만 refresh를 시도하고, 성공 시 실패했던 요청을 다시 보내는 인증 파이프라인을 구현했습니다. 동시에 발생한 401 요청은 같은 refresh 결과를 기다리게 해 중복 갱신을 막았습니다.',
-							},
-							{
-								title:
-									'iframe으로 공존하는 Vue·Next 어드민이 같은 쿠키를 공유하도록 hostname 기반 쿠키 도메인을 런타임에 계산했습니다. logout 요청은 refresh 대상에서 제외해 무한 재시도 루프를 차단했습니다.',
-							},
-							{
-								title:
-									'ISMS-P 결함 조치로 관리자/이용자 목록 자동 조회를 검색 후 조회 방식으로 바꾸고, 개인정보 열람 사유 입력·사전 정의 셀렉트 박스를 적용해 불필요한 개인정보 노출을 줄였습니다.',
+									'90개 이상의 기존 호출부를 주소 기반 래퍼로 옮기고, query-factory 폴더에는 소셜 로그인·제주청년꿈처럼 자동 생성 API로 대체하기 어려운 예외만 남겼습니다.',
 							},
 						],
 					},
@@ -261,52 +245,48 @@ const CAREERS: Careers[] = [
 				serviceDescription: 'B2B SaaS 비즈니스 플랫폼',
 				projects: [
 					{
-						title: '레거시 정리 및 기능 개선',
+						title: 'Wello-biz 상세검색 키워드 입력 UX 개선',
 						date: '2025.11 ~ 2026.01',
 						description:
-							'레거시 UI와 불필요한 의존성으로 번들이 무거워지고 입력 UX 문제도 발생하고 있었습니다. 초기 운영 이슈를 처리하면서 레거시 구조를 함께 정리해 유지보수성과 사용자 경험을 개선했습니다.',
+							'지원사업·조달사업 상세검색에서 키워드를 OR·AND·NOT 조건으로 여러 개 추가해 검색하는 입력 UI를 개선했습니다.',
 						achievements: [
 							{
 								title:
-									'Chakra UI 의존 전역 컴포넌트와 legacy-assets 폴더를 제거하고, `src/containers` 기반 Pages Router 잔재를 App Router 구조로 이전했습니다. 137개 파일에 걸친 UI 교체와 123개 에셋 파일 삭제로 레거시 의존을 줄였습니다.',
+									'검색어를 태그처럼 추가·삭제할 수 있는 자동 리사이징 textarea 입력 컴포넌트를 만들고, Enter 처리 시 IME 조합 상태를 확인해 한글 자음·모음 분리 문제를 해결했습니다.',
 							},
 							{
 								title:
-									'Swiper, react-swipeable, react-feather, yup 등 중복·대체 가능한 라이브러리를 정리하고, Embla Carousel·Pointer Events·SVG 컴포넌트·zod 기반으로 구현을 단순화했습니다.',
+									'지원사업 AI 검색, 지원사업 상세검색, 조달사업 상세검색, 조달 입찰 검색의 11개 키워드 입력 지점에 적용해 검색어 추가·삭제·초기화 동작을 일관되게 맞췄습니다.',
 							},
 							{
 								title:
-									'지원사업/조달사업 검색 입력을 자동 리사이징 textarea와 칩 입력 UI로 개선하고, DOM 값을 직접 초기화하던 코드를 제거해 한글 IME 자음·모음 분리 버그를 해결했습니다.',
+									'검색 조건 검증은 zod schema로 분리해 OR·AND·NOT 키워드 중 최소 1개 조건을 입력해야 검색할 수 있도록 구성했습니다.',
 							},
 						],
 					},
 				],
 			},
 			{
-				service: '공통',
-				serviceDescription: 'Wello · Wello-biz · Admin 전반',
+				service: 'Frontend Platform',
+				serviceDescription: 'Admin 운영 도구 공통 기반',
 				projects: [
 					{
-						title: '프론트엔드 플랫폼 현대화 및 보안 대응',
-						date: '2025.11 ~ 2026.04',
+						title: '어드민 인증·개인정보 보호 개선',
+						date: '2025.12 ~ 2026.03',
 						description:
-							'신규 기능 개발과 병행해 프론트엔드 공통 기반을 현대화했습니다. 프레임워크 메이저 업그레이드, API 타입 생성 체계 전환, 번들 최적화, 보안 취약점 대응, UI 품질 기준 강화를 함께 다뤄 장기 유지보수 비용을 낮췄습니다.',
+							'초기 운영 필요에 맞춰 빠르게 만들어진 기존 Vue 어드민을 유지하면서, 신규 어드민 화면은 Next.js로 전환하는 구조였습니다. 데이터팀에서 운영 중 반복 401로 작업이 끊기는 문제를 제보했고, 두 화면이 같은 관리자 세션을 쓰도록 토큰 갱신과 개인정보 조회 기준을 함께 정리했습니다.',
 						achievements: [
 							{
 								title:
-									'React 18→19, Next.js 15→16 메이저 업그레이드를 253개 파일에 적용했습니다. Turbopack 설정 전환, middleware→proxy 컨벤션 변경, 서버 컴포넌트 params 비동기 Breaking Change 마이그레이션까지 함께 처리했습니다.',
+									'Next 내부에서 동시에 발생한 401은 하나의 refresh 결과를 기다리게 하고, 성공하면 실패했던 요청을 새 토큰으로 다시 보내도록 구성했습니다.',
 							},
 							{
 								title:
-									'865줄 규모의 수동 API 래핑과 9개 쿼리 팩토리를 OpenAPI 기반 자동 생성 클라이언트로 전환했습니다. 90개 이상의 소비자 파일을 마이그레이션해 백엔드 스펙 변경에 따른 타입 불일치를 런타임 전에 감지하도록 바꿨습니다.',
+									'refresh 성공 시 access token 조각 쿠키와 refresh token 쿠키를 함께 갱신해 Vue iframe과 Next 화면이 같은 관리자 세션을 보도록 맞췄습니다.',
 							},
 							{
 								title:
-									'번들 최적화로 lottie-web SVG-only 빌드(약 100KB 절감), html2canvas-pro(200KB+) 제거, 날짜 라이브러리 단일화를 진행했습니다. 직렬 요청으로 네트워크 워터폴이 발생하던 화면도 함께 개선해 주요 화면의 로딩 부담을 낮췄습니다.',
-							},
-							{
-								title:
-									'Next.js CVE-2026-23869와 레거시 Vue axios 보안 취약점을 선제 확인해 팀에 공유하고 패치했습니다. Storybook a11y addon을 error 모드로 전환하고 인터랙션 테스트를 추가해 UI 품질 기준도 강화했습니다.',
+									'ISMS-P 결함 조치로 관리자/이용자 목록 자동 조회를 검색 후 조회 방식으로 바꾸고, 복호화 조회 액션을 분리해 불필요한 개인정보 노출을 줄였습니다.',
 							},
 						],
 					},
@@ -316,19 +296,21 @@ const CAREERS: Careers[] = [
 	},
 	{
 		organization: '(주)살린',
-		position: '팀원 | ILab',
+		position: '프론트엔드 개발자 | ILab',
 		startDate: '2023.08',
 		endDate: '2025.08',
 		description:
-			'3개 서비스(AI 챗봇·업무 지원 플랫폼·WebGL 아바타)의 프론트엔드를 담당하며, 신규 서비스 출시와 레거시 개선을 병행했습니다. 성능 병목 해소, CSR→SSR 전환, 팀 공통 개발 기반 구축으로 사용자 경험과 팀 생산성을 함께 끌어올렸습니다.',
+			'AI 챗봇 플랫폼, 스타트업 업무 지원 플랫폼, WebGL 아바타 서비스의 사용자 화면과 관리자 CMS를 개발했습니다.',
 		highlights: [
-			{ text: 'AI 챗봇 플랫폼과 24페이지 CMS를 구축해 고객사가 개발팀 도움 없이 챗봇을 운영할 수 있는 기반 마련' },
 			{
-				text: '외주 인수받은 WebGL 아바타 서비스의 3초 빈 화면을 400~600ms 수준으로 단축',
+				text: 'AI Talker 서비스와 24페이지 관리자 CMS를 구축하고 Next.js 15 SSR 전환으로 고객사별 SEO·사이트맵 자동화를 적용했습니다.',
 			},
-			{ text: 'CSR 서비스를 Next.js 15 SSR로 전환해 SEO 수작업을 자동화하고 고객사 운영 효율 개선' },
-			{ text: 'CMS 전용 UI Kit와 SSR/SPA 보일러플레이트를 구축해 신규 프로젝트 초기 세팅 비용 절감' },
-			{ text: 'AI 기반 대화형 설문 MVP를 풀스택으로 개발·배포해 신규 서비스 검증 지원' },
+			{
+				text: '외주 인수받은 WebGL 아바타 서비스의 3초 이상 빈 화면을 400~600ms 수준으로 줄이고, 300명 규모 오리엔테이션 행사용 서비스를 출시했습니다.',
+			},
+			{
+				text: 'AI 설문 생성 MVP, CMS UI Kit, 서비스/CMS 보일러플레이트를 개발해 신규 AI·CMS 프로젝트의 초기 구축 속도를 높였습니다.',
+			},
 		],
 		techStack: [
 			'React',
@@ -348,13 +330,13 @@ const CAREERS: Careers[] = [
 				projects: [
 					{
 						title: 'AI 챗봇 플랫폼 & CMS',
-						date: '2024.08 ~ 2025.08',
+						date: '2025.01 ~ 2025.08',
 						description:
-							'고객사가 자체 콘텐츠로 사용자를 응대하고 운영자가 직접 AI를 관리할 수 있도록, 챗봇 서비스와 24페이지 규모의 관리자 CMS를 함께 설계·구현했습니다.',
+							'고객사가 자체 콘텐츠로 사용자를 응대하고 운영자가 직접 AI를 관리할 수 있도록, OpenAI Assistant API 기반 챗봇 서비스와 24페이지 규모의 관리자 CMS를 함께 설계·구현했습니다.',
 						achievements: [
 							{
 								title:
-									'SSE 기반 실시간 스트리밍과 역방향 무한 스크롤을 구현해 자연스러운 대화 흐름과 채팅 히스토리 조회 UX를 개선했습니다.',
+									'Threads·Messages·Runs 흐름을 SSE로 연결하고 역방향 무한 스크롤을 구현해, 실시간 답변 생성과 채팅 히스토리 조회 UX를 개선했습니다.',
 								links: [
 									{
 										title: '관련글',
@@ -364,11 +346,15 @@ const CAREERS: Careers[] = [
 							},
 							{
 								title:
-									'통계 대시보드, AI 콘텐츠 자동 생성, 벡터 스토어 관리, 프롬프트·모델·응답 스타일 설정 기능을 갖춘 CMS를 구축해 고객사가 개발팀 도움 없이 챗봇을 운영할 수 있도록 했습니다.',
+									'프롬프트·모델·응답 스타일·파일 등록·벡터 스토어 관리, 통계 대시보드, AI 콘텐츠 자동 생성 기능을 CMS에 구축해 고객사가 개발팀 도움 없이 챗봇을 운영할 수 있도록 했습니다.',
 							},
 							{
 								title:
-									'응답 횟수 기반 광고 자동 삽입 기능을 구현해 무료 고객사도 서비스 안에서 수익화할 수 있는 장치를 마련했습니다.',
+									'CSR 기반 React 서비스를 Next.js 15 App Router SSR 구조로 전환하고, 고객사별 동적 메타데이터·다국어 OpenGraph·API 기반 사이트맵을 적용해 검색 노출 관리 흐름을 자동화했습니다.',
+							},
+							{
+								title:
+									'무료 고객사의 챗봇 응답 횟수를 기준으로 광고를 자동 삽입하는 기능을 구현해, 서비스 안에서 수익화할 수 있는 장치를 마련했습니다.',
 							},
 							{
 								title:
@@ -382,6 +368,22 @@ const CAREERS: Careers[] = [
 							},
 						],
 					},
+					{
+						title: 'AI 대화형 설문 생성 MVP',
+						date: '2024.08 ~ 2024.12',
+						description:
+							'대화형으로 설문 목적을 입력하면 AI가 설문 문항을 순차 생성하는 MVP를 프론트엔드, Nest.js API 연동, 배포 파이프라인까지 맡아 개발·배포했습니다.',
+						achievements: [
+							{
+								title:
+									'AssistantStream의 텍스트 델타 이벤트를 UI에 실시간 반영하고, 스트리밍 상태에 따라 자동 스크롤·입력 제어·설문 문항 누적 표시를 처리했습니다.',
+							},
+							{
+								title:
+									'배포 가능한 환경까지 완성해 팀이 OpenAI 스트리밍 UX를 실제 화면에서 검증할 수 있게 했고, 이후 AI Talker의 SSE·채팅 UI 구현 기반으로 활용했습니다.',
+							},
+						],
+					},
 				],
 			},
 			{
@@ -392,15 +394,15 @@ const CAREERS: Careers[] = [
 						title: '서비스 웹 + 관리자 CMS 프론트엔드 단독 개발',
 						date: '2024.01 ~ 07',
 						description:
-							'백엔드 개발자 1명과 2인 팀에서 정부 지원 과제 관리 서비스 웹과 관리자 CMS의 프론트엔드를 단독으로 담당했습니다. Unity 기반 WebGL 가상공간은 별도 개발 산출물로 연동하고, 웹 서비스와 CMS 운영 흐름을 맡았습니다.',
+							'백엔드 개발자 1명과 2인 팀에서 정부 지원 과제 관리 서비스 웹과 관리자 CMS의 프론트엔드를 단독으로 담당했습니다. Unity 기반 WebGL 가상공간과 연결되는 웹 진입·운영 흐름을 함께 구현했습니다.',
 						achievements: [
 							{
 								title:
-									'서비스 웹(Webpack v5)과 관리자 CMS(Vite)를 목적에 맞게 분리해 인증, 대시보드, 사업지원 관리, 가상공간 진입 흐름까지 웹 프론트엔드 영역을 설계·개발했습니다.',
+									'서비스 웹(Webpack v5)과 관리자 CMS(Vite)를 목적에 맞게 분리해 인증, 대시보드, 사업지원 관리, WebGL 가상공간으로 이동하는 웹 진입 흐름까지 설계·개발했습니다.',
 							},
 							{
 								title:
-									'Unity WebGL 빌드 산출물 연동으로 커지던 초기 로딩 부담을 Lazy Loading과 코드 스플리팅으로 분리하고, bundle-analyzer로 불필요한 코드와 의존성을 제거했습니다.',
+									'WebGL 가상공간 진입에 필요한 웹 화면과 연결 로직을 서비스 흐름에 붙이고, 서비스 웹·CMS의 초기 로딩 부담은 Lazy Loading, 코드 스플리팅, bundle-analyzer 기반 의존성 정리로 줄였습니다.',
 							},
 						],
 					},
@@ -422,7 +424,7 @@ const CAREERS: Careers[] = [
 							},
 							{
 								title:
-									'800~1000줄 규모의 거대 컴포넌트를 공통 컴포넌트와 커스텀 훅으로 분리해 레거시에 큰 영향 없이 기능 수정이 가능한 구조를 만들었고, 이를 기반으로 300명 규모 대학 OT 및 오디션 시스템을 안정적으로 출시했습니다.',
+									'800~1000줄 규모의 거대 컴포넌트를 공통 컴포넌트와 커스텀 훅으로 분리해 레거시에 큰 영향 없이 기능 수정이 가능한 구조를 만들었습니다. 기존 시스템 분석 범위를 줄여 일정을 단축하고, 300명 규모 대학 OT 및 오디션 시스템을 안정적으로 출시했습니다.',
 							},
 						],
 					},
@@ -433,7 +435,7 @@ const CAREERS: Careers[] = [
 				projects: [
 					{
 						title: 'CMS 전용 UI Kit & 보일러플레이트',
-						date: '2023.12 ~ 2024.12',
+						date: '2023.12 ~ 2024.01',
 						description:
 							'프로젝트마다 반복되던 Webpack 설정과 CMS UI 커스터마이징 비용을 줄이기 위해 서비스 웹/CMS 보일러플레이트와 CMS 전용 UI Kit를 구축했습니다.',
 						achievements: [
@@ -453,9 +455,202 @@ const CAREERS: Careers[] = [
 	},
 ];
 
+const CAREER_DETAIL_OVERRIDES: Record<string, ResumeItemProps[]> = {
+	'마이데이터 연동 및 연결 관리 구축': [
+		{
+			title:
+				'정책 추천 고도화를 위해 사용자가 직접 입력한 프로필을 넘어 의료·통신·신용 데이터를 연결할 수 있는 기반이 필요했습니다. 다만 마이데이터는 단순 API 연동이 아니라 기관별 본인인증, 동의, 전송요구, 전자서명, 재동의, 철회, 전송 이력 확인까지 심사 기준에 맞춰 검증되어야 하는 규제성 플로우였습니다.',
+		},
+		{
+			title:
+				'기관마다 다른 인증·동의 절차를 타입 기반 스텝 설정으로 모델링하고, URL 쿼리와 sessionStorage로 새로고침·뒤로가기 이후에도 진행 상태를 복원하도록 구성했습니다. 외부 본인인증 SDK는 전용 React 훅으로 분리해 스크립트 로딩, 전자서명 콜백, cleanup을 한 곳에서 관리했습니다.',
+		},
+		{
+			title:
+				'기관별로 달랐던 인증·동의·철회 절차를 공통 스텝 구조로 흡수해, 새로고침·뒤로가기·부분 실패 상황에서도 진행 상태와 예외 처리를 같은 기준으로 검증할 수 있게 했습니다. 이후 기관별 보완 요청이 들어와도 화면을 새로 만드는 대신 스텝 설정과 API 연결 단위로 대응할 수 있는 프론트엔드 구조를 확보했습니다.',
+		},
+	],
+	'웰마켙 PG 결제·주문 단계별 처리 플로우 구축': [
+		{
+			title:
+				'고향사랑기부 답례품 기반 지역 상품을 웰마켙에서 판매하면서, 주문 준비 데이터가 PG 결제·주문내역·운영 처리까지 같은 기준으로 이어져야 했습니다. 상품 금액, 배송비, 쿠폰, 웰포인트가 함께 반영되어 화면 표시 금액과 checkout 요청 금액이 어긋나지 않도록 결제 흐름을 설계해야 했습니다.',
+		},
+		{
+			title:
+				'서버 주문 준비 데이터를 기준으로 최종 결제 금액을 계산하고, NICE Payments PG SDK 연동, 결제 요청 파라미터 구성, return URL 처리, 결제 전 예외 차단을 구현했습니다. 구매 이후에는 주문 단계에 따라 주문내역, 배송조회, 영수증, 후기 작성과 운영 어드민의 배송·반품·환불 처리를 연결했습니다.',
+		},
+		{
+			title:
+				'결제 전 금액 계산 기준과 예외 상태를 화면에서 먼저 검증해, 오픈 이후 결제 금액 불일치 이슈 0건으로 운영했습니다. 사용자와 운영팀·입점업체가 주문 단계에 맞춰 주문 확인, 배송 처리, 반품·환불, 고객 응대를 이어갈 수 있게 되었습니다.',
+		},
+	],
+	'Wello PC 레이아웃 개편': [
+		{
+			title:
+				'기존 Wello는 PC에서도 600px 폭의 모바일 화면을 그대로 제공해, 넓은 화면에서 정책과 지역 콘텐츠를 함께 탐색하기 어려웠습니다. 앱 사용 비중이 높은 상황에서 PC 웹 사용자가 홈에서 맞춤정책, 동네소식, 정책 활용 가이드로 이어지며 더 오래 탐색할 수 있는 구조가 필요했습니다.',
+		},
+		{
+			title:
+				'홈을 중앙 피드와 우측 사이드 영역으로 나누고, 퀵메뉴를 PC 6열 그리드로 전환해 첫 화면에서 탐색 가능한 선택지를 늘렸습니다. 지역 선택값을 기준으로 정책, 정책 활용 가이드, 정책카드, 동네소식, 기부사업, 웰마켓 상품을 피드 카드로 노출하고 콘텐츠 타입별 상세 페이지로 연결했습니다.',
+		},
+		{
+			title:
+				'개편 이후 GA4 기준 desktop 평균 참여 시간이 약 20% 증가했습니다. 홈에서 바로 정책·동네소식·정책 활용 가이드를 발견하고 상세 화면으로 이어질 수 있게 되면서, PC 웹에서도 콘텐츠를 이어서 탐색하는 구조를 만들었습니다.',
+		},
+	],
+	'고향사랑기부 지로 납부 연동 및 결제 안정화': [
+		{
+			title:
+				'고향사랑기부는 Wello 내부 PG 결제가 아니라, 기부 신청 후 생성된 납부 식별값으로 외부 지로 납부 화면에서 결제를 완료하는 구조였습니다. 사용자가 외부 화면으로 이동하면 Wello가 진행 상태를 직접 통제하기 어려워, 결제 전 입력 오류나 납부 완료 반영 지연이 중복 기부와 잘못된 완료 처리로 이어질 수 있었습니다.',
+		},
+		{
+			title:
+				'이를 줄이기 위해 답례품 없는 기부와 장바구니 기부 양쪽에서 결제 전 주민등록번호 인증, 기부 가능 여부, 기부금, 기부 용도, 배송지 입력 상태를 검증했습니다. 결제 버튼을 누르는 시점에는 최신 기부 완료 이력을 다시 조회해, 이미 기부한 내역이 있으면 사용자가 확인 후 계속 진행 여부를 선택할 수 있게 했습니다.',
+		},
+		{
+			title:
+				'외부 지로 납부 화면을 거쳐도 Wello에서 결제 진행 상태를 다시 확인할 수 있게 되면서, 중복 기부 여부 확인과 관련된 CS 문의율을 약 50% 줄였습니다. 납부 화면 이동과 복귀 처리는 실행 환경별로 분기해 앱·웹뷰에서도 같은 기준으로 완료 여부를 확인하도록 했습니다.',
+		},
+	],
+	'어드민 인증·개인정보 보호 개선': [
+		{
+			title:
+				'신규 어드민 화면은 Next.js로 옮기고 있었지만, 초기 운영 필요에 맞춰 빠르게 만들어진 기존 Vue 어드민 화면을 한 번에 걷어낼 수 없어 Next의 레거시 라우트에서 iframe으로 함께 운영했습니다. 레거시 화면은 화면별 세션 처리와 오류 대응이 일관되지 않았고, 데이터팀에서 운영 중 이유 없이 401이 반복되어 작업이 끊긴다는 문제를 제보했습니다. 동시에 ISMS-P 결함 조치에 맞춰 개인정보 조회 기준도 정리해야 했습니다.',
+		},
+		{
+			title:
+				'Next 인증 클라이언트에서 401 응답을 받으면 진행 중인 refresh Promise를 재사용해 동시에 실패한 요청들이 같은 갱신 결과를 기다리게 했습니다. 다른 화면에서 이미 쿠키 토큰을 갱신한 경우에는 refresh 없이 새 토큰으로 실패 요청을 다시 보내도록 했고, legacy Vue 요청 인터셉터도 같은 방식으로 동시 401을 단일 refresh 결과에 묶었습니다. refresh 성공 시 access token을 legacy Vue가 읽는 3개 쿠키 조각과 refresh token 쿠키로 갱신해 Vue iframe과 Next 화면이 같은 세션을 보도록 맞췄고, logout·refresh 요청은 재시도 대상에서 제외했습니다.',
+		},
+		{
+			title:
+				'운영자가 Vue 레거시 화면과 Next 신규 화면을 오가도 같은 관리자 세션을 이어갈 수 있게 했고, 중복 refresh와 무한 재시도 가능성을 줄였습니다. 개인정보 화면은 자동 조회를 검색 후 조회 방식으로 바꾸고 복호화 조회를 별도 액션으로 분리해, 필요한 경우에만 개인정보에 접근하도록 운영 기준을 강화했습니다.',
+		},
+	],
+	'Wello-biz 상세검색 키워드 입력 UX 개선': [
+		{
+			title:
+				'Wello-biz의 지원사업·조달사업 상세검색은 사용자가 키워드를 OR·AND·NOT 조건으로 여러 개 추가해 검색 범위를 넓히거나 좁히는 구조였습니다. 같은 입력 UX가 지원사업 AI 검색, 지원사업 상세검색, 조달사업 상세검색, 조달 입찰 검색의 11개 키워드 입력 지점에서 반복되었고, 한글 IME 조합 중 Enter를 누르면 검색어가 자음·모음으로 분리되는 문제가 있었습니다.',
+		},
+		{
+			title:
+				'검색어를 태그처럼 추가·삭제할 수 있는 자동 리사이징 textarea 입력 컴포넌트를 만들고, Enter 처리 시 nativeEvent.isComposing을 확인해 IME 조합 중에는 검색어 추가를 막았습니다. 검색어 추가·삭제·전체 초기화·포커스 제어·최대 개수 제한을 컴포넌트 내부로 모으고, 각 검색 폼의 zod schema와 연결해 키워드 조건을 검증했습니다.',
+		},
+		{
+			title:
+				'한글 검색어 입력 중 자음·모음이 분리되던 문제를 해결하고, OR·AND·NOT 키워드 조건을 11개 입력 지점에서 같은 추가·삭제·초기화 동작과 검증 기준으로 다룰 수 있게 했습니다.',
+		},
+	],
+	'Wello 구형 query factory 제거 및 API 호출 래퍼 정리': [
+		{
+			title:
+				'Wello 서버 API가 v2 기준으로 정리되는 과정에서, v1 시절에 화면별로 만들던 query factory 호출부가 여러 화면에 남아 있었습니다. API 호출 규칙이 화면마다 달라지면 실제 endpoint, query key, 요청·응답 타입을 함께 추적하기 어려웠고, 검색·검증처럼 POST로 조회하는 API는 TanStack Query 옵션이 자동 생성되지 않아 별도 처리 기준이 필요했습니다.',
+		},
+		{
+			title:
+				'Wello의 api/index.ts에서 generated pathMapping을 기준으로 SDK 함수와 React Query 함수를 실제 주소 문자열에 다시 매핑했습니다. AuthApi·UnauthApi, AuthQueryOptions·UnauthQueryOptions, QueryKey, InfiniteQueryOptions, Mutation을 모두 get:/wello/v2/... 같은 endpoint 문자열로 접근하게 만들고, POST 조회성 API는 createQueryOptionsWithPost로 감싸 queryKey와 queryFn을 같은 규칙으로 생성했습니다.',
+		},
+		{
+			title:
+				'90개 이상의 기존 호출부를 주소 기반 래퍼로 옮겨, 화면에서 호출하는 API 주소를 코드만 보고 확인할 수 있게 했습니다. 현재 query-factory 폴더에는 OpenAPI 생성 API로 대체하기 어려운 소셜 로그인 OAuth 처리와 제주청년꿈 외부 API성 호출만 남기고, Wello v2 API 호출은 주소 기반 래퍼로 추적하도록 정리했습니다.',
+		},
+	],
+	'AI 챗봇 플랫폼 & CMS': [
+		{
+			title:
+				'고객사가 보유한 콘텐츠를 기반으로 사용자를 응대하는 AI 챗봇 서비스가 필요했습니다. 동시에 운영자가 프롬프트, 모델, 응답 스타일, 지식 베이스, 사용량 통계를 개발팀 도움 없이 관리할 수 있는 CMS도 함께 필요했습니다.',
+		},
+		{
+			title:
+				'OpenAI Assistant API의 Threads·Messages·Runs 흐름을 SSE로 연결해 답변 생성 과정을 실시간으로 보여주고, 역방향 무한 스크롤로 채팅 히스토리 조회 UX를 개선했습니다. CMS에서는 파일 등록, 벡터 스토어 관리, AI 콘텐츠 자동 생성, 통계 대시보드, 프롬프트·모델 설정 화면을 구현했습니다.',
+		},
+		{
+			title:
+				'CSR 기반 React 서비스를 Next.js 15 App Router SSR 구조로 전환하고, 고객사별 동적 메타데이터·다국어 OpenGraph·API 기반 사이트맵을 적용해 검색 노출 관리 흐름을 자동화했습니다. 고객사는 챗봇 응대와 CMS 운영을 직접 관리할 수 있게 되었고, 무료 고객사에는 응답 횟수 기반 광고 삽입으로 수익화 장치를 붙였습니다.',
+		},
+	],
+	'AI 대화형 설문 생성 MVP': [
+		{
+			title:
+				'OpenAI API를 활용한 신규 서비스 가능성을 빠르게 검증해야 했습니다. 단순 데모가 아니라 사용자가 대화로 설문 목적을 입력하면 AI가 문항을 순차 생성하고, 팀이 실제 화면에서 스트리밍 UX를 확인할 수 있는 MVP가 필요했습니다.',
+		},
+		{
+			title:
+				'Nest.js API 통신과 SSE 스트리밍을 연결하고, 프론트엔드에서는 AssistantStream의 텍스트 델타 이벤트를 받아 UI에 실시간 반영했습니다. 스트리밍 상태에 따라 자동 스크롤과 입력 가능 상태를 제어하고, 생성된 설문 문항이 순차적으로 누적되는 흐름을 구현했습니다.',
+		},
+		{
+			title:
+				'AI 설문 생성 MVP를 배포 가능한 환경까지 완성해 팀이 실제 화면에서 아이디어와 사용성을 검증할 수 있게 했습니다. 이 과정에서 SSE 처리, 스트리밍 UI, AI 응답 상태 관리, 자동 스크롤 패턴을 먼저 검증했고, 이후 AI Talker의 실시간 채팅 UI 구현 기반으로 활용했습니다.',
+		},
+	],
+	'서비스 웹 + 관리자 CMS 프론트엔드 단독 개발': [
+		{
+			title:
+				'Swing은 스타트업 업무 지원 기능과 Unity 기반 WebGL 가상 오피스를 함께 제공하는 서비스였습니다. 저는 백엔드 개발자 1명과 2인 팀에서 서비스 웹·관리자 CMS와 WebGL 가상공간으로 이어지는 진입·연결 흐름의 프론트엔드를 맡았습니다.',
+		},
+		{
+			title:
+				'서비스 웹은 Webpack v5, 관리자 CMS는 Vite로 분리해 인증, 대시보드, 사업지원 관리, WebGL 가상공간 진입 화면과 연결 로직을 구현했습니다. 서비스 웹·CMS의 초기 로딩 부담은 Lazy Loading, 코드 스플리팅, bundle-analyzer 기반 의존성 정리로 줄였습니다.',
+		},
+		{
+			title:
+				'프론트엔드 영역을 단독으로 설계·개발해 웹 서비스와 CMS 운영 흐름을 출시 가능한 상태로 만들었습니다. 프로젝트 성격에 따라 빌드 환경을 분리하고 번들 구조를 관리한 경험은 이후 보일러플레이트와 CMS UI Kit 구축으로 이어졌습니다.',
+		},
+	],
+	'아바타 스튜디오 성능 개선 및 CMS 개발': [
+		{
+			title:
+				'외주 업체에서 인수받은 WebGL 아바타 서비스는 3D 렌더링과 대용량 정적 자산 때문에 3초 이상 빈 화면이 노출되고, 800~1000줄 규모의 거대 컴포넌트가 유지보수를 어렵게 만들고 있었습니다.',
+		},
+		{
+			title:
+				'Suspense와 lazy loading으로 전체 UI가 블로킹되던 구조를 분리하고, 3D·JSON 정적 자산을 AWS S3와 CDN으로 이전했습니다. 거대 컴포넌트는 공통 컴포넌트와 커스텀 훅으로 나눠 신규 기능을 레거시와 분리된 구조로 붙였습니다.',
+		},
+		{
+			title:
+				'3초 이상 노출되던 빈 화면을 400~600ms 수준으로 줄이고, 기존 시스템 분석 범위를 줄여 개발 일정을 단축했습니다. 이 구조를 바탕으로 300명 규모 대학 OT와 오디션 시스템을 안정적으로 출시했습니다.',
+		},
+	],
+	'CMS 전용 UI Kit & 보일러플레이트': [
+		{
+			title:
+				'프로젝트마다 React 초기 세팅과 CMS UI 커스터마이징을 반복하면서, 화면 개발보다 환경 구성과 공통 컴포넌트 조정에 시간이 많이 쓰이고 있었습니다.',
+		},
+		{
+			title:
+				'서비스 웹용 Webpack v5 보일러플레이트와 CMS용 Vite 보일러플레이트를 분리하고, Rollup.js 기반 CMS UI 라이브러리를 CJS/ESM 환경에서 사용할 수 있게 구성했습니다. Storybook과 Chromatic을 붙여 컴포넌트 단위 개발과 시각적 회귀 확인 흐름도 만들었습니다.',
+		},
+		{
+			title:
+				'Yarn Berry 모노레포와 Lerna 버전 관리 구조로 UI 라이브러리, 설정, 유틸 공통 패키지를 함께 관리했습니다. 이후 CMS 프로젝트에서 반복 세팅을 줄이고 공통 UI를 같은 기준으로 재사용할 수 있는 기반을 마련했습니다.',
+		},
+	],
+};
+
+export const CAREER_DETAILS: CareerDetailCareer[] = CAREERS.map(career => ({
+	organization: career.organization,
+	position: career.position,
+	startDate: career.startDate,
+	endDate: career.endDate,
+	period: career.period,
+	serviceGroups: career.serviceGroups.map(group => ({
+		service: group.service,
+		serviceUrl: group.serviceUrl,
+		serviceDescription: group.serviceDescription,
+		printBreakBefore: group.printBreakBefore,
+		projects: group.projects.map(project => ({
+			title: project.title,
+			date: project.date,
+			details: CAREER_DETAIL_OVERRIDES[project.title] ?? project.achievements,
+		})),
+	})),
+}));
+
 const EDUCATION: Education[] = [
 	{ title: '한국방송통신대학교 — 컴퓨터과학과', period: '2026.03 ~ 재학 중' },
-	{ title: '멋쟁이사자처럼 — 프론트엔드 스쿨 3기', period: '2022.08 ~ 2023.01 수료' },
+	{
+		title: '멋쟁이사자처럼 — 프론트엔드 스쿨 3기',
+		period: '2022.08 ~ 2023.01 수료',
+	},
 	{
 		title: '방송정보국제교육원 — UI/UX 기반 웹퍼블리싱&프론트엔드 양성과정',
 		period: '2021.10 ~ 2022.03 수료',
@@ -464,39 +659,39 @@ const EDUCATION: Education[] = [
 
 const ACTIVITIES: Activity[] = [
 	{
-		title: '항해플러스 프론트엔드 6기',
-		organization: '',
-		period: '2025.07 ~ 2025.09',
-		items: [
-			'바닐라 JS → React → TypeScript 점진적 전환을 통한 프레임워크 동작 원리 학습',
-			'클린 코드 리팩토링, SRP 기반 컴포넌트 설계, FSD 아키텍처 적용',
-			'TDD 기반 단위/통합 테스트(Vitest + RTL), 성능 프로파일링 및 렌더링 최적화',
-		],
-	},
-	{
 		title: '오픈소스 컨트리뷰션 아카데미',
 		organization: '과학기술정보통신부',
 		period: '2023.07 ~ 2024.01',
 		items: [
+			'과학기술정보통신부 장관상 대상 수상',
 			'CNCF 졸업 프로젝트 Argo Workflows 컨트리뷰터 멘티 활동 (GitHub 13.6k+ Stars)',
-			'과학기술정보통신부 장관상 수상 (대상)',
 			{
-				text: '드롭다운 컴포넌트의 클래스 → 함수형 전환, 워크플로우 목록 toolbar UI 개선, Cron Workflow 상세에 실행 이력 노출 기능 등 3개 PR 머지',
+				text: '드롭다운 컴포넌트의 클래스 → 함수형 전환, 워크플로우 목록 toolbar UI 개선, Cron Workflow 실행 이력 노출 등 3개 PR 머지',
 				links: [
-					{ title: '#11901', url: 'https://github.com/argoproj/argo-workflows/pull/11901' },
-					{ title: '#11444', url: 'https://github.com/argoproj/argo-workflows/pull/11444' },
-					{ title: '#11811', url: 'https://github.com/argoproj/argo-workflows/pull/11811' },
+					{
+						title: '#11901',
+						url: 'https://github.com/argoproj/argo-workflows/pull/11901',
+					},
+					{
+						title: '#11444',
+						url: 'https://github.com/argoproj/argo-workflows/pull/11444',
+					},
+					{
+						title: '#11811',
+						url: 'https://github.com/argoproj/argo-workflows/pull/11811',
+					},
 				],
 			},
 		],
 	},
 	{
-		title: '테오의 스프린트 15기',
+		title: '항해플러스 프론트엔드 6기',
 		organization: '',
-		period: '2023.06',
+		period: '2025.07 ~ 2025.09',
 		items: [
-			'FE 6, BE 2, 디자이너 1 구성으로 5일간 기획→설계→개발→배포 스프린트',
-			'AI 이미지 생성, 3D 애니메이션 로더, 실시간 페어 프로그래밍 기능 개발',
+			'TDD 기반 단위·통합 테스트(Vitest + RTL)와 성능 프로파일링을 반복하며 기능 검증과 렌더링 최적화 훈련',
+			'바닐라 JS → React → TypeScript로 같은 문제를 점진적으로 전환하며 프레임워크 동작 원리와 타입 설계 학습',
+			'클린 코드 리팩토링, SRP 기반 컴포넌트 설계, FSD 아키텍처 적용',
 		],
 	},
 ];

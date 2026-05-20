@@ -88,12 +88,15 @@
     break-after: avoid;
   }
 
-  /* 프로젝트 블록은 가능하면 안 끊기되, 너무 길면 허용 */
+  /* 프로젝트 블록 전체를 묶으면 다음 프로젝트가 통째로 밀려 큰 빈공간이 생길 수 있음 */
   article {
-    break-inside: avoid;
+    break-inside: auto;
   }
 
-  /* li 끊김 방지 해제 — 긴 불릿이 있으면 오히려 빈공간 생김 */
+  /* 개별 문단만 가능하면 유지하고, 긴 문단은 브라우저가 나누도록 둠 */
+  article li {
+    break-inside: auto;
+  }
 }
 
 @layer base {

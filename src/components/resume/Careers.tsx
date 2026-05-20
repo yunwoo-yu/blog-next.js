@@ -26,10 +26,9 @@ export default function Careers() {
 						</div>
 						<div className="flex-1">
 							<p className="mb-4 text-sm leading-6 print:mb-2">{career.description}</p>
-
 							<ul className="ml-5 list-disc">
 								{career.highlights.map((highlight, index) => (
-									<li key={index} className="my-1 text-sm print:my-0.5">
+									<li key={index} className="my-1 text-sm leading-6 print:my-0.5">
 										<span>{highlight.text}</span>
 										{highlight.subItems && (
 											<ul className="ml-5 mt-1 list-disc">
