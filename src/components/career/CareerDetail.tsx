@@ -23,8 +23,8 @@ export default function CareerDetail() {
 					{career.serviceGroups.map(group => (
 						<div
 							key={group.service}
-							className={`mb-8 flex flex-col print:mb-3 print:block ${group.printBreakBefore ? 'print:break-before-page' : ''}`}>
-							<div className="mt-2 mb-2 flex items-baseline gap-2 print:mt-2 print:break-after-avoid">
+							className={`mb-8 flex flex-col print:mb-5 print:block ${group.printBreakBefore ? 'print:break-before-page' : ''}`}>
+							<div className="mt-2 mb-2 flex items-baseline gap-2 print:mt-2 print:mb-3 print:break-after-avoid">
 								<h3 className="text-xl font-semibold text-destructive print:text-base">
 									{group.serviceUrl ? (
 										<a href={group.serviceUrl} target="_blank" rel="noopener noreferrer" className="hover:underline">
@@ -45,19 +45,19 @@ export default function CareerDetail() {
 								{group.projects.map(project => (
 									<article
 										key={project.title}
-										className="border-l-2 border-destructive py-2 pl-5 print:border-l print:py-1">
-										<div className="mb-3 print:mb-1.5 print:break-after-avoid">
+										className="border-l-2 border-destructive py-2 pl-5 print:mb-4 print:border-l print:py-1.5 print:pl-4 last:print:mb-0">
+										<div className="mb-4 flex flex-wrap items-baseline gap-x-3 gap-y-1 print:mb-2.5 print:break-after-avoid">
 											<h4 className="text-2xl font-medium print:text-base">{project.title}</h4>
 											{project.date && (
-												<p className="mt-1 text-xs text-gray-500 print:text-[11px] dark:text-gray-400">
-													{project.date}
-												</p>
+												<p className="text-xs text-gray-500 print:text-[11px] dark:text-gray-400">{project.date}</p>
 											)}
 										</div>
 
 										<ul className="flex flex-col gap-3 print:gap-1.5">
 											{project.details.map((detail, index) => (
-												<li key={index} className="flex gap-3 text-sm leading-7 print:text-[13px] print:leading-[1.45]">
+												<li
+													key={index}
+													className="flex gap-3 text-sm leading-7 print:gap-2.5 print:text-[13px] print:leading-[1.46]">
 													<span className="mt-[0.7em] size-1.5 shrink-0 rounded-full bg-foreground" />
 													<span>
 														{detail.title}

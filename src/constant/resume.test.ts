@@ -66,6 +66,16 @@ describe('getCareerPeriod', () => {
 
 		expect(getCareerPeriod(career).duration).toBe('4개월');
 	});
+
+	it('일 단위 종료일을 그대로 표시하고 월 기준 기간을 계산한다', () => {
+		const career = createCareer({ startDate: '2025.11', endDate: '2026.06.15' });
+
+		expect(getCareerPeriod(career)).toEqual({
+			text: '2025.11 ~ 2026.06.15',
+			duration: '7개월',
+			isOngoing: false,
+		});
+	});
 });
 
 describe('getCareerPeriodText', () => {

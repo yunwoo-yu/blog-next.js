@@ -4,7 +4,7 @@ import PrintButton from './PrintButton';
 
 export default function ResumeHeader() {
 	return (
-		<div>
+		<div className="mb-10 print:mb-6">
 			<h2 className="sr-only">프론트엔드 개발자 이력서</h2>
 			<div className="flex items-start justify-between">
 				<NameTitle />

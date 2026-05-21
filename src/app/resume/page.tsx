@@ -51,20 +51,30 @@ export default async function ResumePage({ searchParams }: ResumePageProps) {
 					<ResumeHeader />
 					<Introduce />
 					<Careers />
-					<div className="print:break-before-page">
-						<Activities />
-					</div>
-					<Education />
 					{isFull ? (
-						<div className="mt-16 print:mt-8">
-							<div className="mb-8 print:mb-6">
-								<h2 className="text-3xl font-bold print:text-2xl">경력기술서</h2>
-								<p className="mt-2 text-sm text-gray-500 dark:text-gray-400">유윤우 — 프론트엔드 개발자</p>
+						<>
+							<div className="print:break-before-page">
+								<Activities />
 							</div>
-							<CareerDetail />
-						</div>
+							<Education />
+							<div className="mt-16 print:mt-8">
+								<div className="mb-8 print:mb-6">
+									<h2 className="text-3xl font-bold print:text-2xl">경력기술서</h2>
+									<p className="mt-2 text-sm text-gray-500 dark:text-gray-400">유윤우 — 프론트엔드 개발자</p>
+								</div>
+								<CareerDetail />
+							</div>
+						</>
 					) : (
-						<ResumeFooter />
+						<div className="print:break-before-page print:flex print:min-h-[260mm] print:flex-col">
+							<div>
+								<Activities />
+								<Education />
+							</div>
+							<div className="print:mt-auto">
+								<ResumeFooter />
+							</div>
+						</div>
 					)}
 				</section>
 			</div>

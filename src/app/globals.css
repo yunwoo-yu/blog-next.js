@@ -93,9 +93,17 @@
     break-inside: auto;
   }
 
-  /* 개별 문단만 가능하면 유지하고, 긴 문단은 브라우저가 나누도록 둠 */
+  /* 개별 문단은 나눌 수 있되, 한 줄만 다음 페이지에 고립되지 않게 둠 */
   article li {
     break-inside: auto;
+    orphans: 2;
+    widows: 2;
+  }
+
+  article li > span:last-child {
+    display: block;
+    orphans: 2;
+    widows: 2;
   }
 }
 
