@@ -386,6 +386,25 @@ const CAREERS: Careers[] = [
 				],
 			},
 			{
+				service: '공통',
+				projects: [
+					{
+						title: 'CMS 전용 UI Kit & 보일러플레이트',
+						date: '2023.12 ~ 2024.01',
+						achievements: [
+							{
+								title:
+									'서비스 웹(Webpack v5)과 CMS(Vite) 보일러플레이트, Rollup.js 기반 CJS/ESM UI 라이브러리를 구축해 이후 CMS 프로젝트에서 공통으로 재사용할 수 있는 기반을 만들었습니다. Storybook + Chromatic으로 시각적 회귀 테스트까지 표준화했습니다.',
+							},
+							{
+								title:
+									'Yarn Berry 모노레포와 Lerna 버전 관리 구조를 도입해 UI 라이브러리, 설정, 유틸 공통 패키지를 함께 관리하고 신규 프로젝트의 초기 환경 구축 부담을 줄였습니다.',
+							},
+						],
+					},
+				],
+			},
+			{
 				service: 'Localo',
 				serviceDescription: 'WebGL 아바타 서비스',
 				projects: [
@@ -400,25 +419,6 @@ const CAREERS: Careers[] = [
 							{
 								title:
 									'800~1000줄 규모의 거대 컴포넌트를 공통 컴포넌트와 커스텀 훅으로 분리해 레거시에 큰 영향 없이 기능 수정이 가능한 구조를 만들었습니다. 기존 시스템 분석 범위를 줄여 일정을 단축하고, 300명 규모 대학 OT 및 오디션 시스템을 안정적으로 출시했습니다.',
-							},
-						],
-					},
-				],
-			},
-			{
-				service: '공통',
-				projects: [
-					{
-						title: 'CMS 전용 UI Kit & 보일러플레이트',
-						date: '2023.12 ~ 2024.01',
-						achievements: [
-							{
-								title:
-									'서비스 웹(Webpack v5)과 CMS(Vite) 보일러플레이트, Rollup.js 기반 CJS/ESM UI 라이브러리를 구축해 이후 CMS 프로젝트에서 공통으로 재사용할 수 있는 기반을 만들었습니다. Storybook + Chromatic으로 시각적 회귀 테스트까지 표준화했습니다.',
-							},
-							{
-								title:
-									'Yarn Berry 모노레포와 Lerna 버전 관리 구조를 도입해 UI 라이브러리, 설정, 유틸 공통 패키지를 함께 관리하고 신규 프로젝트의 초기 환경 구축 부담을 줄였습니다.',
 							},
 						],
 					},
