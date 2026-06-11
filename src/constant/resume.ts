@@ -25,6 +25,7 @@ export type Careers = {
 	position: string;
 	startDate?: string;
 	endDate?: string;
+	exitReason?: string;
 	period?: string;
 	description: string;
 	highlights: CareerHighlight[];
@@ -104,12 +105,13 @@ export type Resume = {
 
 const CAREERS: Careers[] = [
 	{
-		organization: '주식회사 웰로',
+		organization: '웰로',
 		position: '프론트엔드 개발자 | 제품실 개발팀',
 		startDate: '2025.11',
 		endDate: '2026.06',
+		exitReason: '경영악화로 인한 권고사직',
 		description:
-			'누적 이용자 500만 규모의 Wello와 B2B SaaS Wello-biz에서 사용자 서비스, 커머스, 마이데이터, 통합 어드민 프론트엔드 개발을 담당했습니다.',
+			'누적 이용자 500만 규모의 Wello와 B2B SaaS Wello-biz에서 pnpm·Turborepo 기반 모노레포 환경으로 사용자 서비스, 커머스, 마이데이터, 통합 어드민 프론트엔드 개발을 담당했습니다.',
 		highlights: [
 			{
 				text: '웰마켙 NICE Payments PG 결제 및 주문·배송·반품·환불 플로우 구축',
@@ -269,10 +271,11 @@ const CAREERS: Careers[] = [
 		],
 	},
 	{
-		organization: '(주)살린',
+		organization: '살린',
 		position: '프론트엔드 개발자 | ILab',
 		startDate: '2023.08',
 		endDate: '2025.08',
+		exitReason: '경영악화로 인한 권고사직',
 		description:
 			'AI 챗봇 플랫폼, WebGL 아바타 서비스, 스타트업 업무 지원 서비스의 사용자 화면과 관리자 CMS 프론트엔드 개발을 담당했습니다.',
 		highlights: [
@@ -335,7 +338,7 @@ const CAREERS: Careers[] = [
 							},
 							{
 								title:
-									'무료 고객사의 챗봇 응답 횟수를 기준으로 광고를 자동 삽입하는 기능을 구현해, 서비스 안에서 수익화할 수 있는 장치를 마련했습니다.',
+									'무료 플랜에는 응답 횟수 기반 광고 삽입 로직을 적용해 서비스 내 수익화 실험이 가능하도록 했습니다.',
 							},
 							{
 								title:
@@ -436,11 +439,11 @@ const CAREER_DETAIL_OVERRIDES: Record<string, ResumeItemProps[]> = {
 		},
 		{
 			title:
-				'기관마다 단계 구성과 API 처리 방식이 달라 어댑터 패턴을 적용했습니다. 기관별로 필요한 단계, 요청 생성, 응답 정규화, 에러 매핑을 어댑터로 분리하고, 공통 로직은 단계 실행, 진행 상태 저장, 화면 전환, 실패 처리만 담당하게 했습니다. 진행 상태는 스텝 식별자는 URL 쿼리스트링에, 인증 중간값은 세션스토리지에 분리해 저장했고, 탭을 닫으면 민감한 중간 상태가 사라지도록 의도했습니다.',
+				'기관마다 단계 구성과 API 처리 방식이 달라 어댑터 패턴을 적용했습니다. 기관별로 필요한 단계, 요청 생성, 응답 정규화, 에러 매핑을 어댑터로 분리하고, 공통 로직은 단계 실행, 진행 상태 저장, 화면 전환, 실패 처리만 담당하게 했습니다. 스텝 식별자는 URL 쿼리스트링에, 인증 중간값은 세션스토리지에 분리해 저장했습니다. 새로고침 시에는 진행 상태를 복원하고, 탭 종료 시에는 인증 중간값이 남지 않도록 관리했습니다.',
 		},
 		{
 			title:
-				'기관별 보완 요청이 들어와도 화면을 새로 만들지 않고 어댑터 단위 수정으로 대응할 수 있는 구조를 확보했습니다. 새 기관이 추가되더라도 어댑터만 추가하면 기존 화면과 공통 로직을 그대로 재사용할 수 있어, 규제 대응과 기관 확장을 분리해서 관리할 수 있게 됐습니다.',
+				'기관별 보완 요청이 들어와도 화면을 새로 만들지 않고 어댑터 단위 수정으로 대응할 수 있는 구조를 확보했습니다. 새 기관이 추가되더라도 기관별 어댑터를 중심으로 대응하고, 기존 화면과 공통 플로우 변경 범위를 줄일 수 있게 됐습니다.',
 		},
 	],
 	'웰마켙 PG 결제·주문 단계별 처리 플로우 구축': [
@@ -450,7 +453,7 @@ const CAREER_DETAIL_OVERRIDES: Record<string, ResumeItemProps[]> = {
 		},
 		{
 			title:
-				'주문서에 반영되는 상품 금액, 배송비, 쿠폰, 웰포인트, 결제수단을 하나의 체크아웃 상태로 관리하고, 화면 표시 금액과 PG 요청 파라미터가 같은 기준으로 만들어지도록 검증했습니다. NICE Payments PG SDK 연동, return URL 처리, 결제 전 예외 차단을 구현하고, 구매 이후에는 주문 단계에 따라 주문내역, 배송조회, 영수증, 후기 작성과 운영 어드민의 배송·반품·환불 처리를 연결했습니다.',
+				'주문서에 반영되는 상품 금액, 배송비, 쿠폰, 웰포인트, 결제수단을 하나의 체크아웃 상태로 관리하고, 화면 표시 금액과 PG 요청 파라미터가 일치하도록 검증했습니다. NICE Payments PG SDK 연동, return URL 처리, 결제 전 예외 차단을 구현하고, 구매 이후에는 주문 단계에 따라 주문내역, 배송조회, 영수증, 후기 작성과 운영 어드민의 배송·반품·환불 처리를 연결했습니다.',
 		},
 		{
 			title:
@@ -520,11 +523,11 @@ const CAREER_DETAIL_OVERRIDES: Record<string, ResumeItemProps[]> = {
 		},
 		{
 			title:
-				'OpenAI Assistant API의 Threads·Messages·Runs를 SSE로 연결해 답변 생성 과정을 실시간으로 보여주고, 역방향 무한 스크롤로 채팅 히스토리 조회 UX를 개선했습니다. CMS에서는 파일 등록, 벡터 스토어 관리, AI 콘텐츠 자동 생성, 통계 대시보드, 프롬프트·모델 설정 화면을 구현했습니다.',
+				'OpenAI Assistant API의 Threads·Messages·Runs 흐름을 서버 SSE 응답으로 전달해 답변 생성 과정을 실시간으로 보여주고, 역방향 무한 스크롤로 채팅 히스토리 조회 UX를 개선했습니다. CMS에서는 파일 등록, 벡터 스토어 관리, AI 콘텐츠 자동 생성, 통계 대시보드, 프롬프트·모델 설정 화면을 구현했습니다.',
 		},
 		{
 			title:
-				'CSR 기반 React 서비스를 Next.js 15 App Router SSR 구조로 전환하고, 고객사별 동적 메타데이터·다국어 OpenGraph·API 기반 사이트맵을 적용해 검색 노출 관리를 자동화했습니다. 고객사는 챗봇 응대와 CMS 운영을 직접 관리할 수 있게 되었고, 무료 고객사에는 응답 횟수 기반 광고 삽입으로 수익화 장치를 붙였습니다.',
+				'CSR 기반 React 서비스를 Next.js 15 App Router SSR 구조로 전환하고, 고객사별 동적 메타데이터·다국어 OpenGraph·API 기반 사이트맵을 적용해 검색 노출 관리를 자동화했습니다. 고객사는 챗봇 응대와 CMS 운영을 직접 관리할 수 있게 되었고, 무료 플랜에는 응답 횟수 기반 광고 삽입 로직을 적용해 서비스 내 수익화 실험이 가능하도록 했습니다.',
 		},
 	],
 	'AI 대화형 설문 생성 MVP': [
@@ -538,13 +541,13 @@ const CAREER_DETAIL_OVERRIDES: Record<string, ResumeItemProps[]> = {
 		},
 		{
 			title:
-				'AI 설문 생성 MVP를 배포 가능한 환경까지 완성해 팀이 실제 화면에서 아이디어와 사용성을 검증할 수 있게 했습니다. 이 과정에서 SSE 처리, 스트리밍 UI, AI 응답 상태 관리, 자동 스크롤 패턴을 먼저 검증했고, 이후 AI Talker의 실시간 채팅 UI 구현 기반으로 활용했습니다.',
+				'AI 설문 생성 MVP를 배포 가능한 환경까지 완성하고, SSE 처리, 스트리밍 UI, AI 응답 상태 관리, 자동 스크롤 패턴을 이후 AI Talker 채팅 UI의 구현 기반으로 재사용했습니다.',
 		},
 	],
 	'서비스 웹 + 관리자 CMS 프론트엔드 단독 개발': [
 		{
 			title:
-				'Swing은 스타트업 업무 지원 기능과 Unity 기반 WebGL 가상 오피스를 함께 제공하는 서비스였습니다. 저는 백엔드 개발자 1명과 2인 팀에서 서비스 웹·관리자 CMS와 WebGL 가상공간 진입·연결 프론트엔드를 맡았습니다.',
+				'Swing은 스타트업 업무 지원 기능과 Unity 기반 WebGL 가상 오피스를 함께 제공하는 서비스였습니다. 백엔드 개발자 1명과 2인 팀으로 서비스 웹·관리자 CMS와 WebGL 가상공간 진입·연결 프론트엔드를 담당했습니다.',
 		},
 		{
 			title:
@@ -552,7 +555,7 @@ const CAREER_DETAIL_OVERRIDES: Record<string, ResumeItemProps[]> = {
 		},
 		{
 			title:
-				'프론트엔드 영역을 단독으로 설계·개발해 웹 서비스와 CMS 운영 기능을 출시 가능한 상태로 만들었습니다. 프로젝트 성격에 따라 빌드 환경을 분리하고 번들 구조를 관리한 경험은 이후 보일러플레이트와 CMS UI Kit 구축으로 이어졌습니다.',
+				'프론트엔드 영역을 단독으로 설계·개발해 웹 서비스와 CMS 운영 기능을 실제 운영 가능한 상태로 완성했습니다. 프로젝트 성격에 따라 빌드 환경을 분리하고 번들 구조를 관리한 경험은 이후 보일러플레이트와 CMS UI Kit 구축으로 이어졌습니다.',
 		},
 	],
 	'아바타 스튜디오 성능 개선 및 CMS 개발': [
@@ -576,11 +579,11 @@ const CAREER_DETAIL_OVERRIDES: Record<string, ResumeItemProps[]> = {
 		},
 		{
 			title:
-				'서비스 웹용 Webpack v5 보일러플레이트와 CMS용 Vite 보일러플레이트를 분리하고, Rollup.js 기반 CMS UI 라이브러리를 CJS/ESM 환경에서 사용할 수 있게 구성했습니다. Storybook과 Chromatic을 붙여 컴포넌트 단위 개발과 시각적 회귀 확인 체계도 만들었습니다.',
+				'서비스 웹용 Webpack v5 보일러플레이트와 CMS용 Vite 보일러플레이트를 분리하고, Rollup.js 기반 CMS UI 라이브러리를 CJS/ESM 빌드 산출물로 배포할 수 있게 구성했습니다. Storybook과 Chromatic을 붙여 컴포넌트 단위 개발과 시각적 회귀 확인 체계도 만들었습니다.',
 		},
 		{
 			title:
-				'Yarn Berry 모노레포와 Lerna 버전 관리 구조로 UI 라이브러리, 설정, 유틸 공통 패키지를 함께 관리했습니다. 이후 CMS 프로젝트에서 반복 세팅을 줄이고 공통 UI를 같은 기준으로 재사용할 수 있는 기반을 마련했습니다.',
+				'Yarn Berry 모노레포와 Lerna 버전 관리 구조로 UI 라이브러리, 설정, 유틸 공통 패키지를 함께 관리했습니다. 이후 CMS 프로젝트에서 초기 세팅 시간을 줄이고, 버튼·폼·테이블·레이아웃 등 반복 UI를 일관된 기준으로 재사용할 수 있는 기반을 마련했습니다.',
 		},
 	],
 };
@@ -604,28 +607,26 @@ export const CAREER_DETAILS: CareerDetailCareer[] = CAREERS.map(career => ({
 	})),
 }));
 
-const EDUCATION: Education[] = [
-	{ title: '한국방송통신대학교 — 컴퓨터과학과', period: '2026.03 ~ 재학 중' },
-	{
-		title: '멋쟁이사자처럼 — 프론트엔드 스쿨 3기',
-		period: '2022.08 ~ 2023.01 수료',
-	},
-	{
-		title: '방송정보국제교육원 — UI/UX 기반 웹퍼블리싱&프론트엔드 양성과정',
-		period: '2021.10 ~ 2022.03 수료',
-	},
-];
+const EDUCATION: Education[] = [];
 
 const ACTIVITIES: Activity[] = [
+	{
+		title: '항해플러스 프론트엔드 6기',
+		organization: '',
+		period: '2025.07 ~ 2025.09',
+		items: [
+			'TDD 기반 단위·통합 테스트(Vitest + RTL)와 성능 프로파일링을 반복하며 기능 검증과 렌더링 최적화 흐름을 훈련했습니다.',
+			'바닐라 JS → React → TypeScript 전환, 클린 코드 리팩토링, SRP/FSD 설계를 적용하며 유지보수 가능한 구조를 연습했습니다.',
+		],
+	},
 	{
 		title: '오픈소스 컨트리뷰션 아카데미',
 		organization: '과학기술정보통신부',
 		period: '2023.07 ~ 2024.01',
 		items: [
-			'과학기술정보통신부 장관상 대상 수상',
-			'CNCF 졸업 프로젝트 Argo Workflows 컨트리뷰터 멘티 활동 (GitHub 13.6k+ Stars)',
+			'CNCF 졸업 프로젝트 Argo Workflows 컨트리뷰터 멘티로 참여해 이슈를 분석하고 개선했습니다.',
 			{
-				text: '드롭다운 컴포넌트의 클래스 → 함수형 전환, 워크플로우 목록 toolbar UI 개선, Cron Workflow 실행 이력 노출 등 3개 PR 머지',
+				text: '드롭다운 컴포넌트 함수형 전환, 워크플로우 목록 toolbar UI 개선, Cron Workflow 실행 이력 노출 등 3개 PR을 머지했습니다.',
 				links: [
 					{
 						title: '#11901',
@@ -641,16 +642,25 @@ const ACTIVITIES: Activity[] = [
 					},
 				],
 			},
+			'멘티 활동 결과로 과학기술정보통신부 장관상 대상을 수상했습니다.',
 		],
 	},
 	{
-		title: '항해플러스 프론트엔드 6기',
-		organization: '',
-		period: '2025.07 ~ 2025.09',
+		title: '멋쟁이사자처럼 프론트엔드 스쿨 3기',
+		organization: '멋쟁이사자처럼',
+		period: '2022.08 ~ 2023.01',
 		items: [
-			'TDD 기반 단위·통합 테스트(Vitest + RTL)와 성능 프로파일링을 반복하며 기능 검증과 렌더링 최적화 훈련',
-			'바닐라 JS → React → TypeScript로 같은 문제를 점진적으로 전환하며 프레임워크 동작 원리와 타입 설계 학습',
-			'클린 코드 리팩토링, SRP 기반 컴포넌트 설계, FSD 아키텍처 적용',
+			'HTML/CSS, JavaScript, React 중심의 프론트엔드 기본기를 학습하고 프로젝트 단위 화면 구현 경험을 쌓았습니다.',
+			'팀 프로젝트에서 팀장으로 역할 분담과 일정 조율을 맡고, 코드 리뷰와 회고를 반복하며 프로젝트 리드 경험을 쌓았습니다.',
+		],
+	},
+	{
+		title: 'UI/UX 기반 웹퍼블리싱&프론트엔드 양성과정',
+		organization: '방송정보국제교육원',
+		period: '2021.10 ~ 2022.03',
+		items: [
+			'화면 설계서와 디자인 시안을 작성하며 UI 구조를 정리하고, 이를 반응형 웹 화면으로 구현하는 흐름을 익혔습니다.',
+			'HTML/CSS와 JavaScript로 정적 화면을 동작 가능한 웹 페이지로 구현하며 프론트엔드 기초를 만들었습니다.',
 		],
 	},
 ];

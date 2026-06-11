@@ -22,7 +22,7 @@ const ADDRESS_DATA = [
 
 export default function Address() {
 	return (
-		<address className="mt-10 flex flex-col items-end gap-1 text-xs not-italic">
+		<address className="flex flex-col items-start gap-1 text-xs not-italic sm:items-end">
 			{ADDRESS_DATA.map(({ icon, label, href }) => (
 				<div className="flex" key={label}>
 					<div className="mr-2 flex items-center gap-2">

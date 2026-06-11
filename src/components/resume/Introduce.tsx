@@ -2,8 +2,8 @@ import ResumeContainer from './ResumeContainer';
 
 export default function Introduce() {
 	return (
-		<ResumeContainer>
-			<div className="flex flex-col gap-3 text-sm leading-7">
+		<ResumeContainer title="자기소개" titleClassName="mt-6 print:mt-2">
+			<div className="flex flex-col gap-3 text-sm leading-7 text-gray-700 dark:text-gray-200 print:!text-gray-800">
 				<p>
 					작은 스타트업 환경에서 B2C 플랫폼, B2B SaaS, CMS, 운영 어드민까지 프론트엔드 영역을 넓게 담당하며 빠르게
 					변하는 상황에 주도적으로 대응하는 역량을 키워왔습니다.

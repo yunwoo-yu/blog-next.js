@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
 
 export default function CareerPage() {
-	redirect('/resume?detail=true');
+	redirect('/resume');
 }
