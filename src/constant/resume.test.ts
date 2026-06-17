@@ -1,10 +1,9 @@
-import { type Careers, getCareerPeriod, getCareerPeriodText } from './resume';
+import { type Careers, getCareerPeriod } from './resume';
 
 const createCareer = (overrides: Partial<Careers> = {}): Careers => ({
 	organization: '',
 	position: '',
 	description: '',
-	highlights: [],
 	techStack: [],
 	serviceGroups: [],
 	...overrides,
@@ -78,16 +77,3 @@ describe('getCareerPeriod', () => {
 	});
 });
 
-describe('getCareerPeriodText', () => {
-	it('duration이 있으면 괄호로 붙인다', () => {
-		const career = createCareer({ startDate: '2023.01', endDate: '2024.03' });
-
-		expect(getCareerPeriodText(career)).toBe('2023.01 ~ 2024.03 (1년 2개월)');
-	});
-
-	it('duration이 없으면 text만 반환한다', () => {
-		const career = createCareer({ period: '2023.01 ~ 2023.06' });
-
-		expect(getCareerPeriodText(career)).toBe('2023.01 ~ 2023.06');
-	});
-});

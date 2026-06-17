@@ -15,11 +15,6 @@ export type ServiceGroup = {
 	printBreakBefore?: boolean;
 };
 
-export type CareerHighlight = {
-	text: string;
-	subItems?: string[];
-};
-
 export type Careers = {
 	organization: string;
 	position: string;
@@ -28,7 +23,6 @@ export type Careers = {
 	exitReason?: string;
 	period?: string;
 	description: string;
-	highlights: CareerHighlight[];
 	techStack: string[];
 	serviceGroups: ServiceGroup[];
 };
@@ -75,10 +69,6 @@ export function getCareerPeriod(career: CareerPeriodTarget) {
 	return { text: `${startStr} ~ ${endStr}`, duration, isOngoing };
 }
 
-export function getCareerPeriodText(career: Careers): string {
-	const { text, duration } = getCareerPeriod(career);
-	return duration ? `${text} (${duration})` : text;
-}
 
 export type Education = {
 	title: string;
@@ -112,26 +102,6 @@ const CAREERS: Careers[] = [
 		exitReason: '경영악화로 인한 권고사직',
 		description:
 			'누적 이용자 500만 규모의 Wello와 B2B SaaS Wello-biz에서 pnpm·Turborepo 기반 모노레포 환경으로 사용자 서비스, 커머스, 마이데이터, 통합 어드민 프론트엔드 개발을 담당했습니다.',
-		highlights: [
-			{
-				text: '웰마켙 NICE Payments PG 결제 및 주문·배송·반품·환불 플로우 구축',
-			},
-			{
-				text: '고향사랑기부 중복 기부 방지 및 외부 지로 납부 진행 상태 확인 플로우 개선',
-			},
-			{
-				text: '의료·통신·신용 3개 기관 마이데이터 인증·동의·전송요구·철회 및 연결 관리 화면 구축',
-			},
-			{
-				text: 'Wello-biz 상세검색 키워드 입력 UX 개선 및 11개 검색 입력 지점 적용',
-			},
-			{
-				text: 'Wello·Wello-biz 통합 어드민 인증 갱신 및 ISMS-P 결함 조치 대응',
-			},
-			{
-				text: 'Wello PC 홈·통합검색·정책 상세 레이아웃 개편',
-			},
-		],
 		techStack: [
 			'React 19',
 			'Next.js 16',
@@ -278,26 +248,6 @@ const CAREERS: Careers[] = [
 		exitReason: '경영악화로 인한 권고사직',
 		description:
 			'AI 챗봇 플랫폼, WebGL 아바타 서비스, 스타트업 업무 지원 서비스의 사용자 화면과 관리자 CMS 프론트엔드 개발을 담당했습니다.',
-		highlights: [
-			{
-				text: 'OpenAI Assistant API 기반 AI Talker 채팅 서비스 및 24페이지 관리자 CMS 구축',
-			},
-			{
-				text: 'CSR React 서비스의 Next.js SSR 전환 및 고객사별 SEO·사이트맵 자동화',
-			},
-			{
-				text: 'AI 대화형 설문 생성 MVP 프론트엔드 및 Nest.js API 연동 개발',
-			},
-			{
-				text: 'WebGL 아바타 서비스 초기 로딩 개선 및 관리자 CMS 개발',
-			},
-			{
-				text: 'Swing 서비스 웹·관리자 CMS 프론트엔드 단독 개발',
-			},
-			{
-				text: 'CMS 전용 UI Kit 라이브러리 및 서비스/CMS 보일러플레이트 구축',
-			},
-		],
 		techStack: [
 			'React',
 			'TypeScript',
@@ -453,11 +403,11 @@ const CAREER_DETAIL_OVERRIDES: Record<string, ResumeItemProps[]> = {
 		},
 		{
 			title:
-				'주문서에 반영되는 상품 금액, 배송비, 쿠폰, 웰포인트, 결제수단을 하나의 체크아웃 상태로 관리하고, 화면 표시 금액과 PG 요청 파라미터가 일치하도록 검증했습니다. NICE Payments PG SDK 연동, return URL 처리, 결제 전 예외 차단을 구현하고, 구매 이후에는 주문 단계에 따라 주문내역, 배송조회, 영수증, 후기 작성과 운영 어드민의 배송·반품·환불 처리를 연결했습니다.',
+				'상품 금액·배송비·쿠폰·웰포인트·결제수단을 단일 체크아웃 상태로 관리하고, 최종 결제금액은 체크아웃 API 반환값을 NicePay SDK에 그대로 전달해 계산 경로 불일치 가능성을 없앴습니다. 결제 요청 전 배송지·결제수단·약관을 순서대로 검증하고, 결제 흐름 전반에서 각 케이스에 맞는 예외처리를 했습니다. 구매 후에는 취소·반품·환불 흐름을 주문 단계에 따라 어드민과 연결했습니다.',
 		},
 		{
 			title:
-				'결제 전 금액 계산 기준과 예외 상태를 화면에서 먼저 검증해, 오픈 이후 결제 금액 불일치 이슈 0건으로 운영했습니다. 사용자와 운영팀·입점업체가 같은 주문 상태 기준으로 주문 확인, 배송 처리, 반품·환불, 고객 응대를 이어갈 수 있게 되었습니다.',
+				'주문서부터 결제 승인·배송·반품·환불·어드민 연결까지 커머스 주문 플로우 전체를 설계·구현해 오픈했습니다. 5월까지 결제 금액 관련 이슈 0건으로 안정적으로 운영했고, 사용자·운영팀·입점업체가 같은 주문 상태 기준으로 배송 처리, 반품·환불, 고객 응대를 이어갈 수 있는 기반을 만들었습니다.',
 		},
 	],
 	'Wello PC 레이아웃 개편': [
