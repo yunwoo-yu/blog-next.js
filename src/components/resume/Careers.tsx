@@ -1,4 +1,4 @@
-import RESUME, { CAREER_DETAILS, getCareerPeriod } from '@/constant/resume';
+import RESUME, { getCareerPeriod } from '@/constant/resume';
 
 import ResumeContainer from './ResumeContainer';
 import { ResumeLink } from './ResumeLink';
@@ -8,16 +8,16 @@ const PRODUCT_LINK_LABELS: Record<string, string> = {
 	Wello: '웰로 홈페이지',
 	'Wello-biz': '웰로비즈 홈페이지',
 };
-const PROJECT_HIGHLIGHTS: Record<string, string[][]> = {
+export const PROJECT_HIGHLIGHTS: Record<string, string[][]> = {
 	'웰마켙 PG 결제·주문 단계별 처리 플로우 구축': [
 		[
 			'주문서에 표시되는 금액과 실제 PG 결제 요청 금액이 같은 기준으로 계산',
 			'결제 전 금액 계산과 예외 상태를 화면에서 먼저 검증',
 		],
 		[
-			'체크아웃 API 반환값을 NicePay SDK에 그대로 전달해 계산 경로 불일치 가능성을 없앴습니다',
+			'체크아웃 API 반환값을 NicePay SDK에 그대로 전달해 화면 표시 금액과의 불일치를 차단',
 			'배송지·결제수단·약관을 순서대로 검증',
-			'각 케이스에 맞는 예외처리',
+			'인증 결과 코드별(사용자 취소·통신 실패 등) 안내를 분리',
 		],
 		[
 			'커머스 주문 플로우 전체를 설계·구현해 오픈',
@@ -35,20 +35,20 @@ const PROJECT_HIGHLIGHTS: Record<string, string[][]> = {
 		['결제 전 주민등록번호 인증, 기부 가능 여부, 기부금, 기부 용도, 배송지 입력 상태', '최신 기부 완료 이력'],
 		[
 			'Wello에서 결제 진행 상태를 다시 확인',
-			'중복 기부 여부를 묻는 반복 CS 문의를 줄였습니다',
+			'중복 기부 여부를 묻는 반복 문의가 거의 들어오지 않게 됐습니다',
 			'앱·웹뷰에서도 같은 기준으로 완료 여부',
 		],
 	],
 	'마이데이터 연동 및 연결 관리 구축': [
 		['기관별 본인인증, 동의, 전송요구, 전자서명, 재동의, 철회, 전송 이력 확인', '규제성 플로우'],
-		['어댑터 패턴을 적용', '요청 생성, 응답 정규화, 에러 매핑', '인증 중간값은 세션스토리지에 분리해 저장'],
-		['어댑터 단위 수정으로 대응', '기존 화면과 공통 플로우 변경 범위를 줄일 수 있게'],
+		['어댑터 패턴을 적용', '요청 생성, 응답 정규화, 에러 매핑', '탭 종료 시 자동 소멸되는 세션스토리지에 분리'],
+		['NICE 신용정보 연동 플로우를 구현해 심사를 진행', '어댑터 단위 수정만으로 대응'],
 	],
 	'Wello-biz 상세검색 키워드 입력 UX 개선': [
 		['11개 지점에서 반복', '한글 IME 조합 중 Enter'],
 		['자동 리사이징 textarea 입력 컴포넌트', 'IME composition 상태', 'zod schema와 연결'],
 		[
-			'한글 검색어 입력 중 자음·모음이 분리되던 문제를 해결',
+			'한글 IME 조합 중 완성 전 문자열이 조건으로 추가되던 문제를 해결',
 			'11개 입력 지점에서 같은 추가·삭제·초기화 동작과 검증 기준',
 		],
 	],
@@ -77,7 +77,7 @@ const PROJECT_HIGHLIGHTS: Record<string, string[][]> = {
 		[
 			'배포 가능한 환경까지 완성',
 			'SSE 처리, 스트리밍 UI, AI 응답 상태 관리, 자동 스크롤 패턴',
-			'실시간 채팅 UI 구현 기반',
+			'AI Talker 채팅 UI의 구현 기반',
 		],
 	],
 	'서비스 웹 + 관리자 CMS 프론트엔드 단독 개발': [
@@ -87,7 +87,11 @@ const PROJECT_HIGHLIGHTS: Record<string, string[][]> = {
 			'인증, 대시보드, 사업지원 관리, WebGL 가상공간 진입 화면과 연결 로직',
 			'Lazy Loading, 코드 스플리팅, bundle-analyzer 기반 의존성 정리',
 		],
-		['프론트엔드 영역을 단독으로 설계·개발', '출시 가능한 상태', '보일러플레이트와 CMS UI Kit 구축'],
+		[
+			'프론트엔드 영역을 단독으로 설계·개발',
+			'실제 운영 가능한 상태',
+			'보일러플레이트와 CMS UI Kit을 실제 서비스에 처음 적용',
+		],
 	],
 	'CMS 전용 UI Kit & 보일러플레이트': [
 		['환경 구성과 공통 컴포넌트 조정에 시간이 많이 쓰이고 있었습니다'],
@@ -96,12 +100,12 @@ const PROJECT_HIGHLIGHTS: Record<string, string[][]> = {
 			'Rollup.js 기반 CMS UI 라이브러리를 CJS/ESM 빌드 산출물로 배포',
 			'Storybook과 Chromatic',
 		],
-		['반복 세팅을 줄이고 공통 UI를 같은 기준으로 재사용'],
+		['Swing 서비스 웹·CMS에 적용해 초기 세팅 시간을 줄였고', '반복 UI를 일관된 기준으로 재사용'],
 	],
-	'아바타 스튜디오 성능 개선 및 CMS 개발': [
+	'아바타 스튜디오 성능 개선': [
 		['3초 이상 빈 화면', '800~1000줄 규모의 거대 컴포넌트'],
 		['Suspense와 lazy loading', 'AWS S3와 CDN', '공통 컴포넌트와 커스텀 훅'],
-		['400~600ms 수준으로 단축', '300명 규모 대학 OT와 오디션 시스템을 안정적으로 출시'],
+		['400~600ms 수준(Lighthouse FCP 기준)으로 단축', '레거시에 큰 영향 없이 기능을 수정할 수 있는 구조'],
 	],
 };
 
@@ -129,17 +133,15 @@ export default function Careers() {
 		<ResumeContainer title="경력">
 			<div className="flex flex-col gap-10 print:gap-8">
 				{RESUME.careers.map(career => {
-					const careerDetail = CAREER_DETAILS.find(detail => detail.organization === career.organization);
 					const productLinks = career.serviceGroups
 						.filter(group => group.serviceUrl)
 						.map(group => ({ title: group.service, url: group.serviceUrl! }));
-					const projects =
-						careerDetail?.serviceGroups.flatMap(group =>
-							group.projects.map(project => ({
-								...project,
-								printBreakBefore: group.printBreakBefore,
-							})),
-						) ?? [];
+					const projects = career.serviceGroups.flatMap(group =>
+						group.projects.map(project => ({
+							...project,
+							printBreakBefore: group.printBreakBefore,
+						})),
+					);
 					const { text, duration, isOngoing } = getCareerPeriod(career);
 
 					return (
@@ -174,7 +176,7 @@ export default function Careers() {
 									</p>
 								</div>
 
-								<p className="mt-5 text-sm leading-7 text-gray-700 dark:text-gray-200 print:mt-3 print:!text-gray-800">
+								<p className="mt-5 text-sm leading-7 text-gray-700 dark:text-gray-200 print:mt-3 print:leading-6 print:!text-gray-800">
 									{career.description}
 								</p>
 
@@ -194,7 +196,7 @@ export default function Careers() {
 									{projects.map(project => (
 										<article
 											key={project.title}
-											className={`py-7 first:pt-0 last:pb-0 print:py-4 print:break-inside-auto ${
+											className={`py-7 first:pt-0 last:pb-0 print:py-3 print:break-inside-auto ${
 												project.printBreakBefore ? 'print:break-before-page' : ''
 											}`}>
 											<header className="mb-4 grid grid-cols-[minmax(0,1fr)_auto] items-start gap-x-6 gap-y-2 print:mb-2 print:break-after-avoid">
@@ -210,11 +212,11 @@ export default function Careers() {
 												{project.details.map((detail, index) => (
 													<div
 														key={index}
-														className="grid grid-cols-[48px_1fr] gap-4 print:grid-cols-[38px_1fr] print:gap-3">
-														<dt className="text-xs font-semibold leading-7 text-destructive">
+														className="grid grid-cols-[48px_1fr] gap-4 print:break-inside-avoid print:grid-cols-[38px_1fr] print:gap-3">
+														<dt className="text-xs font-semibold leading-7 text-destructive print:leading-6">
 															{PROJECT_DETAIL_LABELS[index] ?? '상세'}
 														</dt>
-														<dd className="text-sm leading-7 text-gray-700 dark:text-gray-200 print:!text-gray-800">
+														<dd className="text-sm leading-7 text-gray-700 dark:text-gray-200 print:leading-6 print:!text-gray-800">
 															{renderHighlightedText(detail.title, PROJECT_HIGHLIGHTS[project.title]?.[index] ?? [])}
 															{detail.links?.map((link, linkIndex) => (
 																<ResumeLink key={linkIndex} title={link.title} url={link.url} />
