@@ -9,8 +9,9 @@ import { ViewTransition } from 'react';
 import { pretendard } from '@/assets/fonts/fonts';
 import Footer from '@/components/common/Footer';
 import Header from '@/components/common/Header';
+import JsonLd from '@/components/common/JsonLd';
 import { ThemeProvider } from '@/components/common/provider/ThemeProvider';
-import { ROOT_META_DATA } from '@/constant';
+import { BASE_URL, GITHUB_URL, LINKEDIN_URL, META_AUTHOR_NAME, META_TITLE, ROOT_META_DATA } from '@/constant';
 
 export const metadata: Metadata = {
 	...ROOT_META_DATA,
@@ -25,15 +26,39 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<html lang="en" suppressHydrationWarning className={`${pretendard.variable} font-pretendard font-normal`}>
+		<html lang="ko" suppressHydrationWarning className={`${pretendard.variable} font-pretendard font-normal`}>
 			<body className="flex min-h-screen flex-col">
 				<ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+					<a
+						href="#main-content"
+						className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-md focus:bg-background focus:px-4 focus:py-2 focus:ring-2 focus:ring-ring">
+						본문 바로가기
+					</a>
 					<Header />
-					<ViewTransition>
-						<main className="mt-[97px] flex-1 print:mt-0">{children}</main>
+					{/* 이름을 주지 않으면 React가 자동 이름을 붙여 root와 별개 그룹이 생기고,
+					    같은 콘텐츠가 root와 함께 두 번 페이드된다. 이름을 고정해 CSS로 제어한다. */}
+					<ViewTransition name="page-content">
+						<main id="main-content" className="mt-[var(--header-height)] flex-1 print:mt-0">
+							{children}
+						</main>
 					</ViewTransition>
 					<Footer />
 				</ThemeProvider>
+				<JsonLd
+					data={{
+						'@context': 'https://schema.org',
+						'@type': 'WebSite',
+						name: META_TITLE,
+						url: BASE_URL,
+						inLanguage: 'ko-KR',
+						author: {
+							'@type': 'Person',
+							name: META_AUTHOR_NAME,
+							url: BASE_URL,
+							sameAs: [GITHUB_URL, LINKEDIN_URL],
+						},
+					}}
+				/>
 				<SpeedInsights />
 				<Analytics />
 				<Script

@@ -1,41 +1,44 @@
-import { CalendarDays } from 'lucide-react';
+import { CalendarDays, ChevronLeft, Clock } from 'lucide-react';
+import Link from 'next/link';
 import { ViewTransition } from 'react';
 
+import TagLink from '@/components/common/TagLink';
 import type { CompileMdxTypes } from '@/types/common.types';
-import { cn } from '@/utils/utils';
 
 interface PostDetailHeaderProps {
 	frontmatter: CompileMdxTypes;
 	category: string;
 	slug: string;
+	readingTime: number;
 }
 
-const PostDetailHeader = ({ frontmatter, category, slug }: PostDetailHeaderProps) => {
+const PostDetailHeader = ({ frontmatter, category, slug, readingTime }: PostDetailHeaderProps) => {
 	return (
-		<section className="mx-auto max-w-4xl border-b border-border px-5 py-10">
+		<section className="mx-auto max-w-3xl border-b border-border px-5 pb-8 pt-10">
+			<Link
+				href={`/blog/posts/${category}`}
+				className="inline-flex items-center gap-1 text-sm text-muted-foreground transition hover:text-destructive">
+				<ChevronLeft aria-hidden className="size-4" />
+				{category}
+			</Link>
 			<ViewTransition name={`post-title-${category}-${slug}`}>
-				<h2 className="text-2xl text-primary sm:text-3xl">{frontmatter.title}</h2>
+				<h2 className="mt-3 text-2xl font-bold leading-snug text-primary sm:text-3xl">{frontmatter.title}</h2>
 			</ViewTransition>
-			<div className="mt-2 flex items-start justify-between gap-2 text-sm text-gray-400">
-				<ViewTransition name={`post-desc-${category}-${slug}`}>
-					<span>{frontmatter.description}</span>
-				</ViewTransition>
-				<ViewTransition name={`post-date-${category}-${slug}`}>
-					<span className="flex flex-shrink-0 items-center">
-						<CalendarDays className="mr-1 size-3 sm:size-4" />
-						{frontmatter.createdAt}
-					</span>
-				</ViewTransition>
-			</div>
-			<ViewTransition name={`post-tags-${category}-${slug}`}>
-				<div className="mt-2">
-					{frontmatter.tags.map((tag, idx) => (
-						<span className={cn('text-sm text-destructive', idx && 'ml-1')} key={tag}>
-							#{tag}
-						</span>
+			<p className="mt-2 text-sm text-muted-foreground sm:text-base">{frontmatter.description}</p>
+			<div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
+				<span className="flex items-center gap-1">
+					<CalendarDays aria-hidden className="size-3.5" />
+					<time dateTime={frontmatter.createdAt}>{frontmatter.createdAt}</time>
+				</span>
+				<span className="flex items-center gap-1">
+					<Clock aria-hidden className="size-3.5" />약 {readingTime}분
+				</span>
+				<div className="flex flex-wrap gap-1">
+					{frontmatter.tags.map(tag => (
+						<TagLink key={tag} tag={tag} />
 					))}
 				</div>
-			</ViewTransition>
+			</div>
 		</section>
 	);
 };

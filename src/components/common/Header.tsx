@@ -17,6 +17,9 @@ import { cn } from '@/utils/utils';
 import { GitHubIcon, LinkedInIcon } from './Icons';
 import { ModeToggle } from './ModeToggle';
 
+const iconLinkStyle =
+	'flex size-9 items-center justify-center rounded-md border border-input bg-background shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground';
+
 const Header = () => {
 	const pathname = usePathname();
 	const showHeader = useScrollDirection();
@@ -24,51 +27,50 @@ const Header = () => {
 	return (
 		<header
 			className={cn(
-				showHeader ? 'translate-y-[0px]' : 'translate-y-[-97px]',
-				'fixed left-0 top-0 z-50 w-full border-b border-gray-300 bg-[rgba(255,255,255,0.5)] px-5 py-2 backdrop-blur-sm transition-transform duration-300 ease-in-out dark:bg-[rgba(0,0,0,0.5)] print:hidden',
+				showHeader ? 'translate-y-0' : 'translate-y-[calc(-1*var(--header-height))]',
+				'fixed left-0 top-0 z-50 h-[var(--header-height)] w-full border-b border-border bg-background/70 px-4 backdrop-blur-md transition-transform duration-300 ease-in-out sm:px-5 print:hidden',
 			)}>
-			<NavigationMenu className="mx-auto max-w-7xl justify-between">
-				<NavigationMenuList className="gap-5">
-					<NavigationMenuItem className="mr-5">
-						<Link href={WEB_PATH.POSTS.path()} className="relative flex h-20 w-20">
+			<NavigationMenu className="mx-auto h-full max-w-7xl justify-between">
+				<NavigationMenuList className="gap-1 sm:gap-3">
+					<NavigationMenuItem className="mr-1 sm:mr-4">
+						<Link href={WEB_PATH.POSTS.path()} className="relative flex size-12 md:size-20">
 							<h1 className="sr-only">Ycow Blog</h1>
 							<Image
 								src="/images/logo.png"
 								alt="blog logo"
 								className="object-cover"
 								fill
-								sizes="(max-width: 1900px) 160px"
+								sizes="(max-width: 768px) 48px, 80px"
 								priority
 							/>
 						</Link>
 					</NavigationMenuItem>
 					{Object.values(WEB_PATH).map(item => (
-						<NavigationMenuItem
-							key={item.label}
-							className={cn(navigationMenuTriggerStyle(), pathname === item.path() && 'bg-muted')}>
-							<Link href={item.path()}>{item.label}</Link>
+						<NavigationMenuItem key={item.label}>
+							<Link
+								href={item.path()}
+								aria-current={pathname.startsWith(item.path()) ? 'page' : undefined}
+								className={cn(
+									navigationMenuTriggerStyle(),
+									'bg-transparent',
+									pathname.startsWith(item.path()) && 'bg-muted font-semibold',
+								)}>
+								{item.label}
+							</Link>
 						</NavigationMenuItem>
 					))}
 				</NavigationMenuList>
-				<ul className="flex gap-3">
+				<ul className="flex gap-2 sm:gap-3">
 					<li>
 						<ModeToggle />
 					</li>
 					<li>
-						<Link
-							href={GITHUB_URL}
-							target="_blank"
-							aria-label="github link button"
-							className="flex size-9 items-center justify-center rounded-md border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground">
+						<Link href={GITHUB_URL} target="_blank" aria-label="GitHub 프로필 열기" className={iconLinkStyle}>
 							<GitHubIcon width={16} height={16} />
 						</Link>
 					</li>
 					<li>
-						<Link
-							href={LINKEDIN_URL}
-							target="_blank"
-							aria-label="linkedin link button"
-							className="flex size-9 items-center justify-center rounded-md border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground">
+						<Link href={LINKEDIN_URL} target="_blank" aria-label="LinkedIn 프로필 열기" className={iconLinkStyle}>
 							<LinkedInIcon width={16} height={16} />
 						</Link>
 					</li>
