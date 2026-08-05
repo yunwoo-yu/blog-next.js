@@ -19,10 +19,11 @@ describe('useScrollDirection', () => {
 		expect(result.current).toBe(true);
 	});
 
-	it('아래로 스크롤하면 헤더를 숨긴다', () => {
+	it('상단에서 충분히 벗어난 뒤 아래로 스크롤하면 헤더를 숨긴다', () => {
 		const { result } = renderHook(() => useScrollDirection());
 
-		act(() => fireScroll(10));
+		act(() => fireScroll(100));
+		act(() => fireScroll(200));
 
 		expect(result.current).toBe(false);
 	});
@@ -30,8 +31,30 @@ describe('useScrollDirection', () => {
 	it('위로 스크롤하면 헤더를 다시 표시한다', () => {
 		const { result } = renderHook(() => useScrollDirection());
 
-		act(() => fireScroll(100));
-		act(() => fireScroll(50));
+		act(() => fireScroll(300));
+		act(() => fireScroll(400));
+		act(() => fireScroll(350));
+
+		expect(result.current).toBe(true);
+	});
+
+	it('페이지 최상단 부근에서는 아래로 스크롤해도 헤더를 유지한다', () => {
+		const { result } = renderHook(() => useScrollDirection());
+
+		act(() => fireScroll(10));
+		act(() => fireScroll(70));
+
+		expect(result.current).toBe(true);
+	});
+
+	it('숨겨진 상태에서 최상단으로 돌아오면 다시 표시한다', () => {
+		const { result } = renderHook(() => useScrollDirection());
+
+		act(() => fireScroll(200));
+		act(() => fireScroll(400));
+		expect(result.current).toBe(false);
+
+		act(() => fireScroll(0));
 
 		expect(result.current).toBe(true);
 	});
@@ -39,9 +62,11 @@ describe('useScrollDirection', () => {
 	it('5px 미만의 스크롤은 무시한다', () => {
 		const { result } = renderHook(() => useScrollDirection());
 
-		act(() => fireScroll(3));
+		act(() => fireScroll(200));
+		act(() => fireScroll(400));
+		act(() => fireScroll(403));
 
-		expect(result.current).toBe(true);
+		expect(result.current).toBe(false);
 	});
 
 	it('언마운트 시 scroll 이벤트 리스너를 제거한다', () => {
