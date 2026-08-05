@@ -80,7 +80,8 @@ const config: Config = {
 				DEFAULT: {
 					css: {
 						pre: {
-							background: 'var(--shiki-dark-bg)',
+							background: 'var(--code-bg)',
+							color: 'var(--code-fg)',
 							code: {
 								fontSize: '1rem',
 							},

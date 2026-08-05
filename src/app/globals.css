@@ -12,34 +12,44 @@
   :root {
     /* 고정 헤더 높이. layout(main 여백)과 Header(숨김 transform)가 함께 참조한다. */
     --header-height: 65px;
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
+    /* 순백(#fff) + 거의 순검정 글자는 대비가 20:1까지 올라가 눈이 부시다.
+       배경 밝기를 살짝 내리고 글자도 조금 띄워 14.6:1 정도로 맞춘다.
+       색 기운은 넣지 않아 강조색(보라)과 충돌하지 않게 한다. */
+    --background: 0 0% 98%;
+    --foreground: 240 6% 15%;
+    /* 카드는 배경보다 밝게 띄워 층위를 만든다 */
     --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
+    --card-foreground: 240 6% 15%;
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
+    --popover-foreground: 240 6% 15%;
     --primary: 240 5.9% 10%;
     --primary-foreground: 0 0% 98%;
-    --secondary: 240 4.8% 95.9%;
+    --secondary: 240 5% 94%;
     --secondary-foreground: 240 5.9% 10%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 240 4.8% 95.9%;
+    --muted: 240 5% 94%;
+    --muted-foreground: 240 4% 42%;
+    --accent: 240 5% 94%;
     --accent-foreground: 240 5.9% 10%;
-    /* 공백 구분 필수: 쉼표를 쓰면 `hsl(var(--x) / alpha)` 형태가 무효가 되어 bg-destructive/10 등이 죽는다. */
-    --destructive: 255 85% 55%;
+    /* 공백 구분 필수: 쉼표를 쓰면 `hsl(var(--x) / alpha)` 형태가 무효가 되어 bg-destructive/10 등이 죽는다.
+       태그·링크에 글자색으로 쓰이므로 채도를 더 낮추면 AA(4.5:1) 아래로 떨어진다. */
+    --destructive: 255 40% 55%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 240 10% 3.9%;
+    --border: 240 6% 89%;
+    --input: 240 6% 89%;
+    --ring: 240 6% 15%;
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
-    --shiki-light-bg: #f5f5f5;
+    /* 배경(98%)보다 확실히 낮춰야 코드 블록이 본문과 구분된다 */
+    --shiki-light-bg: #f1f1f3;
     --shiki-dark-bg: #282c34;
+    /* pre 배경. 코드 토큰 배경과 같은 값이어야 패딩 영역에 다른 색이 비치지 않는다. */
+    --code-bg: var(--shiki-light-bg);
+    /* 언어 표기가 없어 shiki 가 색을 입히지 않는 코드 블록의 글자색 */
+    --code-fg: #24292e;
   }
   .dark {
     --background: 240 10% 3.9%;
@@ -56,7 +66,8 @@
     --muted-foreground: 240 5% 64.9%;
     --accent: 240 3.7% 15.9%;
     --accent-foreground: 0 0% 98%;
-    --destructive: 250 38% 82%;
+    /* 어두운 배경 위에서는 이미 충분히 연하다. 라이트와 색조(255)만 맞춘다. */
+    --destructive: 255 38% 82%;
     --destructive-foreground: 240 10% 3.9%;
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
@@ -66,8 +77,10 @@
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
-    --shiki-light-bg: #f5f5f5;
+    --shiki-light-bg: #f1f1f3;
     --shiki-dark-bg: #282c34;
+    --code-bg: var(--shiki-dark-bg);
+    --code-fg: #abb2bf;
   }
 }
 
@@ -149,8 +162,16 @@ h3 code {
   @apply !text-lg md:!text-xl;
 }
 
+/* 가로 패딩을 pre 가 아니라 각 줄([data-line])이 가진다.
+   그래야 하이라이트된 줄의 배경이 블록 폭 전체로 칠해진다. */
 pre {
   @apply !px-0 rounded-lg;
+}
+
+/* 언어 표기가 없는 코드 블록은 rehype-pretty-code 가 [data-line] 을 만들지 않아
+   줄 단위 패딩을 못 받는다. 글자가 왼쪽 벽에 붙으므로 그런 블록에만 pre 에 패딩을 준다. */
+pre:not(:has([data-line])) {
+  @apply !px-4;
 }
 
 code {
@@ -179,12 +200,13 @@ code[data-theme*=' '] span {
   background-color: var(--shiki-light-bg);
 }
 
-@media (prefers-color-scheme: dark) {
-  code[data-theme*=' '],
-  code[data-theme*=' '] span {
-    color: var(--shiki-dark);
-    background-color: var(--shiki-dark-bg);
-  }
+/* 테마는 next-themes 가 html 에 붙이는 .dark 클래스가 정한다.
+   prefers-color-scheme 으로 걸면 OS 는 라이트인데 사이트만 다크일 때
+   어두운 배경 위에 밝은 코드 배경이 덮여 읽을 수 없게 된다. */
+.dark code[data-theme*=' '],
+.dark code[data-theme*=' '] span {
+  color: var(--shiki-dark);
+  background-color: var(--shiki-dark-bg);
 }
 
 code[data-line-numbers] {
