@@ -33,15 +33,24 @@ tags: [Algorithm, Sort]
 합치는 과정이 핵심이라 `merge` 함수를 따로 두고 시작합니다.
 
 ```js
-// 정렬된 두 배열을 정렬된 하나의 배열로 합치는 함수
+// 각각 이미 정렬돼 있는 두 배열을, 정렬된 하나의 배열로 합치는 함수
 const merge = (left, right) => {
+  // 합쳐진 결과를 담을 배열
   const result = [];
+
+  // 두 배열에서 각각 "어디까지 꺼냈는지"를 가리키는 인덱스
   let leftIndex = 0;
   let rightIndex = 0;
 
-  // 양쪽 배열의 앞에서부터 더 작은 값을 꺼내 담는다
+  // 양쪽 모두 아직 꺼낼 값이 남아 있는 동안에만 비교한다.
+  // 한쪽이 바닥나면 비교할 상대가 없으므로 루프를 빠져나간다.
   while (leftIndex < left.length && rightIndex < right.length) {
-    // 값이 같을 때 왼쪽을 먼저 담는 것이 중요하다 (아래 안정 정렬 참고)
+    // 두 배열 모두 정렬된 상태이므로, 각 배열의 맨 앞 값이 그 배열에서 가장 작다.
+    // 따라서 이 둘 중 작은 쪽이 "아직 안 꺼낸 값 전체에서 가장 작은 값"이다.
+    // 뒤쪽은 볼 필요 없이 앞의 두 개만 비교하면 되는 이유다.
+    //
+    // 값이 같을 때 왼쪽을 먼저 담는 것이 중요하다.
+    // left는 원래 배열에서 앞쪽이었던 조각이라, 같은 값끼리의 순서가 보존된다 (안정 정렬).
     if (left[leftIndex] <= right[rightIndex]) {
       result.push(left[leftIndex]);
       leftIndex++;
@@ -51,7 +60,12 @@ const merge = (left, right) => {
     }
   }
 
-  // 한쪽이 먼저 비면 남은 쪽은 이미 정렬돼 있으므로 그대로 이어붙인다
+  // 여기 도달했다는 건 한쪽이 바닥났다는 뜻이다.
+  // 남아 있는 값들은 (1) 이미 result의 마지막 값보다 크고 (2) 자기들끼리도 정렬돼 있다.
+  // 그래서 더 비교하지 않고 뒤에 그대로 이어붙이면 된다.
+  //
+  // 바닥난 쪽의 slice는 빈 배열이 되므로,
+  // 어느 쪽이 남았는지 if로 따지지 않고 둘 다 펼쳐도 안전하다.
   return [...result, ...left.slice(leftIndex), ...right.slice(rightIndex)];
 };
 ```
@@ -62,18 +76,25 @@ const merge = (left, right) => {
 const array = [1, 4, 2, 3, 5];
 
 const mergeSort = (arr) => {
-  // 요소가 하나면 더 나눌 수 없고, 그 자체로 정렬된 상태다
+  // 재귀를 멈추는 지점.
+  // 요소가 하나뿐이면 비교할 상대가 없으므로 그 자체로 이미 정렬된 상태다.
   if (arr.length <= 1) {
     return arr;
   }
 
   const middle = Math.floor(arr.length / 2);
 
-  // 절반으로 나눠 각각 재귀적으로 정렬 (Divide + Conquer)
+  // 값을 전혀 보지 않고 무조건 가운데에서 자른다 (Divide).
+  // 퀵 정렬은 pivot과 비교해가며 나눴지만, 병합 정렬의 나누는 단계는 아무 판단도 하지 않는다.
+  //
+  // 각 절반을 다시 mergeSort에 넘기면, 같은 과정이 반복되다가
+  // 길이 1까지 쪼개진 뒤 정렬된 상태로 돌아온다 (Conquer).
   const left = mergeSort(arr.slice(0, middle));
   const right = mergeSort(arr.slice(middle));
 
-  // 정렬이 끝난 두 배열을 합친다 (Combine)
+  // 이 시점에서 left와 right는 각각 정렬이 끝난 배열이다.
+  // 그래서 위에서 만든 merge로 합치기만 하면 된다 (Combine).
+  // 실제 정렬은 전부 이 합치는 단계에서 일어난다.
   return merge(left, right);
 };
 
