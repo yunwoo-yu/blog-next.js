@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 
 import AdSlot from '@/components/common/AdSlot';
 import CustomMDXRemote from '@/components/common/CustomMDXRemote';
@@ -34,6 +35,10 @@ export const generateMetadata = async ({ params }: Params): Promise<Metadata> =>
 	const { category, slug } = await params;
 
 	const post = await getPostDetail(category, slug);
+
+	// 없는 글이면 페이지 컴포넌트가 notFound()로 처리한다. 여기서 던지면 404 대신 500이 된다.
+	if (!post) return {};
+
 	const description = `${post.source
 		.replace(/```[\s\S]*?```/g, '')
 		.replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
@@ -73,7 +78,11 @@ export const generateMetadata = async ({ params }: Params): Promise<Metadata> =>
 
 const PostDetailPage = async ({ params }: Params) => {
 	const { category, slug } = await params;
-	const { source, frontmatter } = await getPostDetail(category, slug);
+	const post = await getPostDetail(category, slug);
+
+	if (!post) notFound();
+
+	const { source, frontmatter } = post;
 	const allPosts = await getAllPosts(getAllPostsPath());
 
 	const headerNavigationList = getHeaderNavigationList(source);

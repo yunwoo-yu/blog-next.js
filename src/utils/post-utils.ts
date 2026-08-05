@@ -110,7 +110,13 @@ export const getAllPostsPath = (category?: string) => {
 };
 
 export const getPostDetail = async (category: string, slug: string) => {
-	const postPath = `${PATH}/${category}/${slug}/index.mdx`;
+	// join 이 ../ 를 정리하므로, 정리된 결과가 mdx 루트 안에 있는지까지 확인한다.
+	const postPath = join(PATH, category, slug, 'index.mdx');
+
+	// 없는 주소에서 readFileSync 가 그대로 던지면 404 가 아니라 500 이 된다.
+	// 호출부가 notFound() 로 넘길 수 있게 null 을 돌려준다.
+	if (!postPath.startsWith(`${PATH}/`) || !existsSync(postPath)) return null;
+
 	const source = readFileSync(postPath, 'utf-8');
 	const deleteFrontmatterSource = source.replace(/---[\s\S]*?---/, '');
 

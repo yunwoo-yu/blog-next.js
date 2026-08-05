@@ -6,6 +6,7 @@ import {
 	getAdjacentPosts,
 	getGeneratedThumbnailPath,
 	getHeaderNavigationList,
+	getPostDetail,
 	getPostsByTag,
 	getReadingTime,
 	normalizeFrontmatter,
@@ -109,6 +110,29 @@ const createPost = (category: string, slug: string, tags: string[] = []): PostLi
 	category,
 	slug,
 	frontmatter: { title: slug, createdAt: '2025-01-01', thumbnail: '', description: '', tags },
+});
+
+describe('getPostDetail', () => {
+	it('존재하는 글은 frontmatter와 본문을 반환한다', async () => {
+		const post = await getPostDetail('cs', 'quick_sort');
+
+		expect(post?.frontmatter.title).toBe('Quick Sort (퀵 정렬)');
+		expect(post?.source.length).toBeGreaterThan(0);
+	});
+
+	// 없는 주소에서 readFileSync가 그대로 던지면 404가 아니라 500이 된다
+	it('없는 글은 null을 반환한다', async () => {
+		expect(await getPostDetail('cs', 'does_not_exist')).toBeNull();
+	});
+
+	it('없는 카테고리도 null을 반환한다', async () => {
+		expect(await getPostDetail('nope', 'nope')).toBeNull();
+	});
+
+	it('mdx 디렉토리 밖으로 빠져나가는 경로는 null을 반환한다', async () => {
+		expect(await getPostDetail('cs', '../../..')).toBeNull();
+		expect(await getPostDetail('../../..', 'cs')).toBeNull();
+	});
 });
 
 describe('countTags', () => {
