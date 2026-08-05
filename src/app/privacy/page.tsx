@@ -1,9 +1,12 @@
 import type { Metadata } from 'next';
 
+import { buildAlternates } from '@/utils/seo';
+
 export const metadata: Metadata = {
 	title: '개인정보처리방침',
 	description: 'Ycow Dev Blog 개인정보처리방침',
 	robots: { index: true, follow: true },
+	alternates: buildAlternates('/privacy'),
 };
 
 const LAST_UPDATED = '2026년 4월 17일';
