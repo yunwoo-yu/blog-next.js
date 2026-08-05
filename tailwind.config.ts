@@ -102,7 +102,7 @@ const config: Config = {
 						blockquote: {
 							fontSize: '100%',
 							fontStyle: 'normal',
-							color: colors.zinc[400],
+							color: 'hsl(var(--muted-foreground))',
 							borderLeftColor: 'hsl(var(--destructive))',
 							'p::before': { display: 'none' },
 							'p::after': { display: 'none' },
@@ -116,16 +116,22 @@ const config: Config = {
 							transitionDuration: '0.18s',
 							boxShadow: `0 0 0 0.2rem transparent`,
 							'&:hover': {
-								color: `${colors.zinc[900]}`,
+								color: 'hsl(var(--destructive-foreground))',
 								background: 'hsl(var(--destructive))',
 								boxShadow: `0 0 0 0.2rem hsl(var(--destructive))`,
 							},
 						},
 						code: {
-							color: '#86e1fc',
 							'&::before': { content: `unset !important` },
 							'&::after': { content: `unset !important` },
 							fontWeight: 'normal',
+						},
+						// 인라인 코드만 대상으로 한다. pre 안쪽은 shiki가 색을 입히므로 건드리지 않는다.
+						':not(pre) > code': {
+							color: 'hsl(var(--destructive))',
+							backgroundColor: 'hsl(var(--destructive) / 0.12)',
+							padding: '0.15em 0.4em',
+							borderRadius: '0.25rem',
 						},
 						'a code': {
 							fontSize: '1em',
