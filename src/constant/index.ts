@@ -8,18 +8,21 @@ export const LINKEDIN_URL = 'https://www.linkedin.com/in/yunwoo-yu-65095b263';
 export const GITHUB_URL = 'https://github.com/yunwoo-yu';
 
 // METADATA
-const META_TITLE = 'Ycow FE Dev Blog';
-const META_DESCRIPTION = '프론트엔드 개발자 Ycow의 개발 블로그 입니다.';
+export const META_TITLE = 'Ycow FE Dev Blog';
+export const META_DESCRIPTION = '프론트엔드 개발자 Ycow의 개발 블로그 입니다.';
+export const META_AUTHOR_NAME = '유윤우';
 const META_APPLICATION_NAME = 'Ycow Dev Blog';
-const META_AUTHOR: Author[] = [{ name: '유윤우', url: LINKEDIN_URL }];
+const META_AUTHOR: Author[] = [{ name: META_AUTHOR_NAME, url: LINKEDIN_URL }];
 const META_GENERATOR = 'Next.js + Typescript';
 const META_KEYWORDS = ['Front-End', 'Developer', 'Blog', 'Next.js', 'React.js', 'Typescript'];
 const META_REFERRER = 'origin';
-const META_CREATOR = '유윤우';
-const META_PUBLISHER = '유윤우';
+const META_CREATOR = META_AUTHOR_NAME;
+const META_PUBLISHER = META_AUTHOR_NAME;
 const META_CATEGORY = 'Blog';
 
 export const ROOT_META_DATA: Metadata = {
+	// 없으면 OG/트위터 이미지가 localhost 기준으로 해석되어 공유 썸네일이 깨진다.
+	metadataBase: new URL(BASE_URL),
 	title: META_TITLE,
 	description: META_DESCRIPTION,
 	applicationName: META_APPLICATION_NAME,
@@ -30,6 +33,11 @@ export const ROOT_META_DATA: Metadata = {
 	creator: META_CREATOR,
 	publisher: META_PUBLISHER,
 	category: META_CATEGORY,
+	// canonical은 여기 두지 않는다. 루트에 두면 /privacy 같은 하위 페이지까지 상속받아
+	// 서로 다른 페이지가 같은 정규 URL을 가리키는 잘못된 중복 신호가 된다.
+	alternates: {
+		types: { 'application/rss+xml': [{ url: '/feed.xml', title: META_TITLE }] },
+	},
 	verification: {
 		google: 'ax_0fwy0VtSqLoetzvw8ap6chPh_IIt5WbYLSKJYlCA',
 		other: {
