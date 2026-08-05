@@ -40,7 +40,9 @@
 		"shiki": "^1.23.1",
 		"tailwind-merge": "^2.5.4",
 		"tailwind-scrollbar-hide": "^4.0.0",
-		"tailwindcss-animate": "^1.0.7"
+		"tailwindcss-animate": "^1.0.7",
+		"vfile": "^6.0.3",
+		"vfile-matter": "^5.0.0"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.4.10",

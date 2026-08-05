@@ -1,11 +1,49 @@
 import { readFileSync } from 'node:fs';
 import { readdir } from 'node:fs/promises';
 import { globSync } from 'glob';
-import { compileMDX } from 'next-mdx-remote/rsc';
+import { VFile } from 'vfile';
+import { matter } from 'vfile-matter';
 
-import type { CompileMdxTypes, HeadingTypes } from '@/types/common.types';
+import type { CompileMdxTypes, HeadingTypes, PostListTypes } from '@/types/common.types';
 
 const PATH = `${process.cwd()}/src/mdx`;
+
+/**
+ * 목록에는 frontmatter만 필요한데 compileMDX는 본문까지 전부 컴파일한다.
+ * 목록 페이지가 요청마다 렌더되므로 next-mdx-remote가 내부적으로 쓰는 파서를 직접 불러 쓴다.
+ * (같은 파서라 파싱 결과가 달라질 여지가 없다.)
+ */
+const parseFrontmatter = (source: string) => {
+	const file = new VFile(source);
+
+	matter(file);
+
+	return normalizeFrontmatter((file.data.matter ?? {}) as CompileMdxTypes);
+};
+
+/** 배포된 환경에서 mdx 파일은 바뀌지 않는다. 개발 중에는 수정이 바로 보이도록 캐시하지 않는다. */
+const frontmatterCache = process.env.NODE_ENV === 'production' ? new Map<string, CompileMdxTypes>() : null;
+
+const readFrontmatter = (postPath: string) => {
+	const cached = frontmatterCache?.get(postPath);
+
+	if (cached) return cached;
+
+	const parsed = parseFrontmatter(readFileSync(postPath, 'utf-8'));
+
+	frontmatterCache?.set(postPath, parsed);
+
+	return parsed;
+};
+
+/**
+ * YAML은 `tags: [Blog, 2025]`의 2025를 숫자로 읽는다. 타입 선언은 string[]이라
+ * 그대로 두면 toLowerCase/localeCompare 같은 문자열 연산에서 터진다. 파싱 경계에서 맞춰 둔다.
+ */
+export const normalizeFrontmatter = (frontmatter: CompileMdxTypes): CompileMdxTypes => ({
+	...frontmatter,
+	tags: (frontmatter.tags ?? []).map(String),
+});
 
 export const getAllPostsPath = (category?: string) => {
 	return globSync(`${PATH}/${category ? category : '**'}/**/*.mdx`);
@@ -16,32 +54,15 @@ export const getPostDetail = async (category: string, slug: string) => {
 	const source = readFileSync(postPath, 'utf-8');
 	const deleteFrontmatterSource = source.replace(/---[\s\S]*?---/, '');
 
-	const { frontmatter } = await compileMDX<CompileMdxTypes>({
-		source,
-		options: {
-			parseFrontmatter: true,
-		},
-	});
-
-	return { source: deleteFrontmatterSource, frontmatter };
+	return { source: deleteFrontmatterSource, frontmatter: parseFrontmatter(source) };
 };
 
-export const getAllPosts = async (postPaths: string[]) => {
-	const ParsingPosts = postPaths.map(async post => {
-		const source = readFileSync(post, 'utf-8');
+export const getAllPosts = async (postPaths: string[]): Promise<PostListTypes[]> => {
+	const posts = postPaths.map(postPath => {
+		const [category, slug] = postPath.split('/').slice(-3);
 
-		const { frontmatter } = await compileMDX<CompileMdxTypes>({
-			source,
-			options: {
-				parseFrontmatter: true,
-			},
-		});
-		const [category, slug] = post.split('/').slice(-3);
-
-		return { frontmatter, category, slug };
+		return { frontmatter: readFrontmatter(postPath), category, slug };
 	});
-
-	const posts = await Promise.all(ParsingPosts);
 
 	return posts.sort((a, b) => (a.frontmatter.createdAt > b.frontmatter.createdAt ? -1 : 1));
 };
@@ -59,6 +80,58 @@ export const getCategoryList = async () => {
 	});
 
 	return { categoryNameList, allCount };
+};
+
+/** 태그별 글 수를 세어 많은 순, 같으면 이름 순으로 정렬한다. */
+export const countTags = (posts: PostListTypes[]) => {
+	const counts = new Map<string, number>();
+
+	for (const post of posts) {
+		for (const tag of post.frontmatter.tags) {
+			counts.set(tag, (counts.get(tag) ?? 0) + 1);
+		}
+	}
+
+	return [...counts.entries()]
+		.map(([label, count]) => ({ label, count }))
+		.sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
+};
+
+/** 태그는 대소문자를 구분하지 않고 매칭한다. URL로 오갈 때 표기가 흔들리기 때문이다. */
+export const getPostsByTag = (posts: PostListTypes[], tag: string) => {
+	const target = tag.toLowerCase();
+
+	return posts.filter(post => post.frontmatter.tags.some(postTag => postTag.toLowerCase() === target));
+};
+
+/**
+ * 최신순으로 정렬된 목록에서 현재 글의 앞뒤 글을 찾는다.
+ * 목록이 최신순이므로 인덱스가 클수록 오래된 글이다.
+ */
+export const getAdjacentPosts = (posts: PostListTypes[], category: string, slug: string) => {
+	const currentIndex = posts.findIndex(post => post.category === category && post.slug === slug);
+
+	if (currentIndex === -1) return { older: null, newer: null };
+
+	return {
+		older: posts[currentIndex + 1] ?? null,
+		newer: posts[currentIndex - 1] ?? null,
+	};
+};
+
+/** 한국어 기준 분당 500자로 읽기 시간을 추정한다. 코드 블록과 마크다운 문법은 제외한다. */
+export const getReadingTime = (source: string) => {
+	const CHARS_PER_MINUTE = 500;
+
+	const plainText = source
+		.replace(/```[\s\S]*?```/g, '')
+		.replace(/`[^`]*`/g, '')
+		.replace(/!\[[^\]]*\]\([^)]*\)/g, '')
+		.replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
+		.replace(/[#*_~>|-]/g, '')
+		.replace(/\s+/g, '');
+
+	return Math.max(1, Math.ceil(plainText.length / CHARS_PER_MINUTE));
 };
 
 export const getHeaderNavigationList = (source: string) => {
