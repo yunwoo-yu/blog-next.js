@@ -1,0 +1,305 @@
+---
+title: "해시 테이블 (Hash Table)"
+createdAt: 2025-02-26
+description: 자료구조 복습하기 2탄
+tags: [DataStructure, Hash]
+---
+
+> 자료구조 포스팅 하며 복습하기 📦
+> 1. [선형 자료구조 (배열, 연결 리스트, 스택, 큐)](/blog/posts/cs/linear_structures)
+> 2. [해시 테이블](/blog/posts/cs/hash_table)
+> 3. [트리와 힙, 그리고 그래프](/blog/posts/cs/tree_and_heap)
+
+## 해시 테이블이란?
+
+키를 숫자로 바꿔 배열의 인덱스로 쓰는 자료구조입니다.
+
+1탄에서 본 구조들은 값을 찾으려면 앞에서부터 훑어야 했습니다. 연결 리스트는 물론이고, 배열도 인덱스를 모르면 결국 전부 비교해야 합니다.
+
+해시 테이블은 발상이 다릅니다. 값을 어디에 뒀는지를 키로부터 계산해냅니다. 찾을 때도 같은 계산을 하면 바로 그 자리가 나오므로 훑을 필요가 없습니다.
+
+## 해시 함수
+
+키를 배열 인덱스로 바꾸는 함수입니다.
+
+어떤 길이의 문자열을 넣어도 정해진 범위의 숫자가 나와야 하고, 같은 키를 넣으면 항상 같은 숫자가 나와야 합니다.
+
+```js
+const hash = (key, size) => {
+  let total = 0;
+
+  for (const char of String(key)) {
+    // 글자를 코드값으로 바꿔 더한다
+    total += char.charCodeAt(0);
+  }
+
+  // 배열 크기로 나눈 나머지를 쓰면 항상 0 ~ size-1 안에 들어온다
+  return total % size;
+};
+
+console.log(hash('name', 10)); // 7
+console.log(hash('name', 10)); // 7  같은 키는 항상 같은 자리
+console.log(hash('age', 10)); // 1
+```
+
+## 충돌
+
+서로 다른 키가 같은 인덱스로 계산되는 경우가 반드시 생깁니다.
+
+키는 무한히 만들 수 있는데 배열 칸은 유한하니 피할 수 없습니다. 위 함수는 글자 코드값을 더하기만 해서 더 자주 부딪힙니다. 순서만 다른 `ab`와 `ba`는 합이 같아 항상 같은 자리로 갑니다.
+
+특별히 꼬아 만든 키가 아니어도 부딪힙니다. 흔히 쓰는 키로 확인해보면 이렇습니다.
+
+```js
+hash('name', 10); // 7
+hash('user', 10); // 7   같은 칸
+hash('age', 10); // 1
+hash('city', 10); // 1   같은 칸
+```
+
+그래서 충돌을 없애려 하지 않고 충돌해도 동작하게 만듭니다. 방법은 크게 두 가지입니다.
+
+- 체이닝: 한 칸에 여러 쌍을 담아두고, 그 칸 안에서만 찾는다
+- 개방 주소법: 한 칸에는 하나만 담고, 자리가 차 있으면 다른 빈 칸으로 옮겨간다
+
+## 체이닝
+
+한 칸에 하나만 담는 대신 여러 쌍을 담아두는 방법입니다.
+
+```
+buckets
+  0  (비어 있음)
+  1  [ { key: 'age',  value: 30 },     { key: 'city', value: '서울' } ]
+  7  [ { key: 'name', value: 'ycow' }, { key: 'user', value: 'admin' } ]
+```
+
+여기서 중요한 점이 있습니다. **해시는 "몇 번 칸"까지만 알려줍니다.** 그 칸에 여러 쌍이 들어 있을 수 있으니, 원하는 키가 그중 어느 것인지는 직접 확인해야 합니다.
+
+그래서 값을 꺼내는 일은 두 단계입니다.
+
+1. 키를 해시해서 칸 번호를 구한다 — 계산 한 번, 훑지 않는다
+2. 그 칸 안에서 키가 일치하는 쌍을 찾는다 — 여기서만 하나씩 비교한다
+
+2단계에 쓰는 것이 `find`입니다. 배열 전체가 아니라 **그 칸에 담긴 몇 개만** 훑기 때문에 비용이 작습니다.
+
+### 코드
+
+```js
+class HashTable {
+  constructor(size = 10) {
+    // 각 칸에 { key, value } 들이 담긴다
+    this.buckets = new Array(size);
+  }
+
+  hash(key) {
+    let total = 0;
+
+    for (const char of String(key)) {
+      total += char.charCodeAt(0);
+    }
+
+    return total % this.buckets.length;
+  }
+
+  set(key, value) {
+    // 1단계: 어느 칸에 넣을지 계산한다
+    const index = this.hash(key);
+
+    // 그 칸을 처음 쓰는 경우에만 배열을 만든다
+    if (!this.buckets[index]) {
+      this.buckets[index] = [];
+    }
+
+    const bucket = this.buckets[index];
+
+    // 2단계: 그 칸에 같은 키가 이미 있는지 확인한다.
+    // 다른 키가 충돌해서 같이 들어 있을 수 있으므로 키를 직접 비교해야 한다
+    const entry = bucket.find(item => item.key === key);
+
+    if (entry) {
+      // find 는 칸 안에 들어 있는 객체를 그대로 돌려준다.
+      // 따라서 여기서 값을 바꾸면 칸 안의 값이 바뀐다
+      entry.value = value;
+    } else {
+      bucket.push({ key, value });
+    }
+  }
+
+  get(key) {
+    // 1단계: 넣을 때와 같은 계산을 하므로 훑지 않고 바로 그 칸으로 간다
+    const bucket = this.buckets[this.hash(key)];
+
+    // 그 칸을 한 번도 쓴 적이 없으면 찾는 키도 없다
+    if (!bucket) {
+      return undefined;
+    }
+
+    // 2단계: 칸 안에 여러 개가 있을 수 있으니 키가 맞는 것을 고른다
+    const entry = bucket.find(item => item.key === key);
+
+    // 칸은 있는데 그 키가 없을 수도 있다
+    return entry?.value;
+  }
+}
+
+const table = new HashTable();
+
+table.set('name', 'ycow');
+table.set('user', 'admin'); // name 과 같은 7번 칸으로 간다
+
+console.log(table.get('name')); // ycow
+console.log(table.get('user')); // admin
+console.log(table.get('none')); // undefined
+
+// 7번 칸에 두 개가 나란히 들어 있다
+console.log(table.buckets[7]);
+// [ { key: 'name', value: 'ycow' }, { key: 'user', value: 'admin' } ]
+```
+
+## 개방 주소법
+
+칸마다 배열을 두지 않고, 배열 하나에 값을 직접 담습니다. 가려는 칸이 이미 차 있으면 빈 칸이 나올 때까지 옮겨갑니다.
+
+한 칸씩 뒤로 밀어가며 찾는 것을 선형 탐사라고 합니다.
+
+```js
+class OpenAddressing {
+  constructor(size = 10) {
+    // 칸마다 { key, value } 하나씩만 들어간다
+    this.slots = new Array(size);
+  }
+
+  hash(key) {
+    let total = 0;
+
+    for (const char of String(key)) {
+      total += char.charCodeAt(0);
+    }
+
+    return total % this.slots.length;
+  }
+
+  // 이 키가 있어야 할 자리를 찾는다.
+  // 빈 칸이거나 같은 키를 만나면 거기가 제자리다
+  findSlot(key) {
+    let index = this.hash(key);
+
+    for (let i = 0; i < this.slots.length; i++) {
+      const slot = this.slots[index];
+
+      if (!slot || slot.key === key) {
+        return index;
+      }
+
+      // 다른 키가 차지하고 있으면 한 칸 뒤로. 끝에 닿으면 처음으로 돌아온다
+      index = (index + 1) % this.slots.length;
+    }
+
+    return -1; // 한 바퀴 다 돌았는데 자리가 없다
+  }
+
+  set(key, value) {
+    const index = this.findSlot(key);
+
+    if (index === -1) {
+      throw new Error('가득 참');
+    }
+
+    this.slots[index] = { key, value };
+  }
+
+  get(key) {
+    const index = this.findSlot(key);
+
+    return index === -1 ? undefined : this.slots[index]?.value;
+  }
+}
+
+const table = new OpenAddressing();
+
+table.set('name', 'ycow'); // 7번 칸
+table.set('user', 'admin'); // 7번이 차 있으니 8번으로
+
+console.log(table.get('name')); // ycow
+console.log(table.get('user')); // admin
+```
+
+체이닝과 달리 배열 하나만 쓰기 때문에 값들이 메모리에 붙어 있습니다. 칸을 옮겨가며 찾을 때 바로 옆을 보게 되므로 CPU 캐시에 유리합니다.
+
+### 삭제가 까다롭습니다
+
+개방 주소법에는 함정이 하나 있습니다. 값을 지울 때 칸을 그냥 비우면 안 됩니다.
+
+```js
+table.slots[7] = undefined; // name 을 지운다고 그냥 비우면
+
+console.log(table.get('user')); // undefined  <- 못 찾는다
+```
+
+`user`는 7번이 차 있어서 8번에 밀려 들어갔습니다. 그런데 7번이 비면 `findSlot`이 7번에서 "빈 칸이네, 여기가 제자리다"라고 판단하고 멈춥니다. 8번까지 가보지도 않습니다.
+
+옮겨간 흔적이 끊기는 것입니다. 그래서 실제로는 칸을 비우는 대신 "여기 있었는데 지워졌다"는 표시를 남겨서, 탐사가 그 칸을 지나쳐 계속 가도록 만듭니다.
+
+체이닝은 이런 문제가 없습니다. 칸 안의 배열에서 하나 빼면 그만입니다.
+
+## 둘 중 무엇을 쓰나
+
+- 체이닝은 칸 수보다 데이터가 많아져도 계속 담을 수 있습니다. 개방 주소법은 칸이 다 차면 더 넣지 못해 배열을 늘려 다시 배치해야 합니다.
+- 개방 주소법은 배열 하나만 쓰므로 메모리가 덜 들고 캐시에 유리합니다. 체이닝은 칸마다 배열이 따로 있어 그만큼 더 씁니다.
+- 삭제는 체이닝이 단순합니다. 개방 주소법은 위에서 본 표시가 필요합니다.
+- 데이터가 칸 수의 70%를 넘어가면 개방 주소법은 빈 칸을 찾아 헤매느라 급격히 느려집니다. 체이닝은 그보다 완만하게 나빠집니다.
+
+구현이 단순하고 적재율에 덜 민감해서 체이닝이 더 흔히 쓰입니다.
+
+### 시간 복잡도
+
+- 충돌이 없으면 계산 한 번으로 자리를 찾으므로 넣기와 찾기 모두 O(1)입니다.
+- 충돌이 나면 그 칸 안을 훑어야 하므로 그만큼 느려집니다.
+- 모든 키가 한 칸으로 몰리면 결국 배열 하나를 전부 훑는 것과 같아져 O(n)이 됩니다.
+- 평균은 O(1), 최악은 **O(n)** 입니다. 해시 함수가 값을 얼마나 고르게 흩어주는지가 성능을 좌우합니다.
+
+[퀵 정렬](/blog/posts/cs/quick_sort)이 pivot을 잘못 고르면 최악으로 떨어졌던 것과 비슷합니다. 평균은 좋지만 입력이나 함수에 따라 무너질 수 있습니다.
+
+## 자바스크립트의 객체와 Map
+
+둘 다 키로 값을 찾는 구조라 겉보기에는 비슷하지만 다르게 동작합니다.
+
+객체는 키를 문자열로 바꿔서 저장합니다. 숫자 `1`과 문자열 `'1'`을 서로 다른 키로 쓸 수 없습니다.
+
+```js
+const obj = {};
+
+obj[1] = 'number 1';
+obj['1'] = 'string 1';
+
+console.log(obj); // { '1': 'string 1' }
+console.log(Object.keys(obj).length); // 1  키가 하나로 합쳐졌다
+
+const map = new Map();
+
+map.set(1, 'number 1');
+map.set('1', 'string 1');
+
+console.log(map.size); // 2  타입을 그대로 구분한다
+```
+
+키 순서도 다릅니다. 객체는 정수처럼 생긴 키를 먼저 오름차순으로 모아놓고 나머지를 넣은 순서대로 붙이지만, `Map`은 넣은 순서를 그대로 지킵니다.
+
+```js
+const obj = { b: 1, 2: 1, a: 1, 1: 1 };
+
+console.log(Object.keys(obj)); // ['1', '2', 'b', 'a']
+
+const map = new Map([['b', 1], [2, 1], ['a', 1], [1, 1]]);
+
+console.log([...map.keys()]); // ['b', 2, 'a', 1]
+```
+
+정리하면 키가 문자열이고 구조가 고정된 데이터라면 객체가 편하고, 키 타입이 섞이거나 넣은 순서가 중요하거나 자주 넣고 지운다면 `Map`이 맞습니다.
+
+## 정리
+
+- 해시 테이블은 키로 위치를 계산해서 훑지 않고 바로 찾아갑니다.
+- 서로 다른 키가 같은 자리로 가는 충돌은 피할 수 없어서, 없애는 대신 견디도록 만듭니다.
+- 평균 O(1)이지만 해시 함수가 고르게 흩어주지 못하면 최악에는 전부 훑는 것과 같아집니다.
+- 객체와 `Map`은 키를 다루는 방식이 달라서 용도가 갈립니다.
