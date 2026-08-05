@@ -3,7 +3,9 @@ import type { Author } from 'next/dist/lib/metadata/types/metadata-types';
 
 export const BASE_URL = 'https://ycow-dev.com';
 
-export const LINKEDIN_URL = 'https://www.linkedin.com/in/yunwoo-yu-65095b263';
+// 프로필 이름을 한글로 바꾸면 LinkedIn 공개 URL 슬러그도 따라 바뀐다.
+// 뒤 식별자(65095b263)는 그대로이므로 같은 프로필이다.
+export const LINKEDIN_URL = 'https://www.linkedin.com/in/%EC%9C%A4%EC%9A%B0-%EC%9C%A0-65095b263/';
 
 export const GITHUB_URL = 'https://github.com/yunwoo-yu';
 
