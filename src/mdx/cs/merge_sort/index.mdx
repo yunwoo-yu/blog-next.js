@@ -1,0 +1,108 @@
+---
+title: "Merge Sort (병합 정렬)"
+createdAt: 2025-02-05
+description: 알고리즘 복습하기 정렬편 5탄
+tags: [Algorithm, Sort]
+---
+
+> 알고리즘 포스팅 하며 복습하기 (정렬편) 📊
+> 1. [Selection Sort (선택 정렬)](/blog/posts/cs/selection_sort)
+> 2. [Insertion Sort (삽입 정렬)](/blog/posts/cs/insertion_sort)
+> 3. [Bubble Sort (버블 정렬)](/blog/posts/cs/bubble_sort)
+> 4. [Quick Sort (퀵 정렬)](/blog/posts/cs/quick_sort)
+> 5. [Merge Sort (병합 정렬)](/blog/posts/cs/merge_sort)
+> 6. [Heap Sort (힙 정렬)](/blog/posts/cs/heap_sort)
+
+## 병합 정렬이란?
+
+병합 정렬은 퀵 정렬과 마찬가지로 분할 정복(divide and conquer)을 이용해 데이터를 정렬하는 알고리즘입니다. 배열을 절반씩 나눠 더 이상 나눌 수 없을 때까지 쪼갠 뒤, 정렬하면서 다시 합칩니다.
+
+지난 글에서 퀵 정렬을 다루며 분할 정복을 정리했는데, 병합 정렬은 같은 분할 정복이면서도 **일을 하는 시점이 정반대**입니다.
+
+- 퀵 정렬은 **나눌 때** 일합니다. pivot을 기준으로 작은 값과 큰 값을 갈라놓기 때문에, 다 나누고 나면 합치는 건 그냥 이어붙이기입니다.
+- 병합 정렬은 **합칠 때** 일합니다. 나눌 때는 아무 기준 없이 무조건 절반으로 자르고, 정렬은 두 배열을 합치는 과정에서 일어납니다.
+
+### 병합 정렬 알고리즘
+
+1. 배열을 절반으로 나눈다 (Divide)
+2. 길이가 1이 될 때까지 재귀적으로 나눈다 — 요소가 하나면 그 자체로 정렬된 상태다
+3. 정렬된 두 배열을 앞에서부터 비교하며 하나로 합친다 (Conquer + Combine)
+
+### 코드
+
+합치는 과정이 핵심이라 `merge` 함수를 따로 두고 시작합니다.
+
+```js
+// 정렬된 두 배열을 정렬된 하나의 배열로 합치는 함수
+const merge = (left, right) => {
+  const result = [];
+  let leftIndex = 0;
+  let rightIndex = 0;
+
+  // 양쪽 배열의 앞에서부터 더 작은 값을 꺼내 담는다
+  while (leftIndex < left.length && rightIndex < right.length) {
+    // 값이 같을 때 왼쪽을 먼저 담는 것이 중요하다 (아래 안정 정렬 참고)
+    if (left[leftIndex] <= right[rightIndex]) {
+      result.push(left[leftIndex]);
+      leftIndex++;
+    } else {
+      result.push(right[rightIndex]);
+      rightIndex++;
+    }
+  }
+
+  // 한쪽이 먼저 비면 남은 쪽은 이미 정렬돼 있으므로 그대로 이어붙인다
+  return [...result, ...left.slice(leftIndex), ...right.slice(rightIndex)];
+};
+```
+
+이제 배열을 절반으로 나누며 재귀적으로 `merge`를 호출합니다.
+
+```js
+const array = [1, 4, 2, 3, 5];
+
+const mergeSort = (arr) => {
+  // 요소가 하나면 더 나눌 수 없고, 그 자체로 정렬된 상태다
+  if (arr.length <= 1) {
+    return arr;
+  }
+
+  const middle = Math.floor(arr.length / 2);
+
+  // 절반으로 나눠 각각 재귀적으로 정렬 (Divide + Conquer)
+  const left = mergeSort(arr.slice(0, middle));
+  const right = mergeSort(arr.slice(middle));
+
+  // 정렬이 끝난 두 배열을 합친다 (Combine)
+  return merge(left, right);
+};
+
+console.log(mergeSort(array)); // [1, 2, 3, 4, 5]
+```
+
+### 퀵 정렬과 무엇이 다른가
+
+|  | 퀵 정렬 | 병합 정렬 |
+|---|---|---|
+| 나누는 기준 | pivot 값 | 무조건 절반 |
+| 정렬하는 시점 | 나눌 때 | 합칠 때 |
+| 최악 시간 복잡도 | O(n^2) | **O(n log n)** |
+| 추가 메모리 | O(log n) (재귀 스택) | **O(n)** |
+| 안정 정렬 | X | **O** |
+
+퀵 정렬은 pivot을 잘못 고르면 분할이 한쪽으로 치우쳐 최악 O(n^2)까지 떨어졌습니다. 병합 정렬은 값과 무관하게 항상 절반으로 자르기 때문에 그런 경우가 없습니다. 대신 합칠 때마다 새 배열을 만들어 쓰므로 메모리를 더 씁니다. 앞선 정렬들이 배열 안에서 자리를 바꾸며(in-place) 동작한 것과 다른 지점입니다.
+
+### 안정 정렬 (Stable Sort)
+
+값이 같은 요소들의 원래 순서가 정렬 후에도 유지되면 **안정 정렬**이라고 합니다.
+
+`merge` 함수에서 두 값이 같을 때 왼쪽 배열의 값을 먼저 담았는데, 왼쪽이 원래 배열에서 앞에 있던 쪽이므로 같은 값끼리의 순서가 그대로 보존됩니다. 이 비교를 `<=`가 아니라 `<`로 바꾸면 오른쪽이 먼저 담기면서 안정성이 깨집니다. 한 글자 차이입니다.
+
+정렬 결과만 보면 차이가 없어 보이지만, 이미 다른 기준으로 정렬해둔 데이터를 다시 정렬할 때 드러납니다. 예를 들어 이름순으로 정렬한 목록을 점수순으로 다시 정렬하면, 안정 정렬은 점수가 같은 사람들 사이에서 이름순을 유지하지만 불안정 정렬은 그 순서를 보장하지 않습니다.
+
+### 시간 복잡도
+
+- 절반씩 나누므로 재귀의 깊이는 **log n**입니다.
+- 각 깊이마다 전체 요소 **n**개를 한 번씩 훑으며 합칩니다.
+- 따라서 두 값을 곱한 **O(n log n)**이며, 나누는 기준이 값에 좌우되지 않으므로 최선·평균·최악이 모두 같습니다.
+- Big O 표기법은 최악의 경우를 기준으로 표기
