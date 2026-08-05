@@ -6,7 +6,7 @@ import rehypeSlug from 'rehype-slug';
 import remarkBreaks from 'remark-breaks';
 import remarkGfm from 'remark-gfm';
 
-import { useMDXComponents } from '@/mdx-components';
+import { mdxComponents } from '@/mdx-components';
 
 interface CustomMDXRemoteProps {
 	source: string;
@@ -31,7 +31,7 @@ const CustomMDXRemote = ({ source }: CustomMDXRemoteProps) => {
 						rehypePlugins: [[rehypePrettyCode, options], rehypeSlug],
 					},
 				}}
-				components={useMDXComponents}
+				components={mdxComponents}
 			/>
 		</div>
 	);
