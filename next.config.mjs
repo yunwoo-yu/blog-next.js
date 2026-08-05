@@ -1,6 +1,6 @@
-import createMDX from '@next/mdx';
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import createMDX from '@next/mdx';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 

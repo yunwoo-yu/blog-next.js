@@ -8,6 +8,9 @@
 		"start": "next start",
 		"test": "vitest run",
 		"test:watch": "vitest",
+		"thumbnail:generate": "node scripts/generate-thumbnails.mjs",
+		"thumbnail:verify": "node scripts/verify-thumbnails.mjs",
+		"prepush": "yarn tsc --noEmit && yarn test && yarn thumbnail:verify && yarn biome check .",
 		"lint": "biome check --fix .",
 		"format": "biome format --fix ."
 	},
@@ -57,6 +60,7 @@
 		"glob": "^11.0.0",
 		"jsdom": "^29.0.1",
 		"postcss": "^8",
+		"sharp": "^0.34.5",
 		"tailwindcss": "^3.4.1",
 		"typescript": "^5",
 		"vitest": "^4.1.2"

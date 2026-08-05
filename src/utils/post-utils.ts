@@ -1,5 +1,6 @@
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { readdir } from 'node:fs/promises';
+import { join } from 'node:path';
 import { globSync } from 'glob';
 import { VFile } from 'vfile';
 import { matter } from 'vfile-matter';
@@ -7,29 +8,87 @@ import { matter } from 'vfile-matter';
 import type { CompileMdxTypes, HeadingTypes, PostListTypes } from '@/types/common.types';
 
 const PATH = `${process.cwd()}/src/mdx`;
+const DEFAULT_THUMBNAIL = '/images/og_thumbnail.png';
+
+const LOCAL_IMAGE_PATTERN = /\.(png|jpe?g|gif|webp|avif|svg)(?:[?#].*)?$/i;
+
+const isLocalImagePath = (value: string) => value.startsWith('/images/') && LOCAL_IMAGE_PATTERN.test(value);
+
+const stripCodeBlocks = (source: string) => source.replace(/```[\s\S]*?```/g, '').replace(/~~~[\s\S]*?~~~/g, '');
+
+const hasPublicAsset = (publicPath: string) => existsSync(join(process.cwd(), 'public', publicPath.replace(/^\//, '')));
+
+export const getGeneratedThumbnailPath = (category: string, slug: string) =>
+	`/images/${category}/${slug}/thumbnail.png`;
+
+export const extractFirstLocalImage = (source: string) => {
+	const sourceWithoutCode = stripCodeBlocks(source);
+	const markdownImages = [...sourceWithoutCode.matchAll(/!\[[^\]]*]\(\s*<?([^)\s>]+)>?(?:\s+['"][^'"]*['"])?\s*\)/g)];
+	const htmlImages = [...sourceWithoutCode.matchAll(/<img\b[^>]*\bsrc=(['"])(.*?)\1[^>]*>/g)];
+
+	return [
+		...markdownImages.map(match => ({ index: match.index, src: match[1] })),
+		...htmlImages.map(match => ({ index: match.index, src: match[2] })),
+	]
+		.sort((a, b) => (a.index ?? 0) - (b.index ?? 0))
+		.find(image => isLocalImagePath(image.src))?.src;
+};
+
+export const resolvePostThumbnail = ({
+	thumbnail,
+	source,
+	category,
+	slug,
+	exists = hasPublicAsset,
+}: {
+	thumbnail?: string;
+	source: string;
+	category: string;
+	slug: string;
+	exists?: (publicPath: string) => boolean;
+}) => {
+	const explicitThumbnail = thumbnail?.trim();
+
+	if (explicitThumbnail) return explicitThumbnail;
+
+	const firstImage = extractFirstLocalImage(source);
+
+	if (firstImage) return firstImage;
+
+	const generatedThumbnail = getGeneratedThumbnailPath(category, slug);
+
+	return exists(generatedThumbnail) ? generatedThumbnail : DEFAULT_THUMBNAIL;
+};
 
 /**
  * 목록에는 frontmatter만 필요한데 compileMDX는 본문까지 전부 컴파일한다.
  * 목록 페이지가 요청마다 렌더되므로 next-mdx-remote가 내부적으로 쓰는 파서를 직접 불러 쓴다.
  * (같은 파서라 파싱 결과가 달라질 여지가 없다.)
  */
-const parseFrontmatter = (source: string) => {
+const parseFrontmatter = (source: string, context?: { category: string; slug: string }) => {
 	const file = new VFile(source);
 
 	matter(file);
 
-	return normalizeFrontmatter((file.data.matter ?? {}) as CompileMdxTypes);
+	const frontmatter = normalizeFrontmatter((file.data.matter ?? {}) as CompileMdxTypes);
+
+	if (!context) return frontmatter;
+
+	return {
+		...frontmatter,
+		thumbnail: resolvePostThumbnail({ thumbnail: frontmatter.thumbnail, source, ...context }),
+	};
 };
 
 /** 배포된 환경에서 mdx 파일은 바뀌지 않는다. 개발 중에는 수정이 바로 보이도록 캐시하지 않는다. */
 const frontmatterCache = process.env.NODE_ENV === 'production' ? new Map<string, CompileMdxTypes>() : null;
 
-const readFrontmatter = (postPath: string) => {
+const readFrontmatter = (postPath: string, context: { category: string; slug: string }) => {
 	const cached = frontmatterCache?.get(postPath);
 
 	if (cached) return cached;
 
-	const parsed = parseFrontmatter(readFileSync(postPath, 'utf-8'));
+	const parsed = parseFrontmatter(readFileSync(postPath, 'utf-8'), context);
 
 	frontmatterCache?.set(postPath, parsed);
 
@@ -42,6 +101,7 @@ const readFrontmatter = (postPath: string) => {
  */
 export const normalizeFrontmatter = (frontmatter: CompileMdxTypes): CompileMdxTypes => ({
 	...frontmatter,
+	thumbnail: frontmatter.thumbnail ?? '',
 	tags: (frontmatter.tags ?? []).map(String),
 });
 
@@ -54,14 +114,14 @@ export const getPostDetail = async (category: string, slug: string) => {
 	const source = readFileSync(postPath, 'utf-8');
 	const deleteFrontmatterSource = source.replace(/---[\s\S]*?---/, '');
 
-	return { source: deleteFrontmatterSource, frontmatter: parseFrontmatter(source) };
+	return { source: deleteFrontmatterSource, frontmatter: parseFrontmatter(source, { category, slug }) };
 };
 
 export const getAllPosts = async (postPaths: string[]): Promise<PostListTypes[]> => {
 	const posts = postPaths.map(postPath => {
 		const [category, slug] = postPath.split('/').slice(-3);
 
-		return { frontmatter: readFrontmatter(postPath), category, slug };
+		return { frontmatter: readFrontmatter(postPath, { category, slug }), category, slug };
 	});
 
 	return posts.sort((a, b) => (a.frontmatter.createdAt > b.frontmatter.createdAt ? -1 : 1));

@@ -2,11 +2,14 @@ import type { PostListTypes } from '@/types/common.types';
 
 import {
 	countTags,
+	extractFirstLocalImage,
 	getAdjacentPosts,
+	getGeneratedThumbnailPath,
 	getHeaderNavigationList,
 	getPostsByTag,
 	getReadingTime,
 	normalizeFrontmatter,
+	resolvePostThumbnail,
 } from './post-utils';
 
 describe('normalizeFrontmatter', () => {
@@ -35,6 +38,70 @@ describe('normalizeFrontmatter', () => {
 		const frontmatter = { ...base, createdAt: '2024-12-06', tags: ['Blog'] };
 
 		expect(normalizeFrontmatter(frontmatter).createdAt).toBe('2024-12-06');
+	});
+});
+
+describe('thumbnail utils', () => {
+	it('글 경로 기준 생성 썸네일 경로를 만든다', () => {
+		expect(getGeneratedThumbnailPath('next', 'loading_vs_suspense')).toBe(
+			'/images/next/loading_vs_suspense/thumbnail.png',
+		);
+	});
+
+	it('본문에서 첫 로컬 이미지를 찾는다', () => {
+		const source = [
+			'```tsx',
+			'<img src="/images/ignore/in-code.png" />',
+			'```',
+			'본문',
+			'![](/images/next/blog/1.png)',
+			'<img src="/images/next/blog/2.png" />',
+		].join('\n');
+
+		expect(extractFirstLocalImage(source)).toBe('/images/next/blog/1.png');
+	});
+
+	it('명시 썸네일을 가장 우선한다', () => {
+		expect(
+			resolvePostThumbnail({
+				thumbnail: '/images/next/blog/thumbnail.png',
+				source: '![](/images/next/blog/1.png)',
+				category: 'next',
+				slug: 'blog',
+			}),
+		).toBe('/images/next/blog/thumbnail.png');
+	});
+
+	it('명시 썸네일이 없으면 본문 첫 이미지를 쓴다', () => {
+		expect(
+			resolvePostThumbnail({
+				source: '<img src="/images/next/blog/1.png" />',
+				category: 'next',
+				slug: 'blog',
+			}),
+		).toBe('/images/next/blog/1.png');
+	});
+
+	it('명시 썸네일과 본문 이미지가 없으면 생성 썸네일을 쓴다', () => {
+		expect(
+			resolvePostThumbnail({
+				source: '본문만 있는 글',
+				category: 'next',
+				slug: 'blog',
+				exists: publicPath => publicPath === '/images/next/blog/thumbnail.png',
+			}),
+		).toBe('/images/next/blog/thumbnail.png');
+	});
+
+	it('쓸 수 있는 글별 썸네일이 없으면 글로벌 기본 이미지를 쓴다', () => {
+		expect(
+			resolvePostThumbnail({
+				source: '본문만 있는 글',
+				category: 'next',
+				slug: 'blog',
+				exists: () => false,
+			}),
+		).toBe('/images/og_thumbnail.png');
 	});
 });
 
