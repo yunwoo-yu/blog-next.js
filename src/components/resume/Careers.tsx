@@ -30,7 +30,7 @@ const getProductLinkLabel = (title: string) => PRODUCT_LINK_LABELS[title] ?? `${
 
 export default function Careers() {
 	return (
-		<ResumeContainer title="경력">
+		<ResumeContainer title="경력" titleClassName="mt-5 print:mb-3 print:mt-2">
 			<div className="flex flex-col gap-10 print:gap-8">
 				{RESUME.careers.map(career => {
 					const { text, duration, isOngoing } = getCareerPeriod(career);

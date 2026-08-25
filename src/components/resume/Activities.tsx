@@ -5,13 +5,13 @@ import { ResumeLink } from './ResumeLink';
 
 export default function Activities() {
 	return (
-		<ResumeContainer title="대외활동">
-			<div className="flex flex-col gap-7 print:gap-5">
+		<ResumeContainer title="대외활동" titleClassName="print:mb-2 print:mt-2">
+			<div className="flex flex-col gap-7 print:gap-2">
 				{RESUME.activities.map(activity => (
 					<article
 						key={activity.title}
 						className="border-l border-violet-200 pl-5 print:border-violet-200 dark:border-violet-300/40">
-						<header className="mb-3 flex flex-wrap items-baseline justify-between gap-x-8 gap-y-1">
+						<header className="mb-3 flex flex-wrap items-baseline justify-between gap-x-8 gap-y-1 print:mb-1">
 							<div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
 								<h4 className="text-base font-semibold leading-7 text-gray-950 dark:text-gray-100 print:!text-gray-950">
 									{activity.title}
