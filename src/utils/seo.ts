@@ -119,3 +119,53 @@ export const buildRssXml = (posts: PostListTypes[], description: string) => {
 		'</rss>',
 	].join('\n');
 };
+
+const buildAuthor = () => ({ '@type': 'Person', name: META_AUTHOR_NAME, url: BASE_URL });
+
+interface PortfolioProfileParams {
+	title: string;
+	description: string;
+	path: string;
+	jobTitle: string;
+	sameAs: string[];
+}
+
+export const buildPortfolioJsonLd = ({ title, description, path, jobTitle, sameAs }: PortfolioProfileParams) => {
+	const url = buildAbsoluteUrl(path);
+
+	return {
+		'@context': 'https://schema.org',
+		'@type': 'ProfilePage',
+		name: title,
+		description,
+		url,
+		inLanguage: 'ko-KR',
+		mainEntity: { ...buildAuthor(), jobTitle, sameAs },
+	};
+};
+
+interface CaseStudyParams {
+	title: string;
+	description: string;
+	path: string;
+	parentPath: string;
+	keywords: string[];
+}
+
+export const buildCaseStudyJsonLd = ({ title, description, path, parentPath, keywords }: CaseStudyParams) => {
+	const url = buildAbsoluteUrl(path);
+
+	return {
+		'@context': 'https://schema.org',
+		'@type': 'CreativeWork',
+		name: title,
+		headline: title,
+		description,
+		url,
+		mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+		isPartOf: { '@type': 'WebPage', '@id': buildAbsoluteUrl(parentPath) },
+		keywords: keywords.length ? keywords.join(', ') : undefined,
+		inLanguage: 'ko-KR',
+		author: buildAuthor(),
+	};
+};

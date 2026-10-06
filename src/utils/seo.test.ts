@@ -1,7 +1,14 @@
 import { BASE_URL } from '@/constant';
 import type { PostListTypes } from '@/types/common.types';
 
-import { buildBlogPostingJsonLd, buildBreadcrumbJsonLd, buildRssXml, escapeXml } from './seo';
+import {
+	buildBlogPostingJsonLd,
+	buildBreadcrumbJsonLd,
+	buildCaseStudyJsonLd,
+	buildPortfolioJsonLd,
+	buildRssXml,
+	escapeXml,
+} from './seo';
 
 const createPost = (overrides: Partial<PostListTypes['frontmatter']> = {}): PostListTypes => ({
 	category: 'next',
@@ -109,5 +116,45 @@ describe('buildRssXml', () => {
 		expect(xml).toContain('<rss version="2.0"');
 		expect(xml).toContain('</rss>');
 		expect(xml).not.toContain('<item>');
+	});
+});
+
+describe('buildPortfolioJsonLd', () => {
+	const jsonLd = buildPortfolioJsonLd({
+		title: '포트폴리오',
+		description: '설명',
+		path: '/portfolio',
+		jobTitle: 'Front-End Developer',
+		sameAs: ['https://github.com/x'],
+	});
+
+	it('ProfilePage 로 절대 URL 과 작성자를 담는다', () => {
+		expect(jsonLd['@type']).toBe('ProfilePage');
+		expect(jsonLd.url).toBe(`${BASE_URL}/portfolio`);
+		expect(jsonLd.mainEntity).toMatchObject({ '@type': 'Person', jobTitle: 'Front-End Developer' });
+		expect(jsonLd.mainEntity.sameAs).toEqual(['https://github.com/x']);
+	});
+});
+
+describe('buildCaseStudyJsonLd', () => {
+	const params = {
+		title: '사례',
+		description: '설명',
+		path: '/portfolio/case',
+		parentPath: '/portfolio',
+		keywords: ['a', 'b'],
+	};
+
+	it('CreativeWork 로 URL·상위 페이지·키워드를 담는다', () => {
+		const jsonLd = buildCaseStudyJsonLd(params);
+
+		expect(jsonLd['@type']).toBe('CreativeWork');
+		expect(jsonLd.url).toBe(`${BASE_URL}/portfolio/case`);
+		expect(jsonLd.isPartOf['@id']).toBe(`${BASE_URL}/portfolio`);
+		expect(jsonLd.keywords).toBe('a, b');
+	});
+
+	it('키워드가 없으면 keywords 필드를 비운다', () => {
+		expect(buildCaseStudyJsonLd({ ...params, keywords: [] }).keywords).toBeUndefined();
 	});
 });
