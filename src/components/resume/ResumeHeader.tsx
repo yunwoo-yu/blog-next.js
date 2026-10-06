@@ -8,7 +8,7 @@ export default function ResumeHeader() {
 			<h2 className="sr-only">프론트엔드 개발자 이력서</h2>
 			<div className="flex flex-wrap items-center justify-between gap-x-10 gap-y-6">
 				<NameTitle />
-				<div className="flex flex-col items-end gap-6">
+				<div className="flex flex-col items-start gap-6 sm:items-end">
 					<PrintButton />
 					<Address />
 				</div>

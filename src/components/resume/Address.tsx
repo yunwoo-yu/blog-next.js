@@ -24,11 +24,11 @@ export default function Address() {
 	return (
 		<address className="flex flex-col items-start gap-1 text-xs not-italic sm:items-end">
 			{ADDRESS_DATA.map(({ icon, label, href }) => (
-				<div className="flex" key={label}>
+				<div className="flex flex-wrap" key={label}>
 					<div className="mr-2 flex items-center gap-2">
 						{icon} {label}
 					</div>
-					<div className="w-52">
+					<div className="min-w-0 break-all sm:w-52">
 						<a
 							href={label === '이메일' ? `mailto:${href}` : href}
 							target="_blank"
