@@ -1,0 +1,137 @@
+/* 포트폴리오 route 에서만 불러오는 스타일. 블로그·루트 번들에는 들어가지 않는다. */
+.pf-root {
+  --pf-ink: #14161a;
+  --pf-paper: #f2f0ea;
+  --pf-stage: #f2f0ea;
+  --pf-signal: #ff5a1f;
+  --pf-break: #e5484d;
+  --pf-ok: #2ea36b;
+  --pf-cool: #6b7a90;
+  /* Tailwind 투명도 유틸리티용 rgb 채널. 위 hex 값과 같은 색이다. */
+  --pf-ink-rgb: 20 22 26;
+  --pf-paper-rgb: 242 240 234;
+  --pf-stage-rgb: 242 240 234;
+  --pf-signal-rgb: 255 90 31;
+  --pf-break-rgb: 229 72 77;
+  --pf-ok-rgb: 46 163 107;
+  --pf-cool-rgb: 107 122 144;
+  /* 흰 글자를 올리는 채움(accent)과 종이색 위의 글자(accent-text)는 대비 4.5:1 이상으로 따로 둔다. */
+  --pf-accent-rgb: 185 58 7;
+  --pf-accent-text-rgb: 185 58 7;
+  background: var(--pf-paper);
+  color: var(--pf-ink);
+}
+.dark .pf-root {
+  --pf-ink: #ebe9e2;
+  --pf-paper: #0d0f12;
+  --pf-stage: #12151a;
+  --pf-cool: #8fa0b8;
+  --pf-ink-rgb: 235 233 226;
+  --pf-paper-rgb: 13 15 18;
+  --pf-stage-rgb: 18 21 26;
+  --pf-cool-rgb: 143 160 184;
+  --pf-accent-rgb: 194 65 12;
+  --pf-accent-text-rgb: 255 122 69;
+}
+
+.pf-diagram text {
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace;
+}
+.pf-node {
+  transition: transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.pf-node rect {
+  transition: fill 0.25s ease, stroke 0.25s ease;
+}
+.pf-node-text {
+  font-size: 10.5px;
+  fill: var(--pf-ink);
+  font-family: Pretendard, system-ui, sans-serif !important;
+  font-weight: 600;
+}
+.pf-node-glyph {
+  font-size: 11px;
+  fill: var(--pf-ink);
+  font-weight: 700;
+}
+.pf-node-idle {
+  fill: none;
+  stroke: var(--pf-ink);
+  stroke-opacity: 0.2;
+  stroke-width: 1;
+}
+.pf-node-provisional {
+  fill: var(--pf-paper);
+  stroke: var(--pf-cool);
+  stroke-width: 1.2;
+}
+.pf-node-confirmed {
+  fill: var(--pf-signal);
+  fill-opacity: 0.22;
+  stroke: var(--pf-signal);
+  stroke-width: 2;
+}
+.pf-node-broken {
+  fill: var(--pf-break);
+  fill-opacity: 0.18;
+  stroke: var(--pf-break);
+  stroke-width: 2;
+}
+.pf-node-waiting {
+  fill: none;
+  stroke: var(--pf-ink);
+  stroke-opacity: 0.55;
+  stroke-width: 1.2;
+  stroke-dasharray: 4 3;
+}
+.pf-node-recovered {
+  fill: var(--pf-ok);
+  fill-opacity: 0.2;
+  stroke: var(--pf-ok);
+  stroke-width: 2;
+}
+.pf-edge {
+  stroke-width: 1.4;
+  fill: none;
+}
+.pf-edge-idle {
+  stroke: var(--pf-ink);
+  stroke-opacity: 0.12;
+}
+.pf-edge-provisional {
+  stroke: var(--pf-cool);
+}
+.pf-edge-confirmed {
+  stroke: var(--pf-signal);
+  stroke-width: 2.2;
+}
+.pf-edge-broken {
+  stroke: var(--pf-break);
+  stroke-dasharray: 3 3;
+}
+.pf-edge-waiting {
+  stroke: var(--pf-ink);
+  stroke-opacity: 0.45;
+  stroke-dasharray: 4 4;
+}
+.pf-edge-recovered {
+  stroke: var(--pf-ok);
+  stroke-width: 2.2;
+}
+.pf-layer-rule {
+  stroke: var(--pf-ink);
+  stroke-opacity: 0.25;
+  stroke-dasharray: 2 4;
+}
+.pf-layer-label {
+  font-size: 9px;
+  fill: var(--pf-ink);
+  fill-opacity: 0.6;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pf-node,
+  .pf-node rect {
+    transition: none;
+  }
+}
