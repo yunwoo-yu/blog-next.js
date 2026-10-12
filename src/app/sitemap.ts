@@ -1,6 +1,8 @@
 import type { MetadataRoute } from 'next';
 
 import { BASE_URL } from '@/constant';
+import { buildCasePath, PORTFOLIO_CASES } from '@/portfolio/cases';
+import { PORTFOLIO_PATH } from '@/portfolio/overview';
 import { countTags, getAllPosts, getAllPostsPath, getCategoryList } from '@/utils/post-utils';
 
 const sitemap = async (): Promise<MetadataRoute.Sitemap> => {
@@ -25,6 +27,17 @@ const sitemap = async (): Promise<MetadataRoute.Sitemap> => {
 			changeFrequency: 'weekly',
 			priority: 0.9,
 		},
+		// 포트폴리오는 날짜 필드가 없다. 실제 변경일을 알 수 없으므로 lastModified 를 넣지 않는다.
+		{
+			url: `${BASE_URL}${PORTFOLIO_PATH}`,
+			changeFrequency: 'monthly' as const,
+			priority: 0.8,
+		},
+		...PORTFOLIO_CASES.map(item => ({
+			url: `${BASE_URL}${buildCasePath(item.slug)}`,
+			changeFrequency: 'monthly' as const,
+			priority: 0.6,
+		})),
 		...categoryData.categoryNameList.map(category => ({
 			url: `${BASE_URL}/blog/posts/${category.label}`,
 			lastModified: latestPostDate,
