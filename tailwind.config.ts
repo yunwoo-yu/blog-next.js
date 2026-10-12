@@ -27,6 +27,18 @@ const config: Config = {
 	theme: {
 		extend: {
 			colors: {
+				// 포트폴리오 전용. 투명도(/20 등)가 먹도록 rgb 채널 변수를 쓴다. 값은 portfolio.css 에 있다.
+				pf: {
+					ink: 'rgb(var(--pf-ink-rgb) / <alpha-value>)',
+					paper: 'rgb(var(--pf-paper-rgb) / <alpha-value>)',
+					stage: 'rgb(var(--pf-stage-rgb) / <alpha-value>)',
+					signal: 'rgb(var(--pf-signal-rgb) / <alpha-value>)',
+					accent: 'rgb(var(--pf-accent-rgb) / <alpha-value>)',
+					'accent-text': 'rgb(var(--pf-accent-text-rgb) / <alpha-value>)',
+					break: 'rgb(var(--pf-break-rgb) / <alpha-value>)',
+					ok: 'rgb(var(--pf-ok-rgb) / <alpha-value>)',
+					cool: 'rgb(var(--pf-cool-rgb) / <alpha-value>)',
+				},
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
 				card: {

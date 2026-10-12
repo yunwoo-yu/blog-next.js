@@ -346,3 +346,30 @@ article p {
     opacity: 0;
   }
 }
+
+@layer components {
+  /* 포트폴리오 프로젝트 카드의 상세 영역.
+     기본(터치·좁은 화면·JS 없음)은 펼친 채로 두고, 호버 가능한 넓은 화면에서만 접어 두었다가
+     호버·키보드 포커스 때 펼친다. 접힌 상태에서도 DOM 에는 남아 있어 스크린리더가 읽는다. */
+  .case-detail {
+    display: grid;
+    grid-template-rows: 1fr;
+    transition: grid-template-rows 0.3s ease, opacity 0.3s ease;
+  }
+  @media (hover: hover) and (min-width: 1024px) {
+    .case-detail {
+      grid-template-rows: 0fr;
+      opacity: 0;
+    }
+    .case-card:hover .case-detail,
+    .case-card:focus-within .case-detail {
+      grid-template-rows: 1fr;
+      opacity: 1;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .case-detail {
+      transition: none;
+    }
+  }
+}
