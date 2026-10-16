@@ -83,14 +83,6 @@ const CASE_SOURCES: PortfolioCaseSource[] = [
 		},
 	},
 	{
-		slug: 'regional-news-cache',
-		title: '지역소식 섹션의 지역 조회·로딩 구조 개선',
-		summary:
-			'서버에서 지역을 먼저 조회하던 지역소식 섹션을 클라이언트 렌더링으로 바꿔, 지역 조회 API의 지연·실패가 섹션 전체를 막던 문제를 없애고 빠져 있던 지역 값을 요청에 반영했습니다.',
-		keywords: ['지역 조회 API', '60초 캐시', '스켈레톤 UI', '클라이언트 렌더링'],
-		resumeRef: { organization: '웰로', service: 'Wello', project: '지역소식 섹션의 지역 조회·로딩 구조 개선' },
-	},
-	{
 		slug: 'wellobiz-chakra-zod',
 		title: 'Wello-biz 레거시 UI 스택 정리 (Chakra UI·yup 제거)',
 		summary:
@@ -100,6 +92,18 @@ const CASE_SOURCES: PortfolioCaseSource[] = [
 			organization: '웰로',
 			service: 'Wello-biz',
 			project: 'Wello-biz 레거시 UI 스택 정리 (Chakra UI·yup 제거)',
+		},
+	},
+	{
+		slug: 'admin-session-refresh',
+		title: 'Next.js·Vue 통합 어드민 토큰 자동 갱신',
+		summary:
+			'토큰이 만료돼도 갱신되지 않던 Next.js·Vue 어드민에 401 → 갱신 → 재시도를 구현하고, 웰로·웰로비즈 어드민의 쿠키를 접속 도메인별로 분리해 서로의 로그인 정보를 덮어쓰지 않게 했습니다.',
+		keywords: ['401', '갱신', '쿠키', '도메인별로 분리'],
+		resumeRef: {
+			organization: '웰로',
+			service: 'Wello·Wello-biz Admin',
+			project: 'Next.js·Vue 통합 어드민 토큰 자동 갱신',
 		},
 	},
 	{

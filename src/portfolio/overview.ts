@@ -7,7 +7,7 @@ export { PORTFOLIO_LINKS, PORTFOLIO_PATH, type PortfolioLink, type PortfolioSect
 
 export const PORTFOLIO_TITLE = `${META_AUTHOR_NAME} 포트폴리오`;
 export const PORTFOLIO_DESCRIPTION =
-	'프론트엔드 개발자 유윤우의 포트폴리오. 결제·통합검색·마이데이터·지역 데이터 캐시·폼 검증 전환·AI 챗봇·WebGL 성능 개선 등 웰로와 살린에서 맡은 10개 프로젝트를 문제, 판단, 결과 순서로 정리했습니다.';
+	'프론트엔드 개발자 유윤우의 포트폴리오. 결제·통합검색·마이데이터·폼 검증 전환·어드민 토큰 갱신·AI 챗봇·WebGL 성능 개선 등 웰로와 살린에서 맡은 10개 프로젝트를 문제, 판단, 결과 순서로 정리했습니다.';
 
 export const PORTFOLIO_SECTIONS: PortfolioSection[] = [
 	{ id: 'exhibit', label: '전시' },

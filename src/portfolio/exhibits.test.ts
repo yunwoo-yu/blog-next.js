@@ -130,27 +130,21 @@ describe('전시 헬퍼', () => {
 	});
 
 	it('상태가 없는 노드는 idle 이고, 개선 전 이름이 따로 있으면 그것을 쓴다', () => {
-		const region = getExhibit('regional-news-cache')!;
-		const resolve = region.nodes.find(node => node.id === 'resolve')!;
+		const admin = getExhibit('admin-session-refresh')!;
+		const recover = admin.nodes.find(node => node.id === 'recover')!;
 
-		expect(getNodeState(region, 'after', 0, 'other')).toBe('idle');
-		expect(getNodeLabel(resolve, 'before')).toBe('getServerRegion 조회');
-		expect(getNodeLabel(resolve, 'after')).toBe('저장소의 codeRegion·codeSubRegion');
+		expect(getNodeState(admin, 'after', 0, 'relogin')).toBe('idle');
+		expect(getNodeLabel(recover, 'before')).toBe('401 처리 없음');
+		expect(getNodeLabel(recover, 'after')).toBe('401 복구 (갱신 후 재시도)');
 	});
 
-	it('지역소식: 개선 전에는 60초 캐시를 거쳐 다른 사용자의 데이터에 닿고, 개선 후에는 캐시를 거치지 않는다', () => {
-		const region = getExhibit('regional-news-cache')!;
+	it('어드민: 개선 전에는 복구 없이 다시 로그인으로 이어지고, 개선 후에는 refresh 로 가는 간선이 공유 단계 하나뿐이다', () => {
+		const admin = getExhibit('admin-session-refresh')!;
 
-		expect(region.edges.before).toEqual(
-			expect.arrayContaining([
-				['fetch', 'cache'],
-				['cache', 'other'],
-			]),
-		);
-		expect(region.edges.after).toEqual(expect.arrayContaining([['fetch', 'news']]));
-		expect(region.edges.after.some(([from, to]) => [from, to].some(id => id === 'cache' || id === 'other'))).toBe(
-			false,
-		);
+		expect(admin.edges.before).toEqual(expect.arrayContaining([['recover', 'relogin']]));
+		expect(admin.edges.before.some(([, to]) => to === 'refresh')).toBe(false);
+		expect(admin.edges.after.filter(([, to]) => to === 'refresh')).toEqual([['share', 'refresh']]);
+		expect(admin.edges.after.some(([from, to]) => [from, to].some(id => id === 'relogin'))).toBe(false);
 	});
 
 	it('결제: 개선 후 PG 로 가는 간선은 서버 API 뿐이다', () => {
@@ -169,6 +163,6 @@ describe('전·후 이름', () => {
 		expect(getVariantName(checkout, 'before')).toBe('위험 시나리오');
 		expect(getVariantName(checkout, 'after')).toBe('개선 후');
 		for (const phase of checkout.phases.before) expect(phase.caption).toMatch(/가정|수 있습니다/);
-		expect(getVariantName(getExhibit('regional-news-cache')!, 'before')).toBe('개선 전');
+		expect(getVariantName(getExhibit('admin-session-refresh')!, 'before')).toBe('개선 전');
 	});
 });

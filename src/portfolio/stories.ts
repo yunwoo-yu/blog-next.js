@@ -257,67 +257,6 @@ export const STORIES: CaseStory[] = [
 		],
 	},
 	{
-		slug: 'regional-news-cache',
-		decisions: [
-			{
-				question: '지역 값을 어디에서 가져올 것인가',
-				options: [
-					{
-						name: '로그인 상태 저장소의 codeRegion·codeSubRegion에서 바로 읽기',
-						verdict: 'chosen',
-						reason: 'getServerRegion 조회를 없애고, 이미 가진 지역 값으로 지역소식 조회를 바로 시작합니다.',
-						basis: 'resume',
-					},
-					{
-						name: '서버에서 getServerRegion()으로 조회',
-						verdict: 'rejected',
-						reason: '이 API가 느리거나 실패하면 지역소식 섹션 전체가 렌더링되지 않았습니다.',
-						basis: 'resume',
-					},
-				],
-			},
-			{
-				question: '사용자 지역을 조회 요청에 어떻게 반영할 것인가',
-				options: [
-					{
-						name: '조회 요청에 code_region·code_sub_region 추가',
-						verdict: 'chosen',
-						reason: '요청에 사용자 지역이 반영되어 지역에 맞는 소식이 표시됩니다.',
-						basis: 'resume',
-					},
-					{
-						name: 'revalidate=60 캐시에 맡기기',
-						verdict: 'rejected',
-						reason:
-							'지역 파라미터가 빠진 요청이 revalidate=60 캐시를 거쳐 사용자 지역과 무관한 소식이 보일 수 있었습니다.',
-						basis: 'resume',
-					},
-					{
-						name: '서버 컴포넌트를 유지하고 Suspense로 섹션만 스트리밍',
-						verdict: 'rejected',
-						reason:
-							'[확인 필요] 이 방식을 검토했는지, 첫 화면 데이터 포함과 클라이언트 전환 사이에서 무엇을 택한 이유인지 작성자 확인 전 초안입니다.',
-						basis: 'draft',
-					},
-				],
-			},
-		],
-		troubles: [
-			{
-				problem:
-					'지역소식 섹션이 getServerRegion() 조회를 기다리는 서버 컴포넌트였고, 이 API가 느리거나 실패하면 섹션 전체가 렌더링되지 않았습니다.',
-				fix: '클라이언트 컴포넌트로 전환하고 useSuspenseQuery로 조회하되, 로딩 중에는 Skeleton UI를 보여 줬습니다. 빠져 있던 code_region·code_sub_region도 요청에 추가했습니다.',
-				basis: 'resume',
-			},
-		],
-		checks: [
-			'문제의 원인을 어떻게 설명하나요? Next 16 fetch 캐시 키는 URL·메서드·헤더·본문을 포함하므로(소스 확인), 사용자 식별이 헤더에 있었다면 사용자 간 공유는 일어나지 않습니다. 지역 정보가 요청에 실리지 않은 채 revalidate=60 캐시가 공유됐다는 설명이 가장 자연스러운데 맞나요? 페이지 단위 revalidate였나요, fetch 단위였나요?',
-			"cache: 'no-store'를 쓰셨다면 클라이언트 fetch에서 그것이 무엇을 보장하나요? (브라우저 HTTP 캐시 모드일 뿐 react-query 캐시와는 무관합니다)",
-			'서버 렌더링을 포기한 대가(첫 화면 워터폴, 스켈레톤만 있는 첫 HTML)와 대안(서버 Suspense 스트리밍, 섹션 단위 ErrorBoundary)을 비교했나요?',
-			'ErrorBoundary에 resetKeys와 재시도 버튼이 없으면 한 번 실패한 뒤 지역을 바꿔도 복구되지 않을 수 있는데, 알고 계셨나요?',
-		],
-	},
-	{
 		slug: 'wellobiz-chakra-zod',
 		decisions: [
 			{
@@ -395,6 +334,82 @@ export const STORIES: CaseStory[] = [
 			'기본 resolver 대신 직접 만든 이유는 무엇인가요? (의존성 버전, 타입 제약) 타입 안전성을 잃는 대가는 어떻게 봤나요?',
 			'같은 항목에 오류가 여러 개일 때 마지막 오류가 표시되는 한계를 알고 있나요?',
 			'일괄 전환 대신 어댑터를 둔 점진 전환을 검토했나요? wello-biz에는 테스트가 없는데 회귀는 어떻게 확인했나요?',
+		],
+	},
+	{
+		slug: 'admin-session-refresh',
+		decisions: [
+			{
+				question: '동시에 401을 받은 요청이 토큰 갱신을 어떻게 나눠 쓸 것인가',
+				options: [
+					{
+						name: '진행 중인 refresh Promise를 공유해 첫 요청만 갱신',
+						verdict: 'chosen',
+						reason: '첫 요청만 refresh를 호출하고 나머지는 같은 결과를 기다립니다.',
+						basis: 'resume',
+					},
+					{
+						name: '요청마다 각자 refresh 호출',
+						verdict: 'rejected',
+						reason:
+							'갱신용 토큰은 한 번 쓰면 무효가 되어, 동시에 거절된 요청이 각자 갱신하면 첫 요청만 성공하고 나머지는 만료로 처리돼 로그아웃됩니다.',
+						basis: 'resume',
+					},
+				],
+			},
+			{
+				question: '다른 탭·프레임이 먼저 갱신한 경우를 어떻게 다룰 것인가',
+				options: [
+					{
+						name: '실패한 요청의 토큰과 쿠키 토큰을 비교',
+						verdict: 'chosen',
+						reason: '쿠키 토큰이 다르면 다른 앱이 이미 갱신한 것으로 보고 refresh 없이 쿠키의 토큰으로 재시도합니다.',
+						basis: 'resume',
+					},
+					{
+						name: '항상 refresh부터 호출',
+						verdict: 'rejected',
+						reason:
+							'갱신용 토큰은 한 번 쓰면 무효가 되므로, 다른 탭이 이미 갱신했다면 같은 토큰으로 또 갱신하는 것은 실패합니다.',
+						basis: 'resume',
+					},
+				],
+			},
+			{
+				question: '웰로·웰로비즈 어드민의 로그인 쿠키를 어떻게 나눌 것인가',
+				options: [
+					{
+						name: '접속 도메인별로 쿠키 범위를 분리',
+						verdict: 'chosen',
+						reason:
+							'쿠키는 접속 도메인별로 분리하고, 상위 도메인에 남은 기존 쿠키는 옮기고 지워 두 어드민의 로그인이 서로 덮어쓰지 않게 했습니다.',
+						basis: 'resume',
+					},
+					{
+						name: '상위 도메인에 같은 이름으로 공유',
+						verdict: 'rejected',
+						reason:
+							'웰로·웰로비즈 어드민을 각각 로그인해 함께 켜면 같은 이름의 쿠키가 서로의 로그인 정보를 덮어썼습니다.',
+						basis: 'resume',
+					},
+				],
+			},
+		],
+		troubles: [
+			{
+				problem: 'logout 요청이 401을 받으면 갱신 → 재시도 → 다시 401이 반복될 수 있습니다.',
+				fix: 'logout 요청은 복구 대상에서 빼 무한 반복을 막았습니다.',
+				basis: 'resume',
+			},
+		],
+		checks: [
+			'이전 증상은 "자동 갱신이 없어 직접 다시 로그인"이고, "refresh 중복"은 갱신을 만들 때 막아야 했던 동시성 위험입니다. 둘을 섞어 말하지 않도록 순서(증상 → 설계 이유)를 정리했나요?',
+			'탭 2개에서 한쪽이 로그아웃되던 원인을 어떻게 설명하나요? (쿠키는 탭끼리 공유되지만 토큰은 탭 메모리에도 따로 있습니다)',
+			'쿠키 범위를 바꾸면 이미 로그인한 사용자의 기존 쿠키는 어떻게 되나요? (옮기고 지우는 한 번짜리 이동 처리)',
+			'갱신용 토큰이 한 번 쓰면 무효가 되는 건 서버 정책인가요? 두 번째 갱신이 실패했을 때 서버는 어떻게 응답하고, 클라이언트는 그걸 어떻게 처리하나요?',
+			'Vue 쪽에는 쿠키 토큰 비교가 없습니다. iframe 안이라 같은 쿠키를 읽어서 필요 없다고 본 건가요, 아니면 시간상 빠진 건가요?',
+			'refresh 자체가 실패하면(refresh 토큰 만료) 운영자는 어떤 경험을 하나요? 입력 중이던 내용은 어떻게 되나요?',
+			'재시도하는 요청이 생성·수정처럼 두 번 실행되면 안 되는 요청이면 어떻게 되나요?',
 		],
 	},
 	{

@@ -43,7 +43,7 @@ const stubMotion = (reduce: boolean) =>
 		removeEventListener: vi.fn(),
 	}));
 
-const exhibit = getExhibit('regional-news-cache')!;
+const exhibit = getExhibit('admin-session-refresh')!;
 const loadButton = () => screen.findByRole('button', { name: '3D로 구조 보기' });
 
 beforeEach(() => {
@@ -68,7 +68,7 @@ describe('ServiceExhibit 컨트롤', () => {
 		fireEvent.click(screen.getByRole('radio', { name: /개선 전/ }));
 
 		expect(screen.getByTestId('phase-caption')).toHaveTextContent(exhibit.phases.before[0].caption);
-		expect(screen.getByRole('img', { name: /서버 조회·60초 캐시, 1단계/ })).toBeInTheDocument();
+		expect(screen.getByRole('img', { name: /자동 갱신 없음, 1단계/ })).toBeInTheDocument();
 	});
 
 	it('단계 버튼과 화살표·Home·End 키가 같은 단계를 가리킨다', () => {
