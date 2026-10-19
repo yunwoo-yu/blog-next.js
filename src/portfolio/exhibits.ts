@@ -284,7 +284,7 @@ const CORE_EXHIBITS: Exhibit[] = [
 	{
 		slug: 'wello-responsive-search',
 		shortTitle: '반응형·검색',
-		headline: '찾은 그대로 공유되는 통합검색',
+		headline: '검색 조건이 URL에 남는 통합검색',
 		variantLabels: { before: '600px 고정폭', after: 'PC 레이아웃·통합검색' },
 		beforeKind: 'historical',
 		layerLabels: ['화면', '검색 상태', '콘텐츠'],
@@ -475,14 +475,15 @@ const CORE_EXHIBITS: Exhibit[] = [
 			'입력·출력 타입이 다른 스키마를 받는 폼 연결 어댑터',
 		],
 		callouts: {
-			role: 'Wello-biz의 Chakra UI·yup과 서드파티 UI 라이브러리를 걷어내고 UI와 검증 기준을 공통 디자인 시스템·Zod로 맞췄습니다.',
+			role: 'Wello-biz의 Chakra UI·yup과 서드파티 UI 라이브러리를 걷어내고 UI와 검증 기준을 공통 디자인 시스템·Zod로 맞췄습니다. Chakra 의존 컴포넌트 137개 파일, legacy-assets 123개 파일을 정리했습니다.',
 			problem:
 				'Chakra UI 기반 공통 컴포넌트와 yup 검증, 여러 서드파티 UI 라이브러리가 섞여 있어, 공통 디자인 시스템과 Zod를 쓰는 모노레포의 다른 앱과 UI·검증 방식이 갈려 있었습니다.',
 			decision:
 				'컴포넌트는 공통 디자인 시스템으로, 캐러셀과 스와이프는 더 단순한 구현으로 바꾸고, Zod가 지우는 필드는 느슨한 객체 스키마로 보존했습니다.',
 			outcome:
-				'wello-biz에서 Chakra UI(글로벌 테마 포함), yup, Swiper, react-swipeable, react-feather 의존성이 사라졌고, 검증은 Zod 하나로 통일됐습니다.',
-			outcomeBasis: '이력서 기재 내용. 번들 크기 변화는 측정한 값이 없어 싣지 않았습니다.',
+				'wello-biz에서 Chakra UI·yup·Swiper·react-swipeable·react-feather 의존성이 사라지고 검증이 Zod 하나로 통일돼 번들이 줄었습니다.',
+			outcomeBasis:
+				'이력서 기재 내용. 번들 감소는 라이브러리 단위 추정(제거분 gzip 약 137KB, 순감소 110KB 이상)이며 앱 번들 실측값이 아닙니다.',
 		},
 		screens: {},
 		reconstructionNote: '내부 코드 전환 작업이라 공개 캡처가 없어 구조를 다시 그린 도식입니다. 실제 화면이 아닙니다.',
@@ -490,7 +491,7 @@ const CORE_EXHIBITS: Exhibit[] = [
 	{
 		slug: 'avatar-studio-performance',
 		shortTitle: '아바타 스튜디오',
-		headline: 'UI 먼저, 3D는 뒤에서',
+		headline: '3D 자산을 초기 로딩에서 분리해 첫 화면 400~600ms',
 		variantLabels: { before: '모두 기다린 뒤 표시', after: 'UI 먼저·3D 지연' },
 		beforeKind: 'historical',
 		layerLabels: ['화면', '진입·변경 경계', '정적 자산'],
@@ -579,10 +580,10 @@ const CORE_EXHIBITS: Exhibit[] = [
 export const EXHIBIT_ORDER = [
 	'wellomarket-checkout',
 	'wello-responsive-search',
+	'admin-session-refresh',
+	'wellobiz-chakra-zod',
 	'donation-duplicate-guard',
 	'mydata-integration',
-	'wellobiz-chakra-zod',
-	'admin-session-refresh',
 	'ai-chatbot-cms',
 	'ai-chatbot-ssr',
 	'swing-frontend',

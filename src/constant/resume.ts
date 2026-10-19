@@ -1,19 +1,4 @@
-import type { ResumeItemProps } from '@/components/resume/ResumeItem';
 import type { ResumeLinkProps } from '@/components/resume/ResumeLink';
-
-export type Project = {
-	title: string;
-	date?: string;
-	details: (ResumeItemProps & { highlights: string[] })[];
-};
-
-export type ServiceGroup = {
-	service: string;
-	serviceUrl?: string;
-	serviceDescription?: string;
-	projects: Project[];
-	printBreakBefore?: boolean;
-};
 
 export type Careers = {
 	organization: string;
@@ -24,7 +9,64 @@ export type Careers = {
 	period?: string;
 	description: string;
 	techStack: string[];
-	serviceGroups: ServiceGroup[];
+};
+
+/** 이력서의 프로젝트 한 건. 1~2줄 요약만 싣고, 문제·판단·결과 상세는 포트폴리오(career-detail.ts)에 있다. */
+export type ProjectItem = {
+	/** 포트폴리오 상세 원문의 프로젝트 제목과 같아야 한다(테스트가 검사). */
+	title: string;
+	/** 같은 프로젝트의 포트폴리오 사례 slug. 이력서에서 상세로 연결한다(테스트가 존재와 제목 일치를 검사). */
+	caseSlug: string;
+	/** 'YYYY.MM ~ YYYY.MM' 또는 'YYYY.MM'. */
+	date: string;
+	/** 한 일(작업 내용). 결과 수치는 넣지 않는다. */
+	summary: string;
+	highlights: string[];
+	links?: ResumeLinkProps[];
+	/** 성과: 결과로 얻은 변화. value 는 한 단어 수준으로 압축하고, 기준·조건은 note 에 둔다. 개수·줄 수 같은 작업량은 이력서에 싣지 않는다(포트폴리오 상세에 둔다). */
+	outcome?: ProjectOutcome;
+};
+
+export type ProjectOutcome = {
+	value: string;
+	note?: string;
+};
+
+/** 서비스(제품) 단위 프로젝트. 항목은 최신순. */
+export type ServiceProject = {
+	organization: string;
+	service: string;
+	serviceUrl?: string;
+	serviceDescription?: string;
+	/** 이 서비스에서 맡은 역할. 1~2줄. */
+	role: string[];
+	techStack: string[];
+	items: ProjectItem[];
+};
+
+/** 'YYYY.MM ~ YYYY.MM' 또는 'YYYY.MM' 에서 [시작, 종료]를 뽑는다. 날짜가 없으면 빈 문자열. */
+export const getProjectRange = (date?: string): [start: string, end: string] => {
+	const [start = '', end = start] = (date ?? '').split(' ~ ');
+	return [start, end];
+};
+
+/** 종료일 → 시작일 순으로 최신이 앞에 오는 비교 함수. 날짜가 없으면 맨 뒤. */
+export const compareRecent = (a: [start: string, end: string], b: [start: string, end: string]) => {
+	if (!a[1] !== !b[1]) return a[1] ? -1 : 1;
+	return b[1].localeCompare(a[1]) || b[0].localeCompare(a[0]);
+};
+
+/** 서비스 프로젝트의 전체 기간. 항목 중 가장 이른 시작 ~ 가장 늦은 종료. */
+export const getServicePeriod = (project: Pick<ServiceProject, 'items'>) => {
+	const ranges = project.items.map(item => getProjectRange(item.date));
+	const start = ranges.map(([from]) => from).sort()[0] ?? '';
+	const end =
+		ranges
+			.map(([, to]) => to)
+			.sort()
+			.at(-1) ?? '';
+
+	return start === end ? start : `${start} ~ ${end}`;
 };
 
 type CareerPeriodTarget = Pick<Careers, 'startDate' | 'endDate' | 'period'>;
@@ -76,6 +118,7 @@ export type Activity = {
 
 export type Resume = {
 	careers: Careers[];
+	projects: ServiceProject[];
 	education: Education[];
 	activities: Activity[];
 };
@@ -100,162 +143,6 @@ const CAREERS: Careers[] = [
 			'OpenAPI',
 			'Storybook',
 		],
-		serviceGroups: [
-			{
-				service: 'Wello',
-				serviceUrl: 'https://www.welfarehello.com/',
-				serviceDescription: 'AI 기반 개인 맞춤형 정책 추천 플랫폼',
-				projects: [
-					{
-						title: '웰마켙 주문·결제 전 과정 구축',
-						date: '2026.02 ~ 2026.05',
-						details: [
-							{
-								title:
-									'지역 상품 커머스 웰마켙은 상품·배송비·쿠폰·웰포인트가 겹쳐 최종 결제 금액이 복잡하게 정해집니다. 화면에 보이는 금액과 PG 승인 금액이 어긋나면 결제 불일치로 이어지고, 재고 소진·주문 만료·인증 실패 같은 중단 상황에서도 사용자가 다음 행동을 알 수 있어야 했습니다.',
-								highlights: ['PG 승인 금액이 어긋나면', '재고 소진·주문 만료·인증 실패'],
-							},
-							{
-								title:
-									'쿠폰·포인트 선택 내역을 체크아웃 API로 보내고, 서버가 확정한 금액만 NICEPAY에 요청하도록 결제 금액 기준을 서버로 고정했습니다. 인증 결과는 응답 코드별(사용자 취소·통신 실패 등)로 안내하고, 재고 부족·주문 만료는 장바구니로 돌려보내 다시 선택하게 했습니다. 배송·취소·반품·환불 화면과 운영 어드민은 같은 서버 주문 상태 코드를 기준으로 동작하게 맞췄습니다.',
-								highlights: ['서버가 확정한 금액만 NICEPAY에 요청', '같은 서버 주문 상태 코드를 기준으로'],
-							},
-							{
-								title: '2026.03 오픈 후 1개월간 결제 금액 관련 CS 문의와 API 에러 로그가 0건이었습니다.',
-								highlights: ['결제 금액 관련 CS 문의와 API 에러 로그가 0건'],
-							},
-						],
-					},
-					{
-						title: 'Wello PC 반응형 전환 및 통합검색 구축',
-						date: '2026.04',
-						details: [
-							{
-								title:
-									'Wello는 PC에서도 600px 고정폭 모바일 화면을 노출했고, 정책·답례품·동네소식·기부사업은 각 메뉴에 흩어져 있었습니다. PC 사용자는 넓은 화면을 활용하지 못한 채 원하는 콘텐츠를 찾기 위해 서비스별로 다시 탐색해야 했습니다.',
-								highlights: ['PC에서도 600px 고정폭 모바일 화면', '서비스별로 다시 탐색'],
-							},
-							{
-								title:
-									'주요 화면을 PC 레이아웃으로 확장하고, 흩어진 콘텐츠를 카테고리별로 찾는 통합검색을 구축했습니다. 검색어·카테고리·필터를 URL에 담아 공유하거나 새로고침하고 상세 화면에서 돌아와도 같은 결과가 복원되게 했습니다. 필터는 같은 상태와 동작을 PC 사이드바와 모바일 드로어에 함께 연결해 화면만 다르게 그렸습니다.',
-								highlights: ['검색어·카테고리·필터를 URL에 담아', 'PC 사이드바와 모바일 드로어에 함께 연결'],
-							},
-							{
-								title:
-									'정책·답례품·동네소식·기부사업을 서비스별로 따로 찾던 흐름이 통합검색 한 화면으로 모였습니다. 개편 전후 2주 GA4 단순 전후 비교에서 데스크톱 평균 참여 시간이 약 20% 증가했습니다.',
-								highlights: ['통합검색 한 화면으로 모였습니다', '데스크톱 평균 참여 시간이 약 20% 증가'],
-							},
-						],
-					},
-					{
-						title: '외부 납부 환경의 중복 기부 재확인',
-						date: '2025.12 ~ 2026.01',
-						details: [
-							{
-								title:
-									'고향사랑기부는 신청 후 외부 지로 화면에서 납부를 완료하는 구조였습니다. 앱·웹뷰를 벗어난 뒤에는 Wello가 진행 상태를 즉시 알기 어렵고, 납부 완료 반영이 늦으면 사용자가 같은 기부를 다시 시도할 수 있었습니다.',
-								highlights: ['진행 상태를 즉시 알기 어렵고', '같은 기부를 다시 시도'],
-							},
-							{
-								title:
-									'기부 페이지에 진입하면 이전 기부 내역을 정산하고, 결제 직전에는 정산이 끝난 뒤 최신 완료 이력을 다시 조회해 지자체·금액을 보여 주고 사용자가 확인한 뒤 진행할지 선택하게 했습니다. 외부 납부로 이동하기 직전에 납부 식별값을 저장해 두고, 돌아오면 서버에 조회해 실제 완료 여부를 판별했습니다.',
-								highlights: [
-									'정산이 끝난 뒤 최신 완료 이력을 다시 조회',
-									'돌아오면 서버에 조회해 실제 완료 여부를 판별',
-								],
-							},
-							{
-								title:
-									'외부 납부를 거쳐도 최신 완료 이력을 기준으로 중복 여부를 확인하게 해, 중복 기부 관련 CS 재문의가 70% 감소했습니다. Wello 앱·KB·토스 웹뷰와 일반 웹 모두 같은 서버 조회를 기준으로 완료 여부를 판별합니다.',
-								highlights: ['CS 재문의가 70% 감소', '같은 서버 조회를 기준으로 완료 여부를 판별'],
-							},
-						],
-					},
-					{
-						title: '의료·통신·신용 마이데이터 연동 및 연결 관리 구축',
-						date: '2025.12 ~ 2026.01',
-						details: [
-							{
-								title:
-									'정책 추천에 의료·통신·신용 데이터를 활용하려면 KHIS·KOSCOM·NICE의 서로 다른 절차를 하나의 사용자 여정으로 연결해야 했습니다. 본인인증부터 약관 동의, 전송요구, 전자서명, 재동의, 철회, 전송 이력까지 긴 규제성 흐름이 새로고침과 외부 인증 이후에도 이어져야 했습니다.',
-								highlights: ['서로 다른 절차를 하나의 사용자 여정으로 연결', '긴 규제성 흐름'],
-							},
-							{
-								title:
-									'외부 본인인증 SDK의 스크립트 로딩과 콜백 순서를 커스텀 훅으로 감싸고, KHIS·KOSCOM별 인증·동의·전송요구·전자서명 화면을 구현했습니다. 연동 중간값은 세션 스토리지에 단계별로 저장·정리하고, 연결 관리에서는 분야별 상세·재동의·개별·일괄 철회·전송 이력을 구현했습니다.',
-								highlights: [
-									'스크립트 로딩과 콜백 순서를 커스텀 훅으로 감싸고',
-									'연동 중간값은 세션 스토리지에 단계별로 저장·정리',
-								],
-							},
-							{
-								title:
-									'의료·통신·신용 연동부터 연결 상태 확인, 재동의, 철회, 전송 이력까지 전체 흐름을 구축했습니다. 분야별 연동 여부를 기준으로 직접 접근을 차단하고, 일괄 철회는 기관 요청을 병렬 처리한 뒤 실패한 항목만 안내해 일부 실패에도 나머지 처리가 유지되게 했습니다.',
-								highlights: ['연결 상태 확인, 재동의, 철회, 전송 이력까지 전체 흐름', '실패한 항목만 안내'],
-							},
-						],
-					},
-				],
-			},
-			{
-				service: 'Wello-biz',
-				serviceUrl: 'https://www.wellobiz.com/',
-				serviceDescription: 'B2B SaaS 비즈니스 플랫폼',
-				projects: [
-					{
-						title: 'Wello-biz 레거시 UI 스택 정리 (Chakra UI·yup 제거)',
-						date: '2026.01',
-						details: [
-							{
-								title:
-									'Wello-biz는 Chakra UI 기반 공통 컴포넌트와 yup 검증, 여러 서드파티 UI 라이브러리가 섞여 있어, 공통 디자인 시스템과 Zod를 쓰는 모노레포의 다른 앱과 UI·검증 방식이 갈려 있었습니다.',
-								highlights: ['Chakra UI 기반 공통 컴포넌트와 yup 검증', 'UI·검증 방식이 갈려 있었습니다'],
-							},
-							{
-								title:
-									'Chakra에 의존한 Modal·Alert·Table 등 글로벌 컴포넌트를 공통 디자인 시스템의 Modal·Button 조합으로 바꾸고, 캐러셀은 Embla Carousel로, 스와이프는 브라우저 Pointer Events 직접 구현으로 교체했습니다. yup 검증은 Zod로 전환했고, Zod가 선언하지 않은 필드를 제출 데이터에서 지우는 문제는 해당 폼의 스키마를 느슨한 객체로 바꿔 해결했습니다. 폼 라이브러리 연결부는 입력과 출력 타입이 다른 스키마도 받는 어댑터를 직접 작성해 통일했습니다.',
-								highlights: [
-									'Embla Carousel로, 스와이프는 브라우저 Pointer Events 직접 구현',
-									'느슨한 객체로 바꿔 해결',
-								],
-							},
-							{
-								title:
-									'wello-biz에서 Chakra UI(글로벌 테마 포함), yup, Swiper, react-swipeable, react-feather 의존성이 사라졌고, UI는 공통 디자인 시스템과 Tailwind, 검증은 Zod 하나로 통일됐습니다.',
-								highlights: ['의존성이 사라졌고', 'Zod 하나로 통일됐습니다'],
-							},
-						],
-					},
-				],
-			},
-			{
-				service: 'Wello·Wello-biz Admin',
-				serviceDescription: '통합 운영 어드민',
-				projects: [
-					{
-						title: 'Next.js·Vue 통합 어드민 토큰 자동 갱신',
-						date: '2026.03',
-						details: [
-							{
-								title:
-									'탭을 2개 열고 작업하면 한쪽이 로그아웃된다는 내부 구성원의 요청이 있었습니다. 토큰은 만료돼도 자동 갱신되지 않았고, Next.js 어드민은 탭마다 토큰을 따로 들고 있어 다른 탭이 옛 토큰으로 요청했으며, 웰로·웰로비즈 어드민은 같은 이름의 쿠키가 서로 덮어써졌습니다.',
-								highlights: ['자동 갱신되지 않았고', '서로 덮어써졌습니다'],
-							},
-							{
-								title:
-									'요청이 거절(401)되면 토큰을 갱신해 다시 보내도록 Next.js·Vue 어드민에 구현했습니다. 갱신용 토큰은 한 번 쓰면 무효가 돼 동시에 거절된 요청이 각자 갱신하면 첫 요청만 성공하고 나머지는 로그아웃되므로, 갱신은 한 번만 하고 나머지는 그 결과를 기다리게 했습니다. Next.js 어드민은 쿠키의 토큰이 요청과 다르면 다른 탭이 갱신한 것으로 보고 그 토큰으로 재시도하며, 쿠키는 접속 도메인별로 분리했습니다.',
-								highlights: ['첫 요청만 성공하고 나머지는 로그아웃', '갱신은 한 번만 하고 나머지는 그 결과를 기다리게'],
-							},
-							{
-								title:
-									'탭 로그아웃과 쿠키 덮어쓰기가 해소돼 웰로·웰로비즈 어드민 모두에 적용했고, 이후 같은 요청은 없었습니다.',
-								highlights: ['해소돼', '같은 요청은 없었습니다'],
-							},
-						],
-					},
-				],
-			},
-		],
 	},
 	{
 		organization: '살린',
@@ -276,117 +163,163 @@ const CAREERS: Careers[] = [
 			'Webpack',
 			'Vite',
 		],
-		serviceGroups: [
+	},
+];
+
+/** 서비스는 최신 작업 순, 항목도 최신순. 순서는 resume.test.ts 가 지킨다. */
+const PROJECTS: ServiceProject[] = [
+	{
+		organization: '웰로',
+		service: 'Wello',
+		serviceUrl: 'https://www.welfarehello.com/',
+		serviceDescription: 'AI 기반 개인 맞춤형 정책 추천 플랫폼',
+		role: [
+			'웰마켙·통합검색·마이데이터·기부 흐름 프론트엔드 개발',
+			'결제·외부 납부처럼 서버 상태가 기준인 사용자 흐름 설계',
+		],
+		techStack: [
+			'React 19',
+			'Next.js 16',
+			'TypeScript',
+			'TanStack Query v5',
+			'Zustand',
+			'Tailwind CSS',
+			'Zod',
+			'OpenAPI',
+		],
+		items: [
 			{
-				service: 'AI Talker',
-				serviceDescription: 'AI 챗봇 플랫폼',
-				projects: [
-					{
-						title: 'AI 챗봇 사용자 서비스·운영 CMS 구축',
-						date: '2025.01 ~ 2025.08',
-						details: [
-							{
-								title:
-									'고객사 콘텐츠를 근거로 답변하는 AI 챗봇과, 운영자가 프롬프트·모델·지식 베이스·사용량을 직접 관리하는 CMS가 함께 필요했습니다. 답변 생성 시간을 빈 화면으로 기다리지 않게 하고, 긴 대화 이력을 불러와도 읽던 위치를 유지해야 했습니다.',
-								highlights: ['운영자가 프롬프트·모델·지식 베이스·사용량을 직접 관리', '읽던 위치를 유지'],
-							},
-							{
-								title:
-									'AI 설문 MVP에서 검증한 스트림 처리·응답 상태 관리 패턴을 적용해 OpenAI Assistants의 답변을 대화 화면에 순차 반영했습니다. 이전 대화를 불러올 때는 추가된 높이만큼 스크롤 위치를 보정해 사용자가 읽던 지점을 유지했습니다. CMS에는 파일·벡터 스토어, 프롬프트·모델 설정, 콘텐츠 생성, 방문·대화·비용 통계를 구현했습니다.',
-								highlights: ['OpenAI Assistants의 답변을 대화 화면에 순차 반영', '사용자가 읽던 지점을 유지'],
-								links: [
-									{
-										title: '관련글',
-										url: 'https://www.ycow-dev.com/blog/posts/next/reverse_infinite_scroll',
-									},
-								],
-							},
-							{
-								title:
-									'챗봇 응답과 운영 설정을 하나의 제품으로 배포해 고객사가 지식 파일과 응답 설정을 직접 관리하게 했습니다. 사용자 서비스와 CMS를 실제 운영했고, 무료 플랜에는 응답 횟수를 기준으로 광고를 노출하는 정책을 연결했습니다.',
-								highlights: ['고객사가 지식 파일과 응답 설정을 직접 관리', '사용자 서비스와 CMS를 실제 운영'],
-							},
-						],
-					},
-					{
-						title: 'React CSR 서비스의 Next.js 15 SSR 전환',
-						date: '2025.01 ~ 2025.08',
-						details: [
-							{
-								title:
-									'고객사마다 브랜드와 언어가 다른 챗봇을 제공했지만, 기존 React CSR 구조에서는 검색 엔진과 링크 미리보기에 고객사별 정보를 안정적으로 전달하기 어려웠습니다. 신규 고객사가 추가될 때마다 메타데이터와 검색 노출 경로를 코드에 직접 반영하는 방식도 확장에 불리했습니다.',
-								highlights: ['고객사별 정보를 안정적으로 전달하기 어려웠습니다', '코드에 직접 반영하는 방식'],
-							},
-							{
-								title:
-									'사용자 서비스를 Next.js 15 App Router로 전환하고, 고객사 코드로 조회한 설정을 서버에서 메타데이터·Open Graph에 반영했습니다. 사이트맵도 고객사 코드 목록 API를 기준으로 생성해 새 고객사의 검색 경로가 자동으로 포함되게 했습니다.',
-								highlights: [
-									'고객사 코드로 조회한 설정을 서버에서 메타데이터·Open Graph에 반영',
-									'고객사 코드 목록 API를 기준으로 생성',
-								],
-							},
-							{
-								title:
-									'고객사별 제목·설명·다국어 Open Graph와 사이트맵을 운영 데이터로 관리하게 해, 프론트엔드 배포 없이 검색 노출 정보를 변경하거나 신규 고객사를 추가할 수 있는 구조로 전환했습니다.',
-								highlights: ['프론트엔드 배포 없이 검색 노출 정보를 변경', '신규 고객사를 추가할 수 있는 구조'],
-							},
-						],
-					},
-				],
+				title: '웰마켙 주문·결제 전 과정 구축',
+				caseSlug: 'wellomarket-checkout',
+				date: '2026.02 ~ 2026.05',
+				summary:
+					'NICEPAY PG 기반 주문·결제부터 취소·반품·환불까지 개발·배포·운영하며 결제 금액 기준을 서버로 고정했습니다.',
+				highlights: ['NICEPAY PG 기반 주문·결제', '서버로 고정'],
+				outcome: { value: 'CS·에러 0건', note: '오픈 후 1개월, 결제 금액 관련' },
 			},
 			{
-				service: 'Swing',
-				serviceDescription: 'WebGL 가상 오피스 기반 스타트업 업무 지원 플랫폼',
-				projects: [
-					{
-						title: '서비스 웹 + 관리자 CMS 프론트엔드 단독 개발',
-						date: '2024.01 ~ 2024.07',
-						details: [
-							{
-								title:
-									'Swing은 업무 지원 기능과 Unity WebGL 가상 오피스를 함께 제공하는 신규 서비스였습니다. 백엔드 개발자 1명과 2인 팀에서 사용자 웹, 관리자 CMS, WebGL 진입·인증 연결까지 프론트엔드 전 영역을 구축해야 했습니다.',
-								highlights: ['백엔드 개발자 1명과 2인 팀', '프론트엔드 전 영역을 구축'],
-							},
-							{
-								title:
-									'서비스 개발에 앞서 사용자 웹용 Webpack 5·CMS용 Vite 보일러플레이트와 CMS UI 패키지를 구축하고, 이를 적용해 인증·대시보드·사업지원 관리 화면을 구현했습니다. Unity 자산을 환경별 S3 경로에서 받아 빌드에 포함하고, 웹 토큰을 가상 오피스 진입 과정에 연결했습니다.',
-								highlights: ['보일러플레이트와 CMS UI 패키지를 구축', '웹 토큰을 가상 오피스 진입 과정에 연결'],
-							},
-							{
-								title:
-									'인증부터 업무 지원 관리와 가상 오피스 진입까지 하나의 서비스 흐름으로 완성했습니다. 공통 개발 기반을 Swing 사용자 웹과 CMS에 적용해 화면별 설정과 반복 UI를 같은 방식으로 유지했습니다.',
-								highlights: ['하나의 서비스 흐름으로 완성', '화면별 설정과 반복 UI를 같은 방식으로 유지'],
-							},
-						],
-					},
-				],
+				title: 'Wello PC 반응형 전환 및 통합검색 구축',
+				caseSlug: 'wello-responsive-search',
+				date: '2026.04',
+				summary: 'PC 반응형 전환과 카테고리별 통합검색을 구축하고 검색 조건을 URL에 동기화했습니다.',
+				highlights: ['카테고리별 통합검색', 'URL에 동기화'],
+				outcome: { value: '참여시간 +20%', note: '데스크톱, 개편 전후 2주 GA4 단순 비교' },
 			},
 			{
-				service: 'Localo',
-				serviceDescription: 'WebGL 아바타 서비스',
-				projects: [
-					{
-						title: '아바타 스튜디오 성능 개선',
-						date: '2023.10 ~ 2023.12',
-						details: [
-							{
-								title:
-									'외주 업체에서 인수한 WebGL 아바타 서비스는 3D 렌더링과 대용량 정적 자산이 초기 진입을 막아 3초 이상 빈 화면이 노출됐습니다. 3D·편집 로직이 큰 컴포넌트에 섞여 있어 작은 기능 변경도 기존 동작에 영향을 주기 쉬웠습니다.',
-								highlights: ['3초 이상 빈 화면', '작은 기능 변경도 기존 동작에 영향을 주기 쉬웠습니다'],
-							},
-							{
-								title:
-									'앱 진입점을 lazy loading과 Suspense 경계로 분리하고, 아바타 파츠·JSON 자산은 S3·CDN 경로에서 불러오도록 이전했습니다. 3D 뷰와 편집 상태는 역할별 컴포넌트·훅으로 나눠 신규 기능이 기존 렌더링 로직에 직접 의존하지 않게 했습니다.',
-								highlights: ['lazy loading과 Suspense 경계로 분리', 'S3·CDN 경로에서 불러오도록 이전'],
-							},
-							{
-								title:
-									'3초 이상 걸리던 첫 화면 표시를 Lighthouse FCP 기준 400~600ms로 단축했습니다. 3D 렌더링과 화면 기능의 변경 경계를 나눠, 기존 동작을 전부 수정하지 않고도 아바타 편집 기능을 확장할 수 있게 했습니다.',
-								highlights: ['Lighthouse FCP 기준 400~600ms로 단축', '기존 동작을 전부 수정하지 않고도'],
-							},
-						],
-					},
-				],
+				title: '외부 납부 환경의 중복 기부 재확인',
+				caseSlug: 'donation-duplicate-guard',
+				date: '2025.12 ~ 2026.01',
+				summary:
+					'외부 지로 화면에서 납부를 마치는 고향사랑기부에서 결제 직전 최신 완료 이력을 다시 조회해 중복 기부를 확인하게 했습니다.',
+				highlights: ['결제 직전 최신 완료 이력을 다시 조회', '중복 기부를 확인'],
+				outcome: { value: '재문의 −70%', note: '중복 기부 관련 CS' },
+			},
+			{
+				title: '의료·통신·신용 마이데이터 연동 및 연결 관리 구축',
+				caseSlug: 'mydata-integration',
+				date: '2025.12 ~ 2026.01',
+				summary:
+					'KHIS·KOSCOM·NICE 마이데이터 연동 플로우와 연결 관리(재동의·철회·전송 이력)를 구축하고, 일괄 철회는 일부가 실패해도 실패한 항목만 안내하게 했습니다.',
+				highlights: ['연결 관리', '실패한 항목만 안내'],
+			},
+		],
+	},
+	{
+		organization: '웰로',
+		service: 'Wello·Wello-biz Admin',
+		serviceDescription: '통합 운영 어드민',
+		role: ['Next.js·Vue 통합 운영 어드민의 인증·세션 개선'],
+		techStack: ['Next.js', 'Vue'],
+		items: [
+			{
+				title: 'Next.js·Vue 통합 어드민 토큰 자동 갱신',
+				caseSlug: 'admin-session-refresh',
+				date: '2026.03',
+				summary:
+					'401 응답 시 토큰을 갱신해 재요청하도록 Next.js·Vue 어드민에 구현하고 동시 갱신을 한 번으로 묶었으며, 쿠키를 접속 도메인별로 분리했습니다.',
+				highlights: ['토큰을 갱신해 재요청', '접속 도메인별로 분리'],
+				outcome: { value: '탭 로그아웃 해소', note: '웰로·웰로비즈 어드민, 이후 같은 요청 없음' },
+			},
+		],
+	},
+	{
+		organization: '웰로',
+		service: 'Wello-biz',
+		serviceUrl: 'https://www.wellobiz.com/',
+		serviceDescription: 'B2B SaaS 비즈니스 플랫폼',
+		role: ['레거시 UI 스택 정리와 공통 디자인 시스템 전환'],
+		techStack: ['Tailwind CSS', 'Zod', 'Embla Carousel', 'Pointer Events'],
+		items: [
+			{
+				title: 'Wello-biz 레거시 UI 스택 정리 (Chakra UI·yup 제거)',
+				caseSlug: 'wellobiz-chakra-zod',
+				date: '2026.01',
+				summary: 'Chakra UI·yup·Swiper 등 레거시 스택을 공통 디자인 시스템·Tailwind·Zod·Embla로 전환했습니다.',
+				highlights: ['레거시 스택', 'Zod·Embla로 전환'],
+				outcome: { value: '번들 감소', note: '의존성 5종 제거' },
+			},
+		],
+	},
+	{
+		organization: '살린',
+		service: 'AI Talker',
+		serviceDescription: 'AI 챗봇 플랫폼',
+		role: ['사용자 서비스와 운영 CMS 프론트엔드 개발', 'React CSR에서 Next.js 15 SSR로 전환'],
+		techStack: ['React', 'Next.js 15', 'TypeScript', 'TanStack Query', 'Zustand', 'Emotion', 'OpenAI Assistants'],
+		items: [
+			{
+				title: 'AI 챗봇 사용자 서비스·운영 CMS 구축',
+				caseSlug: 'ai-chatbot-cms',
+				date: '2025.01 ~ 2025.08',
+				summary:
+					'OpenAI Assistants 답변을 스트림으로 순차 반영하고 이전 대화 로딩 시 읽던 위치를 유지했으며, 프롬프트·지식 베이스·통계를 관리하는 운영 CMS를 구축했습니다.',
+				highlights: ['스트림으로 순차 반영', '운영 CMS'],
+				links: [{ title: '관련글', url: 'https://www.ycow-dev.com/blog/posts/next/reverse_infinite_scroll' }],
+				outcome: { value: '고객사 직접 관리', note: '지식 파일·응답 설정' },
+			},
+			{
+				title: 'React CSR 서비스의 Next.js 15 SSR 전환',
+				caseSlug: 'ai-chatbot-ssr',
+				date: '2025.01 ~ 2025.08',
+				summary:
+					'React CSR 챗봇을 Next.js 15 App Router로 전환해 고객사별 메타데이터·Open Graph·사이트맵을 서버에서 생성했습니다.',
+				highlights: ['Next.js 15 App Router', '서버에서 생성'],
+				outcome: { value: '배포 없이 고객사 추가', note: '검색 노출 정보 변경 포함' },
+			},
+		],
+	},
+	{
+		organization: '살린',
+		service: 'Swing',
+		serviceDescription: 'WebGL 가상 오피스 기반 스타트업 업무 지원 플랫폼',
+		role: ['프론트엔드 전 영역 단독 개발(백엔드 1명과 2인 팀)', '공통 보일러플레이트와 CMS UI 패키지 구축'],
+		techStack: ['React', 'TypeScript', 'Webpack 5', 'Vite', 'Unity WebGL', 'AWS S3'],
+		items: [
+			{
+				title: '서비스 웹 + 관리자 CMS 프론트엔드 단독 개발',
+				caseSlug: 'swing-frontend',
+				date: '2024.01 ~ 2024.07',
+				summary:
+					'백엔드 1명과 2인 팀에서 서비스 웹·관리자 CMS와 Unity WebGL 가상 오피스 진입(쿠키 인증 공유)까지 프론트엔드를 단독 개발했습니다.',
+				highlights: ['프론트엔드를 단독 개발', '쿠키 인증 공유'],
+			},
+		],
+	},
+	{
+		organization: '살린',
+		service: 'Localo',
+		serviceDescription: 'WebGL 아바타 서비스',
+		role: ['인수한 WebGL 서비스의 초기 로딩 성능 개선', '3D 뷰와 편집 상태를 역할별 컴포넌트·훅으로 분리'],
+		techStack: ['React', 'WebGL', 'Suspense', 'S3·CDN', 'Lighthouse'],
+		items: [
+			{
+				title: '아바타 스튜디오 성능 개선',
+				caseSlug: 'avatar-studio-performance',
+				date: '2023.10 ~ 2023.12',
+				summary:
+					'인수한 WebGL 아바타 서비스의 진입점을 lazy loading·Suspense로 분리하고 3D 자산을 S3·CDN으로 옮겼습니다.',
+				highlights: ['lazy loading·Suspense', 'S3·CDN으로 옮겼'],
+				outcome: { value: 'FCP 0.4~0.6초', note: '기존 3초 이상, Lighthouse' },
 			},
 		],
 	},
@@ -441,6 +374,7 @@ const ACTIVITIES: Activity[] = [
 
 const RESUME: Resume = {
 	careers: CAREERS,
+	projects: PROJECTS,
 	education: EDUCATION,
 	activities: ACTIVITIES,
 };

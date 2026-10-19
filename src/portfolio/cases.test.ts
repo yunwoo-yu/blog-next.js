@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import RESUME from '@/constant/resume';
 import { getCategoryList } from '@/utils/post-utils';
 
+import { CAREER_DETAIL, getCareerProjects } from './career-detail';
 import { buildCasePath, findResumeProject, getAdjacentCases, getPortfolioCase, PORTFOLIO_CASES } from './cases';
 import { getPortfolioExperience, PORTFOLIO_SECTIONS } from './overview';
 
@@ -16,12 +17,21 @@ const projectText = (slug: string) => {
 
 describe('포트폴리오 케이스 데이터', () => {
 	it('이력서의 경력 프로젝트를 빠짐없이 사례로 가진다', () => {
-		const resumeTitles = RESUME.careers.flatMap(career =>
-			career.serviceGroups.flatMap(group => group.projects.map(project => project.title)),
-		);
+		const resumeTitles = RESUME.projects.flatMap(project => project.items.map(item => item.title));
 		const caseTitles = PORTFOLIO_CASES.map(item => findResumeProject(item.resumeRef).project.title);
 
 		expect([...caseTitles].sort()).toEqual([...resumeTitles].sort());
+	});
+
+	it('사례는 경력 순서대로, 경력 안에서는 프로젝트 최신순이다', () => {
+		const expected = CAREER_DETAIL.flatMap(career =>
+			getCareerProjects(career).map(({ service, project }) => `${career.organization}/${service}/${project.title}`),
+		);
+		const actual = PORTFOLIO_CASES.map(
+			({ organization, service, resumeRef }) => `${organization}/${service}/${resumeRef.project}`,
+		);
+
+		expect(actual).toEqual(expected);
 	});
 
 	it('slug 는 URL 에 안전하고 중복되지 않는다', () => {
@@ -153,7 +163,9 @@ describe('클라이언트 번들과 이력서 원문의 분리', () => {
 		for (const file of clientFiles) {
 			const source = read(`src/components/portfolio/${file}`);
 
-			expect(source, file).not.toMatch(/from\s+'@\/constant\/resume'|from\s+'@\/portfolio\/(cases|overview)'/);
+			expect(source, file).not.toMatch(
+				/from\s+'@\/constant\/resume'|from\s+'@\/portfolio\/(cases|overview|career-detail)'/,
+			);
 		}
 		expect(read('src/portfolio/links.ts')).not.toMatch(/from\s+'@\/constant\/resume'/);
 	});

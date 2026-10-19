@@ -1,6 +1,5 @@
 import type { ResumeLinkProps } from '@/components/resume/ResumeLink';
-import RESUME, { type Project } from '@/constant/resume';
-
+import { CAREER_DETAIL, getCareerProjects, type Project } from './career-detail';
 import { buildCasePath } from './links';
 
 /** 이력서 프로젝트 문단 순서(문제·기여·결과)와 같은 라벨. */
@@ -74,7 +73,7 @@ const CASE_SOURCES: PortfolioCaseSource[] = [
 		slug: 'mydata-integration',
 		title: '의료·통신·신용 마이데이터 연동 및 연결 관리 구축',
 		summary:
-			'KHIS·KOSCOM·NICE의 서로 다른 절차를 본인인증부터 전송요구, 재동의, 철회, 전송 이력까지 하나의 사용자 여정으로 연결했습니다.',
+			'KHIS·KOSCOM·NICE의 서로 다른 절차를 본인인증부터 전송요구, 재동의, 철회, 전송 이력까지 27개 API 연동으로 구축했습니다.',
 		keywords: ['본인인증 SDK', '세션 스토리지', '일괄 철회', '전송 이력'],
 		resumeRef: {
 			organization: '웰로',
@@ -126,7 +125,7 @@ const CASE_SOURCES: PortfolioCaseSource[] = [
 		slug: 'swing-frontend',
 		title: 'Swing 서비스 웹 + 관리자 CMS 프론트엔드 단독 개발',
 		summary:
-			'백엔드 개발자 1명과 2인 팀에서 사용자 웹, 관리자 CMS, Unity WebGL 가상 오피스 진입·인증 연결까지 프론트엔드 전 영역을 구축했습니다.',
+			'백엔드 개발자 1명과 2인 팀에서 Webpack 사용자 웹, Vite 관리자 CMS, Unity WebGL 가상 오피스 진입·인증 연결까지 프론트엔드 전 영역을 단독 개발했습니다.',
 		keywords: ['Webpack 5', 'Vite', 'Unity', 'S3'],
 		resumeRef: { organization: '살린', service: 'Swing', project: '서비스 웹 + 관리자 CMS 프론트엔드 단독 개발' },
 	},
@@ -140,9 +139,9 @@ const CASE_SOURCES: PortfolioCaseSource[] = [
 	},
 ];
 
-/** 이력서에서 참조한 프로젝트를 찾는다. 이름이 바뀌어 못 찾으면 조용히 비우지 않고 던진다. */
+/** 포트폴리오 상세 원문(career-detail.ts)에서 참조한 프로젝트를 찾는다. 이름이 바뀌어 못 찾으면 조용히 비우지 않고 던진다. */
 export const findResumeProject = ({ organization, service, project }: ResumeRef) => {
-	const career = RESUME.careers.find(item => item.organization === organization);
+	const career = CAREER_DETAIL.find(item => item.organization === organization);
 	const group = career?.serviceGroups.find(item => item.service === service);
 	const found: Project | undefined = group?.projects.find(item => item.title === project);
 
@@ -176,7 +175,19 @@ const resolveCase = (source: PortfolioCaseSource): PortfolioCase => {
 	};
 };
 
-export const PORTFOLIO_CASES: PortfolioCase[] = CASE_SOURCES.map(resolveCase);
+/** 경력 순서(CAREER_DETAIL) → 경력 안에서는 프로젝트 최신순. 사례 배열의 순서가 곧 목록·이전/다음 순서다. */
+const getCaseOrder = ({ resumeRef: { organization, service, project } }: PortfolioCaseSource) => {
+	const careerIndex = CAREER_DETAIL.findIndex(career => career.organization === organization);
+	const projectIndex = getCareerProjects(CAREER_DETAIL[careerIndex]).findIndex(
+		item => item.service === service && item.project.title === project,
+	);
+
+	return careerIndex * 1000 + projectIndex;
+};
+
+export const PORTFOLIO_CASES: PortfolioCase[] = [...CASE_SOURCES]
+	.sort((a, b) => getCaseOrder(a) - getCaseOrder(b))
+	.map(resolveCase);
 
 export const getPortfolioCase = (slug: string) => PORTFOLIO_CASES.find(item => item.slug === slug);
 

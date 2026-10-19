@@ -4,6 +4,8 @@ import Activities from '@/components/resume/Activities';
 import Careers from '@/components/resume/Careers';
 import Education from '@/components/resume/Education';
 import Introduce from '@/components/resume/Introduce';
+import KeyOutcomes from '@/components/resume/KeyOutcomes';
+import Projects from '@/components/resume/Projects';
 import ResumeHeader from '@/components/resume/ResumeHeader';
 import ResumeSheet from '@/components/resume/ResumeSheet';
 
@@ -17,7 +19,9 @@ export default function ResumePage() {
 			<ResumeSheet>
 				<ResumeHeader />
 				<Introduce />
+				<KeyOutcomes />
 				<Careers />
+				<Projects />
 				<div className="mt-16 print:mt-8">
 					<Activities />
 					<Education />

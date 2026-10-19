@@ -100,7 +100,7 @@ export const MORE_EXHIBITS: Exhibit[] = [
 	{
 		slug: 'mydata-integration',
 		shortTitle: '마이데이터',
-		headline: '긴 규제성 흐름을 하나의 사용자 여정으로',
+		headline: '의료·통신·신용 마이데이터 연동과 연결 관리',
 		variantLabels: { before: '', after: '인증부터 철회까지 한 흐름' },
 		beforeKind: 'none',
 		layerLabels: ['사용자 화면', '연동 상태', '기관 절차'],
@@ -163,12 +163,12 @@ export const MORE_EXHIBITS: Exhibit[] = [
 			'연결 관리: 재동의·개별·일괄 철회·전송 이력',
 		],
 		callouts: {
-			role: '본인인증부터 연동, 연결 상태 확인, 재동의, 철회, 전송 이력까지 전체 흐름을 구축했습니다.',
+			role: '본인인증부터 연동, 연결 상태 확인, 재동의, 철회, 전송 이력까지 API 27개를 연동해 구축했습니다.',
 			problem:
 				'서로 다른 기관 절차를 하나의 사용자 여정으로 연결해야 했고, 긴 규제성 흐름이 새로고침과 외부 인증 이후에도 이어져야 했습니다.',
 			decision:
 				'SDK 로딩·콜백 순서를 훅으로 감싸고 연동 중간값을 세션 스토리지에 단계별로 저장·정리했습니다. 일괄 철회는 병렬로 처리하고 실패한 항목만 안내했습니다.',
-			outcome: '의료·통신·신용 연동부터 철회와 전송 이력까지 전체 흐름을 구축했습니다.',
+			outcome: '일괄 철회에서 일부 기관 요청이 실패해도 성공한 처리는 유지되고, 실패한 항목만 안내합니다.',
 			outcomeBasis: '이력서 기재 내용. 이 페이지에서 측정한 값이 아닙니다.',
 		},
 		screens: {},
@@ -261,7 +261,7 @@ export const MORE_EXHIBITS: Exhibit[] = [
 	{
 		slug: 'ai-chatbot-cms',
 		shortTitle: 'AI 챗봇·CMS',
-		headline: '답변은 이어서 나오고, 읽던 자리는 그대로',
+		headline: '스트림 답변과 이전 대화 스크롤 보정',
 		variantLabels: { before: '', after: '스트림 응답과 위치 유지' },
 		beforeKind: 'none',
 		layerLabels: ['사용자 챗봇', '스트림·상태', 'OpenAI·운영 CMS'],
@@ -472,7 +472,8 @@ export const MORE_EXHIBITS: Exhibit[] = [
 				{ title: 'WebGL 자산', caption: 'Unity 자산을 환경별 S3 경로에서 받아 빌드에 포함합니다.' },
 				{
 					title: '진입',
-					caption: '웹 토큰을 가상 오피스 진입 과정에 연결해 인증부터 진입까지 하나의 흐름으로 완성합니다.',
+					caption:
+						'웹 로그인 토큰을 쿠키로 공유해 가상 오피스 진입 페이지가 인증하도록 연결하고, 인증부터 진입까지 하나의 흐름으로 완성합니다.',
 				},
 			],
 		},
@@ -488,7 +489,7 @@ export const MORE_EXHIBITS: Exhibit[] = [
 				'업무 지원 기능과 Unity WebGL 가상 오피스를 함께 제공하는 신규 서비스를 2인 팀이 처음부터 만들어야 했습니다.',
 			decision:
 				'서비스 개발에 앞서 공통 보일러플레이트와 CMS UI 패키지를 먼저 만들고, 두 앱에 같은 방식으로 적용했습니다.',
-			outcome: '인증부터 업무 지원 관리와 가상 오피스 진입까지 하나의 서비스 흐름으로 완성했습니다.',
+			outcome: '2인 팀에서 서비스 웹과 CMS를 단독으로 개발하고 가상 오피스 진입까지 연결했습니다.',
 			outcomeBasis: '이력서 기재 내용. 이력서에 정량 결과는 적혀 있지 않습니다.',
 		},
 		screens: {},

@@ -9,7 +9,7 @@ export default function ResumeContainer({ title, titleClassName = '', children }
 		<section className="[&_strong]:font-bold">
 			{title && (
 				<h3
-					className={`mb-6 mt-12 flex items-center gap-3 text-2xl font-bold text-gray-950 after:h-px after:flex-1 after:bg-violet-200 dark:text-gray-50 dark:after:bg-violet-300/35 print:mb-4 print:mt-7 print:text-xl print:!text-gray-950 print:after:!bg-violet-200 ${titleClassName}`}>
+					className={`mb-5 mt-14 text-xl font-bold tracking-tight text-gray-950 dark:text-gray-50 print:mb-3 print:mt-6 print:text-lg print:!text-gray-950 ${titleClassName}`}>
 					<span>{title}</span>
 				</h3>
 			)}
