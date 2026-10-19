@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 
-import { renderHighlightedText } from '@/components/resume/Careers';
+import { renderHighlightedText } from '@/components/resume/highlight';
 import { buildCasePath, getAdjacentCases, type PortfolioCase } from '@/portfolio/cases';
 import { getExhibit } from '@/portfolio/exhibits';
 import { getStory } from '@/portfolio/stories';
@@ -12,17 +12,17 @@ import ServiceExhibit from './ServiceExhibit';
 
 interface CaseStudyProps {
 	item: PortfolioCase;
-	/** 이력서 기록 뒤, 이전/다음 사례 앞에 들어가는 보조 영역. */
+	/** 본문 뒤, 이전/다음 사례 앞에 들어가는 보조 영역. */
 	children?: ReactNode;
 }
 
 /** 실제로 렌더되는 섹션만 내비에 올린다. 없는 앵커로 가는 죽은 링크를 만들지 않는다. */
 const buildSections = (parts: { decisions: boolean; troubles: boolean; screens: boolean }) => [
+	{ id: 'record', label: '작업 기록' },
 	{ id: 'exhibit', label: '구조' },
 	...(parts.decisions ? [{ id: 'decisions', label: '판단' }] : []),
 	...(parts.troubles ? [{ id: 'troubles', label: '해결' }] : []),
 	...(parts.screens ? [{ id: 'screens', label: '화면' }] : []),
-	{ id: 'record', label: '이력서 원문' },
 ];
 
 const BRIEF_ROWS = [
@@ -79,27 +79,21 @@ const CaseStudy = ({ item, children }: CaseStudyProps) => {
 					</section>
 				)}
 
-				<div id="exhibit" className="mt-12 scroll-mt-32">
-					<h3 className="text-xl font-bold md:text-2xl">구조</h3>
-					<div className="mt-4">{exhibit && <ServiceExhibit exhibit={exhibit} showHeadline={false} priority />}</div>
-					{exhibit && !exhibit.screens.before && !exhibit.screens.after && !exhibit.identity && (
-						<p className="mt-3 text-xs leading-5 text-pf-ink/60">{exhibit.reconstructionNote}</p>
-					)}
-				</div>
-
-				{story && <CaseStory story={story} exhibit={exhibit} />}
-
-				<details id="record" className="mt-14 scroll-mt-32 border-t border-pf-ink/20 pt-5">
-					<summary className="cursor-pointer text-xl font-bold">이력서 원문</summary>
-					<p className="mt-3 text-sm leading-6 text-pf-ink/70">{item.summary}</p>
-					<ol className="mt-5 grid gap-4 md:grid-cols-3">
+				<section id="record" aria-labelledby="record-title" className="mt-12 scroll-mt-32">
+					<h3 id="record-title" className="text-xl font-bold md:text-2xl">
+						작업 기록
+					</h3>
+					<p className="mt-2 text-sm leading-6 text-pf-ink/70">{item.summary}</p>
+					<ol className="mt-6 grid gap-6">
 						{item.stages.map(stage => (
-							<li key={stage.id} className="border-t-2 border-pf-ink/80 pt-3">
-								<section id={stage.id} aria-labelledby={`${stage.id}-title`} className="scroll-mt-32">
+							<li
+								key={stage.id}
+								className="grid gap-2 border-t-2 border-pf-ink/80 pt-4 md:grid-cols-[88px_1fr] md:gap-6">
+								<section id={stage.id} aria-labelledby={`${stage.id}-title`} className="contents scroll-mt-32">
 									<h4 id={`${stage.id}-title`} className="text-sm font-bold">
 										{stage.label}
 									</h4>
-									<p className="mt-2 text-sm leading-7">
+									<p className="text-base leading-8">
 										{renderHighlightedText(stage.text, stage.highlights)}
 										{stage.links.map(link => (
 											<a
@@ -116,7 +110,17 @@ const CaseStudy = ({ item, children }: CaseStudyProps) => {
 							</li>
 						))}
 					</ol>
-				</details>
+				</section>
+
+				<div id="exhibit" className="mt-12 scroll-mt-32">
+					<h3 className="text-xl font-bold md:text-2xl">구조</h3>
+					<div className="mt-4">{exhibit && <ServiceExhibit exhibit={exhibit} showHeadline={false} priority />}</div>
+					{exhibit && !exhibit.screens.before && !exhibit.screens.after && !exhibit.identity && (
+						<p className="mt-3 text-xs leading-5 text-pf-ink/60">{exhibit.reconstructionNote}</p>
+					)}
+				</div>
+
+				{story && <CaseStory story={story} exhibit={exhibit} />}
 
 				{children}
 

@@ -50,6 +50,12 @@ const CaseCard = ({ item }: CaseCardProps) => {
 					</Link>
 				</h3>
 				<p className="mt-1 text-sm text-pf-ink/70">{item.title}</p>
+				{exhibit && (
+					<p className="mt-3 text-sm leading-6">
+						<span className="mr-1.5 text-xs font-semibold text-pf-accent-text">결과</span>
+						{exhibit.callouts.outcome}
+					</p>
+				)}
 				<span className="mt-4 inline-flex items-center gap-1 text-sm font-medium" aria-hidden="true">
 					전시 보기
 					<ArrowUpRight size={14} />

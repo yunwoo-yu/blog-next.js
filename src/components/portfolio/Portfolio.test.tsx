@@ -7,6 +7,7 @@ import RESUME from '@/constant/resume';
 import { buildCasePath, PORTFOLIO_CASES } from '@/portfolio/cases';
 import { getExhibit } from '@/portfolio/exhibits';
 
+import CaseCard from './CaseCard';
 import CaseStudy from './CaseStudy';
 import PortfolioOverview from './PortfolioOverview';
 
@@ -118,6 +119,16 @@ describe('PortfolioOverview', () => {
 	});
 });
 
+describe('CaseCard 결과 요약', () => {
+	it('목록 카드에 사례의 결과 한 줄을 보여 준다', () => {
+		const item = PORTFOLIO_CASES[0];
+
+		render(<CaseCard item={item} />);
+
+		expect(screen.getByText(getExhibit(item.slug)!.callouts.outcome)).toBeInTheDocument();
+	});
+});
+
 describe('CaseStudy', () => {
 	const item = PORTFOLIO_CASES[1];
 
@@ -131,8 +142,8 @@ describe('CaseStudy', () => {
 		expect(screen.getByRole('heading', { level: 2, name: exhibit.headline })).toBeInTheDocument();
 		expect(screen.getByText(item.title)).toBeInTheDocument();
 		for (const [label, id] of [
+			['작업 기록', 'record'],
 			['구조', 'exhibit'],
-			['이력서 원문', 'record'],
 		]) {
 			expect(within(nav).getByRole('link', { name: label })).toHaveAttribute('href', `#${id}`);
 			expect(document.getElementById(id)).not.toBeNull();
@@ -142,6 +153,19 @@ describe('CaseStudy', () => {
 		expect(within(nav).getByRole('link', { name: /포트폴리오/ })).toHaveAttribute('href', '/portfolio');
 		expectCompactNavLinks(nav);
 		expectNonShrinkingNav(nav);
+	});
+
+	it('작업 기록(문제·기여·결과)은 접히지 않은 본문이고 구조 시각화보다 먼저 나온다', () => {
+		const { container } = render(<CaseStudy item={item} />);
+
+		const record = document.getElementById('record')!;
+		const exhibit = document.getElementById('exhibit')!;
+
+		expect(record.closest('details')).toBeNull();
+		expect(within(record).getByRole('heading', { level: 3, name: '작업 기록' })).toBeInTheDocument();
+		for (const stage of item.stages) expect(record.textContent).toContain(stage.text);
+		expect(record.compareDocumentPosition(exhibit) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+		expect(container.textContent).not.toContain('이력서 원문');
 	});
 
 	it('이웃 사례로 이동하는 링크를 준다', () => {
