@@ -3,15 +3,12 @@
 import { render, screen, within } from '@testing-library/react';
 
 import { GITHUB_URL, LINKEDIN_URL } from '@/constant';
-import RESUME from '@/constant/resume';
 import { buildCasePath, PORTFOLIO_CASES } from '@/portfolio/cases';
 import { getExhibit } from '@/portfolio/exhibits';
 
 import CaseCard from './CaseCard';
 import CaseStudy from './CaseStudy';
 import PortfolioOverview from './PortfolioOverview';
-
-const exitReasons = RESUME.careers.flatMap(career => (career.exitReason ? [career.exitReason] : []));
 
 const expectCompactNavLinks = (nav: HTMLElement) => {
 	expect(within(nav).getByRole('link', { name: '이력서' })).toHaveAttribute('href', '/resume');
@@ -112,7 +109,6 @@ describe('PortfolioOverview', () => {
 	it('퇴사 사유와 광고 슬롯, 이메일을 렌더하지 않는다', () => {
 		const { container } = render(<PortfolioOverview />);
 
-		for (const reason of exitReasons) expect(container.textContent).not.toContain(reason);
 		expect(container.textContent).not.toContain('권고사직');
 		expect(container.querySelector('ins.adsbygoogle')).toBeNull();
 		expect(container.querySelector('a[href^="mailto:"]')).toBeNull();

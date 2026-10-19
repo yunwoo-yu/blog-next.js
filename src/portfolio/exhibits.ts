@@ -200,7 +200,7 @@ const CORE_EXHIBITS: Exhibit[] = [
 	{
 		slug: 'wellomarket-checkout',
 		shortTitle: '주문·결제',
-		headline: '결제 금액의 기준은 서버 하나',
+		headline: '결제부터 배송·리뷰, 어드민까지',
 		variantLabels: { before: '화면이 금액을 정하면', after: '서버가 금액을 확정' },
 		beforeKind: 'scenario',
 		layerLabels: ['사용자 화면', '서버·주문 상태', '결제사'],

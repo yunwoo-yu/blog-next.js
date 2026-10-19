@@ -101,7 +101,7 @@ const CASE_SOURCES: PortfolioCaseSource[] = [
 		keywords: ['401', '갱신', '쿠키', '도메인별로 분리'],
 		resumeRef: {
 			organization: '웰로',
-			service: 'Wello·Wello-biz Admin',
+			service: 'Wello 통합 어드민',
 			project: 'Next.js·Vue 통합 어드민 토큰 자동 갱신',
 		},
 	},

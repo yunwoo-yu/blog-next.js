@@ -39,7 +39,6 @@ export const CAREER_DETAIL: DetailCareer[] = [
 		position: '프론트엔드 개발자 | 제품실 개발팀',
 		startDate: '2025.11',
 		endDate: '2026.06',
-		exitReason: '경영 악화로 인한 권고사직',
 		description:
 			'누적 이용자 500만 규모의 Wello와 B2B SaaS Wello-biz의 사용자 서비스, 커머스, 마이데이터, 통합 어드민 프론트엔드 개발을 pnpm·Turborepo 기반 모노레포 환경에서 담당했습니다.',
 		techStack: [
@@ -70,7 +69,7 @@ export const CAREER_DETAIL: DetailCareer[] = [
 							},
 							{
 								title:
-									'쿠폰·포인트 선택 내역을 체크아웃 API로 보내고, 서버가 확정한 금액만 NICEPAY에 요청하도록 결제 금액 기준을 서버로 고정했습니다. 인증 결과는 응답 코드별(사용자 취소·통신 실패 등)로 안내하고, 재고 부족·주문 만료는 장바구니로 돌려보내 다시 선택하게 했습니다. 배송·취소·반품·환불 화면과 운영 어드민은 같은 서버 주문 상태 코드를 기준으로 동작하게 맞췄습니다.',
+									'쿠폰·포인트 선택 내역을 체크아웃 API로 보내고, 서버가 확정한 금액만 NICEPAY에 요청하도록 결제 금액 기준을 서버로 고정했습니다. 인증 결과는 응답 코드별(사용자 취소·통신 실패 등)로 안내하고, 재고 부족·주문 만료는 장바구니로 돌려보내 다시 선택하게 했습니다. 배송·취소·반품·환불 화면과 운영 어드민은 같은 서버 주문 상태 코드를 기준으로 동작하게 맞췄습니다. 결제부터 이후 이어지는 배송조회·배송완료·리뷰 작성까지의 사용자 흐름과 입점업체 어드민을 맡았습니다.',
 								highlights: ['서버가 확정한 금액만 NICEPAY에 요청', '같은 서버 주문 상태 코드를 기준으로'],
 							},
 							{
@@ -179,7 +178,7 @@ export const CAREER_DETAIL: DetailCareer[] = [
 				],
 			},
 			{
-				service: 'Wello·Wello-biz Admin',
+				service: 'Wello 통합 어드민',
 				serviceDescription: '통합 운영 어드민',
 				projects: [
 					{
@@ -212,7 +211,6 @@ export const CAREER_DETAIL: DetailCareer[] = [
 		position: '프론트엔드 개발자 | ILab',
 		startDate: '2023.08',
 		endDate: '2025.08',
-		exitReason: '경영 악화로 인한 권고사직',
 		description:
 			'AI 챗봇 플랫폼, WebGL 아바타 서비스, 스타트업 업무 지원 서비스의 사용자 화면과 관리자 CMS 프론트엔드 개발을 담당했습니다.',
 		techStack: [

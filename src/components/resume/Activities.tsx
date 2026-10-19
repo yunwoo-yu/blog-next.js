@@ -1,7 +1,6 @@
 import RESUME from '@/constant/resume';
-
+import { renderRichText } from './highlight';
 import ResumeContainer from './ResumeContainer';
-import { ResumeLink } from './ResumeLink';
 
 export default function Activities() {
 	return (
@@ -9,7 +8,7 @@ export default function Activities() {
 			<div className="flex flex-col gap-7 print:gap-2">
 				{RESUME.activities.map(activity => (
 					<article key={activity.title} className="print:break-inside-avoid">
-						<header className="mb-3 flex flex-wrap items-baseline justify-between gap-x-8 gap-y-1 print:mb-1">
+						<header className="flex flex-wrap items-baseline justify-between gap-x-8 gap-y-1 print:mb-1">
 							<div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
 								<h4 className="text-base font-semibold leading-7 text-gray-950 dark:text-gray-100 print:!text-gray-950">
 									{activity.title}
@@ -24,22 +23,21 @@ export default function Activities() {
 								{activity.period}
 							</p>
 						</header>
-						<ul className="ml-5 list-disc">
-							{activity.items.map((item, index) => {
-								const text = typeof item === 'string' ? item : item.text;
-								const links = typeof item === 'string' ? undefined : item.links;
-								return (
-									<li
-										key={index}
-										className="my-1 text-sm leading-6 text-gray-700 dark:text-gray-200 print:!text-gray-800">
-										{text}
-										{links?.map((link, linkIndex) => (
-											<ResumeLink key={linkIndex} title={link.title} url={link.url} />
-										))}
-									</li>
-								);
-							})}
-						</ul>
+						{activity.items.length > 0 && (
+							<ul className="ml-5 list-disc">
+								{activity.items.map((item, index) => {
+									const text = typeof item === 'string' ? item : item.text;
+									const links = typeof item === 'string' ? undefined : item.links;
+									return (
+										<li
+											key={index}
+											className="my-1 text-sm leading-6 text-gray-700 dark:text-gray-200 print:!text-gray-800">
+											{renderRichText(text, [], links)}
+										</li>
+									);
+								})}
+							</ul>
+						)}
 					</article>
 				))}
 			</div>

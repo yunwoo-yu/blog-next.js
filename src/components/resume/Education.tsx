@@ -6,7 +6,7 @@ export default function Education() {
 	if (RESUME.education.length === 0) return null;
 
 	return (
-		<ResumeContainer title="교육">
+		<ResumeContainer title="학력" titleClassName="print:mb-2 print:mt-2">
 			<ul className="ml-5 list-disc">
 				{RESUME.education.map(edu => (
 					<li key={edu.title} className="my-1 text-sm leading-6 text-gray-700 dark:text-gray-200 print:!text-gray-800">

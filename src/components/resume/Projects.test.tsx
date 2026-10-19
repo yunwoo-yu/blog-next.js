@@ -2,112 +2,93 @@
 
 import { render, screen, within } from '@testing-library/react';
 
-import RESUME, { getServicePeriod } from '@/constant/resume';
+import RESUME, { getOrganizationSummary } from '@/constant/resume';
 
-import Projects, { ProjectBlock } from './Projects';
+import Projects from './Projects';
 
-describe('프로젝트 블록', () => {
-	it('서비스 이름·소속 회사·기간을 왼쪽 레일에 보여 준다', () => {
-		for (const project of RESUME.projects) {
-			const { container, unmount } = render(<ProjectBlock project={project} />);
+type Project = (typeof RESUME.projects)[number];
 
-			expect(screen.getByRole('heading', { level: 5, name: project.service })).toBeInTheDocument();
-			expect(container.textContent).toContain(project.organization);
-			expect(container.textContent).toContain(getServicePeriod(project));
-			unmount();
+const getSection = (project: Project) =>
+	screen
+		.getAllByRole('heading', { level: 5 })
+		.find(
+			heading =>
+				heading.textContent === project.service &&
+				heading.closest('div[data-org]')?.getAttribute('data-org') === project.organization,
+		)!
+		.closest('section')!;
+
+describe('프로젝트', () => {
+	it('회사별로 묶고 회사 제목에 프로젝트 개수를 보여 준다', () => {
+		render(<Projects />);
+
+		const companies = screen.getAllByRole('heading', { level: 4 }).map(heading => heading.textContent);
+
+		expect(companies).toEqual(
+			RESUME.careers.map(career => {
+				const { projects } = getOrganizationSummary(RESUME.projects, career.organization);
+
+				return `${career.organization} 프로젝트 ${projects}개`;
+			}),
+		);
+	});
+
+	it('서비스 이름을 제목으로 그 회사 안에서 최신 서비스부터 나열한다', () => {
+		render(<Projects />);
+
+		for (const career of RESUME.careers) {
+			const group = document.querySelector(`div[data-org="${career.organization}"]`) as HTMLElement;
+			const titles = within(group)
+				.getAllByRole('heading', { level: 5 })
+				.map(heading => heading.textContent);
+
+			expect(titles).toEqual(
+				RESUME.projects.filter(project => project.organization === career.organization).map(project => project.service),
+			);
 		}
 	});
 
-	it('설명·역할·업무·사용 기술을 구분해 보여 준다', () => {
+	it('각 서비스 제목 아래에 그 서비스에서 한 일을 따로 모은다', () => {
+		render(<Projects />);
+
 		for (const project of RESUME.projects) {
-			const { container, unmount } = render(<ProjectBlock project={project} />);
+			const rows = within(getSection(project)).getAllByTestId('work-item');
 
-			for (const label of ['설명', '역할', '업무', '사용 기술']) {
-				expect(screen.getByText(label, { selector: 'h6, h6 *' }), `${project.service} ${label}`).toBeInTheDocument();
-			}
-			for (const role of project.role) expect(container.textContent).toContain(role);
-			for (const tech of project.techStack) expect(container.textContent).toContain(tech);
-			unmount();
-		}
-	});
-
-	it('업무 항목을 최신순으로 제목·기간·요약과 함께 보여 준다', () => {
-		for (const project of RESUME.projects) {
-			const { unmount } = render(<ProjectBlock project={project} />);
-
-			const works = screen.getByRole('list', { name: `${project.service} 업무` });
-			const rows = within(works).getAllByRole('listitem');
-
-			expect(rows).toHaveLength(project.items.length);
+			expect(rows, project.service).toHaveLength(project.items.length);
 			project.items.forEach((item, index) => {
-				expect(rows[index].textContent).toContain(item.title);
-				expect(rows[index].textContent).toContain(item.date);
 				expect(rows[index].textContent).toContain(item.summary);
+				expect(rows[index].textContent).not.toContain(item.date);
 			});
-			unmount();
 		}
 	});
 
-	it('성과가 있는 항목은 성과를 따로 보여 준다', () => {
+	it('서비스 설명을 보여 주고 기술 키워드는 경력에서만 보여 준다', () => {
+		render(<Projects />);
+
 		for (const project of RESUME.projects) {
-			const { unmount } = render(<ProjectBlock project={project} />);
-			const works = screen.getByRole('list', { name: `${project.service} 업무` });
-			const rows = within(works).getAllByRole('listitem');
+			const section = getSection(project);
 
-			project.items.forEach((item, index) => {
-				const row = rows[index];
-
-				if (item.outcome) {
-					const outcome = row.querySelector('[data-field="outcome"]')!;
-
-					expect(outcome.textContent).toContain(item.outcome.value);
-					if (item.outcome.note) expect(outcome.textContent).toContain(item.outcome.note);
-				} else {
-					expect(row.querySelector('[data-field="outcome"]')).toBeNull();
-				}
-			});
-			unmount();
+			if (project.serviceDescription) expect(section.textContent).toContain(project.serviceDescription);
+			expect(section.textContent).not.toContain(project.techStack.join(', '));
 		}
 	});
 
-	it('업무마다 포트폴리오 상세로 가는 링크를 주고 인쇄에서는 숨긴다', () => {
-		for (const project of RESUME.projects) {
-			const { unmount } = render(<ProjectBlock project={project} />);
+	it('항목에 포트폴리오 상세 링크와 화살표를 달지 않는다', () => {
+		render(<Projects />);
 
-			for (const item of project.items) {
-				const link = screen.getByRole('link', {
-					name: name => name.includes(item.title) && name.includes('포트폴리오'),
-				});
-
-				expect(link).toHaveAttribute('href', `/portfolio/${item.caseSlug}`);
-				expect(link).toHaveClass('print:hidden');
-			}
-			unmount();
-		}
+		expect(screen.queryAllByRole('link', { name: /포트폴리오 상세/ })).toHaveLength(0);
+		expect(document.body.textContent).not.toMatch(/상세 →|→/);
 	});
 
 	it('항목의 외부 링크를 함께 보여 준다', () => {
-		const withLinks = RESUME.projects.filter(project => project.items.some(item => item.links?.length));
-
-		expect(withLinks.length).toBeGreaterThan(0);
-		for (const project of withLinks) {
-			const { unmount } = render(<ProjectBlock project={project} />);
-
-			for (const link of project.items.flatMap(item => item.links ?? [])) {
-				expect(screen.getByRole('link', { name: new RegExp(link.title) })).toHaveAttribute('href', link.url);
-			}
-			unmount();
-		}
-	});
-});
-
-describe('프로젝트 섹션', () => {
-	it('경력과 별도 섹션으로 모든 서비스를 최신순으로 보여 준다', () => {
 		render(<Projects />);
 
-		expect(screen.getByRole('heading', { level: 3, name: '프로젝트' })).toBeInTheDocument();
-		expect(screen.getAllByRole('heading', { level: 5 }).map(heading => heading.textContent)).toEqual(
-			RESUME.projects.map(project => project.service),
-		);
+		const links = RESUME.projects.flatMap(project => project.items.flatMap(item => item.links ?? []));
+
+		expect(links.length).toBeGreaterThan(0);
+		for (const link of links) {
+			expect(screen.getByRole('link', { name: link.title })).toHaveAttribute('href', link.url);
+		}
+		expect(document.body.textContent).not.toMatch(/\[[^\]]+\]/);
 	});
 });

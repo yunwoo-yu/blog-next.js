@@ -68,11 +68,8 @@ describe('포트폴리오 케이스 데이터', () => {
 		}
 	});
 
-	it('exitReason 은 사례 데이터에 담기지 않는다', () => {
-		expect(JSON.stringify(PORTFOLIO_CASES)).not.toContain('exitReason');
-		for (const career of RESUME.careers) {
-			if (career.exitReason) expect(JSON.stringify(PORTFOLIO_CASES)).not.toContain(career.exitReason);
-		}
+	it('퇴사 사유 문구는 사례 데이터에 담기지 않는다', () => {
+		expect(JSON.stringify(PORTFOLIO_CASES)).not.toContain('권고사직');
 	});
 
 	it('없는 이력서 프로젝트를 참조하면 던진다', () => {

@@ -1,4 +1,14 @@
-import RESUME, { type Careers, compareRecent, getCareerPeriod, getProjectRange, getServicePeriod } from './resume';
+import RESUME, {
+	type Careers,
+	compareRecent,
+	getCareerMonths,
+	getCareerPeriod,
+	getOrganizationItems,
+	getOrganizationSummary,
+	getProjectRange,
+	getServicePeriod,
+	getSkills,
+} from './resume';
 
 const createCareer = (overrides: Partial<Careers> = {}): Careers => ({
 	organization: '',
@@ -109,6 +119,75 @@ describe('프로젝트 날짜 helper', () => {
 	});
 });
 
+describe('경력 요약 helper', () => {
+	it('경력 개월 수를 센다', () => {
+		expect(getCareerMonths(createCareer({ startDate: '2023.08', endDate: '2025.08' }))).toBe(24);
+		expect(getCareerMonths(createCareer({ startDate: '2025.11', endDate: '2026.06' }))).toBe(7);
+	});
+
+	it('기간이 없는 경력은 0개월로 센다', () => {
+		expect(getCareerMonths(createCareer())).toBe(0);
+		expect(getCareerMonths(createCareer({ period: '2023.01 ~ 2023.06' }))).toBe(0);
+	});
+
+	it('회사별 프로젝트 수와 서비스별 개수를 센다', () => {
+		const summary = getOrganizationSummary(RESUME.projects, '웰로');
+
+		expect(summary.projects).toBe(summary.services.length);
+		expect(summary.total).toBe(summary.services.reduce((sum, { count }) => sum + count, 0));
+		expect(summary.services.map(({ service }) => service)).toEqual(
+			RESUME.projects.filter(project => project.organization === '웰로').map(project => project.service),
+		);
+		expect(getOrganizationSummary(RESUME.projects, '없는 회사')).toEqual({ projects: 0, total: 0, services: [] });
+	});
+});
+
+describe('getSkills', () => {
+	it('버전을 떼고 대소문자 구분 없이 중복을 합친다', () => {
+		const careers = [
+			{ techStack: ['React 19', 'Next.js 16', 'TanStack Query v5', 'TypeScript'] },
+			{ techStack: ['React', 'Next.js 15', 'TanStack Query', 'NestJS'] },
+		];
+
+		expect(getSkills(careers)).toEqual(['React', 'Next.js', 'TanStack Query', 'TypeScript', 'NestJS']);
+	});
+
+	it('실제 경력의 기술을 최근 경력 순서로 모은다', () => {
+		const skills = getSkills(RESUME.careers);
+
+		expect(skills.slice(0, 3)).toEqual(['React', 'Next.js', 'TypeScript']);
+		expect(skills).toContain('NestJS');
+	});
+});
+
+describe('getOrganizationItems', () => {
+	it('한 회사의 항목을 서비스 구분 없이 최신순으로 펼친다', () => {
+		for (const career of RESUME.careers) {
+			const entries = getOrganizationItems(RESUME.projects, career.organization);
+			const ranges = entries.map(({ item }) => getProjectRange(item.date));
+			const expected = RESUME.projects
+				.filter(project => project.organization === career.organization)
+				.reduce((total, project) => total + project.items.length, 0);
+
+			expect(entries, career.organization).toHaveLength(expected);
+			expect(ranges, career.organization).toEqual([...ranges].sort(compareRecent));
+		}
+	});
+
+	it('각 항목에 소속 서비스를 붙인다', () => {
+		const entries = getOrganizationItems(RESUME.projects, '웰로');
+
+		expect(entries.find(({ item }) => item.title.startsWith('Next.js·Vue'))?.service).toBe('Wello 통합 어드민');
+	});
+});
+
+describe('이력서 공개 문구', () => {
+	it('퇴사 사유(권고사직 등)는 이력서 데이터에 싣지 않는다', () => {
+		expect(JSON.stringify(RESUME)).not.toContain('권고사직');
+		expect(JSON.stringify(RESUME)).not.toContain('exitReason');
+	});
+});
+
 describe('이력서 프로젝트 데이터', () => {
 	const items = RESUME.projects.flatMap(project => project.items);
 
@@ -138,20 +217,10 @@ describe('이력서 프로젝트 데이터', () => {
 		}
 	});
 
-	it('성과는 짧게 압축하고, 작업량 수치(개수·줄 수)는 성과로도 이력서 문구로도 쓰지 않는다', () => {
+	it('작업량 수치(개수·줄 수)는 이력서 문구에 쓰지 않는다(포트폴리오 상세에 둔다)', () => {
 		for (const item of items) {
-			if (item.outcome) {
-				expect(item.outcome.value.length, item.title).toBeLessThanOrEqual(16);
-				expect(item.outcome.value, `${item.title}: 작업량 수치는 성과가 아닙니다`).not.toMatch(/\d[\d,]*\s*(개|줄)/);
-			}
-			expect(item.summary, `${item.title}: 작업량 수치는 포트폴리오 상세에 둡니다`).not.toMatch(
-				/\d[\d,]*\s*(개 (파일|API|라우트)|줄)/,
-			);
+			expect(item.summary, item.title).not.toMatch(/\d[\d,]*\s*(개 (파일|API|라우트)|줄)/);
 		}
-	});
-
-	it('작업 요약에는 결과 수치를 섞지 않는다(성과 칸에만 둔다)', () => {
-		for (const item of items) expect(item.summary, item.title).not.toMatch(/\d\s*%|\d\s*ms|0건|\d\s*초/);
 	});
 
 	it('각 항목은 1~2줄 요약이고 강조 문구 1~2개가 요약에 실제로 들어 있다', () => {
