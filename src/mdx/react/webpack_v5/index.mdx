@@ -35,14 +35,15 @@ ES2015부터 모듈 이라는 문법을 지원하게 되었고 이 모듈을 사
 // npm or yarn or pnpm init 명령어로 package.json 파일을 생성해 주세요.
 // 이 글에서는 npm을 이용합니다.
 
-npm install -D webpack @types/webpack webpack-cli
+npm install -D webpack webpack-cli
 
-yarn add -D webpack @types/webpack webpack-cli
+yarn add -D webpack webpack-cli
 
-pnpm add -D webpack @types/webpack webpack-cli
+pnpm add -D webpack webpack-cli
 ```
 
-- 원하는 패키지 매니저를 통해 설치한다. -D 옵션으로 production 빌드 시 포함되지 않도록 해준다.
+- 원하는 패키지 매니저를 통해 설치한다. -D 옵션은 devDependencies로 설치한다는 뜻이다. (번들 결과물에 포함되는지와는 별개이고, 번들에는 코드에서 import한 모듈만 들어간다.)
+- webpack 5는 패키지 자체에 타입이 포함되어 있어서 `@types/webpack`은 필요 없다.
 - webpack은 말 그대로 webpack, webpack-cli는 webpack을 cmd 등에서 사용할 수 있게 해주는 라이브러리이다.
 
 ### Config 파일 생성
@@ -199,7 +200,7 @@ export default config;
 - resolve.extensions 옵션은 우리가 import 할때 확장자를 적어주지 않기 때문에 배열로 명시해주는 것이다. 기본값은 ['.js', '.json', '.wasm'] 이다.
 - babel-loader의 사용 방법은 간단하다. 필요한 babel 관련 라이브러리를 인스톨 한 후 module 옵션을 추가해주고 그 안에 rules 를 적용해준다.
 - 그리고 npm run build를 실행해보면, 에러가 터진다.
-- 사실 당연한 이유였다. config 파일을 typescript로 작성하기도 했고, 현재 코드를 보면 ESM 방식을 이용했지만 애초에 webpack은 CJS 방식으로 만들어졌기에.. 내부를 읽지도, .ts 확장자를 node에서 받아들이지도 못한것이다. 해결해보자!
+- 사실 당연한 이유였다. config 파일을 typescript로 작성했고 ESM 문법(import/export)을 썼는데, Node는 .ts 확장자를 그대로 실행하지 못하고 .js도 기본적으로 CJS로 해석하기 때문이다. (webpack이 ESM config를 지원하지 않는 것은 아니고 `.mjs`나 `"type": "module"`로도 쓸 수 있다.) 해결해보자!
 
 ### Webpack에 ESM, TS 적용하기
 
@@ -235,3 +236,6 @@ npm i -D ts-node
 
 - Webpack 빌드에 성공하게 된다. 아직 개발환경과 프로덕션의 환경 분리와 다른 loader, plugins 등등 설정할 것이 많이 남아있다.
 - 글이 길어져 2편으로 돌아오겠다. 혹시 급하게 환경을 구성해야할 분들을 위해 Yarn Berry + React + TS + Webpack 으로 구성된 내 [보일러플레이트](https://github.com/yunwoo-yu/React-BoilerPlate)를 남겨놓는다. (스타도 눌러주시면 좋구요..👏)
+
+***
+✏️ (2026-10-20) **수정**: webpack 5에는 필요 없는 `@types/webpack` 설치를 제거하고, `-D` 옵션이 번들 포함 여부와 무관하다는 설명으로 바로잡았습니다. config 빌드가 실패한 이유도 "webpack이 CJS라서"가 아니라 "Node가 .ts를 실행하지 못하고 .js를 CJS로 해석하기 때문"으로 정정했습니다.

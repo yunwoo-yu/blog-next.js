@@ -29,14 +29,15 @@ tags: [ios, safari, crossBrowsing, Next.js]
 ### Visual viewport & Layout viewport
 
 화면의 뷰포트는 크게 두가지로 나눌 수 있습니다. 바로 Visual viewport 와 Layout viewport입니다.
-Visual viewport는 유동적인 화면으로 현재 내 화면에 보이는 영역 (확대, 축소 포함)에 대한 정보이며
-Layout viewport는 고정된 화면으로 window 객체의 outerWidth, outerHeight 등 변하지 않는 브라우저 전체 크기에 대한 정보입니다.
+Visual viewport는 유동적인 화면으로 현재 내 화면에 실제로 보이는 영역(핀치 확대·축소, 가상키보드가 가리는 영역 반영)에 대한 정보이며
+Layout viewport는 CSS 레이아웃(100vh, position: fixed 등)이 계산되는 기준 영역으로 핀치 확대·축소의 영향을 받지 않습니다.
 
-- Layout viewport에 해당 : window.outerWidth, window.outerHeight
-- Visual viewport에 해당 : window.innerWidth, window.innerHeight
+- Layout viewport에 해당 : window.innerWidth, window.innerHeight (스크롤바 포함), document.documentElement.clientWidth, clientHeight (스크롤바 제외)
+- Visual viewport에 해당 : window.visualViewport.width, window.visualViewport.height
+- 참고 : window.outerWidth, window.outerHeight는 뷰포트가 아니라 툴바 등을 포함한 브라우저 창 전체 크기입니다.
 
-우리가 뷰포트를 구할때는 보통 innerWidth, innerHeight를 사용하게됩니다. 하지만 사용자의 확대, 축소 혹은 가상키보드가 올라오는 등의 이유로 뷰포트가 변경되는 경우가 있습니다.
-이런 경우에 뷰포트를 구할때는 inner가 아닌 JS에서 제공하는 VisualViewport 인스턴스 혹은 window.visualViewport를 사용해야합니다.
+우리가 뷰포트를 구할때는 보통 innerWidth, innerHeight를 사용하게됩니다. 하지만 사용자의 확대, 축소 혹은 가상키보드가 올라오는 등의 이유로 '지금 보이는 영역'이 바뀌는 경우가 있습니다.
+이런 경우에 보이는 영역을 구할때는 JS에서 제공하는 VisualViewport 인스턴스 혹은 window.visualViewport를 사용해야합니다.
 
 일단 저희 프로젝트는 html 부터 height:100%로 설정되어있습니다. 내부 컨텐츠에 의해 크기가 바뀌고 document의 크기가 늘어나도록 되어있어요.
 
@@ -183,3 +184,6 @@ native 환경이라면 더 수월하게 처리가 가능한거 같지만 현재 
 
 - [채널톡 블로그](https://channel.io/ko/blog/articles/12bccbc3)
 - [웹뷰 - Fixed, 가상 키보드, VisualViewport 사용](https://velog.io/@th_velog/%EC%9B%B9%EB%B7%B0-Fixed-%EA%B0%80%EC%83%81-%ED%82%A4%EB%B3%B4%EB%93%9C-VisualViewport-%EC%82%AC%EC%9A%A9)
+
+***
+✏️ (2026-10-20) **수정**: Layout viewport를 `outerWidth/outerHeight`, Visual viewport를 `innerWidth/innerHeight`로 적었던 부분을 바로잡았습니다. `innerWidth/innerHeight`는 Layout viewport, Visual viewport는 `window.visualViewport`이고 `outerWidth/outerHeight`는 브라우저 창 전체 크기입니다.
