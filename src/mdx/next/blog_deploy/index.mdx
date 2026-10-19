@@ -51,7 +51,7 @@ Vercel 요금이 만만치 않다는 말을 많이 들었거든요. 오래오래
 <img src="/images/next/blog_deploy/9.png" width="100%" alt="post image" className='post-image' />
 
 S3는 이미지 같은 파일이나 데이터를 저장하는 용도로도 많이 사용하며, 정적인 웹 호스팅도 가능합니다.
-저는 이 S3에 데이터를 저장하고 CloudFront를 통해 AWS 리전을 통한 CDN도 이용할 예정이기에 먼저 파일 저장부터 해두겠습니다!
+저는 이 S3에 데이터를 저장하고 CloudFront를 통해 AWS 엣지 로케이션 기반의 CDN도 이용할 예정이기에 먼저 파일 저장부터 해두겠습니다!
 
 <img src="/images/next/blog_deploy/10.png" width="100%" alt="post image" className='post-image' />
 
@@ -94,14 +94,14 @@ Routing쪽에 문제가 있다는건 이해했지만 공식 깃허브 이슈탭�
 - 아쉽지만 제 분야는 클라우드가 아닌 프론트기에,, 주말을 하얗게 불태우며 Vercel 배포로 변경하여 등록해두었습니다.
 - Vercel 도메인 등록하는건 구글에 널려있기에 굳이 작성하지 않겠습니다! 필요하신분은 댓글에 남겨주시면 레퍼런스를 찾아드리거나 작성해드릴게요 :)
 
-### I AM 계정으로 GitHub Action 배포 자동화 (보너스)
+### IAM 사용자로 GitHub Action 배포 자동화 (보너스)
 
 <img src="/images/next/blog_deploy/19.png" width="100%" alt="post image" className='post-image' />
 
 <img src="/images/next/blog_deploy/20.png" width="100%" alt="post image" className='post-image' />
 
 
-- AWS I AM 계정을 생성하면 Public Key와 Secret Key를 받게되는데요 이 두가지 키를 Github에 Secret에 등록해줘야 합니다.
+- AWS IAM 사용자를 생성하면 Access Key ID와 Secret Access Key를 받게되는데요 이 두가지 키를 Github에 Secret에 등록해줘야 합니다. (Public Key가 아닙니다. 배포에 필요한 S3·CloudFront 권한만 가진 사용자를 만드세요)
 - AWS_DISTRIBUTION_ID는 생성한 CloudFront를 들어가면 좌측 상단에 나오는 ID입니다.
 
 
@@ -157,3 +157,6 @@ jobs:
 
 > 이걸 만들면서 이미지를 찍어놨어야하는데 집중해서 막 시도하다가 삭제한것들이 많은데 돌아가서 다시 찾으려 하니 곤욕이네요ㅎㅎ,,
 > 오랜만에 글을 쓰려니 뒤죽박죽인거 같네요,, 다음에 또 다른 서비스를 배포하게 된다면 작업별로 쪼개서 올려보겠습니다!
+
+***
+✏️ (2026-10-20) **수정**: IAM에서 받는 키를 "Public Key와 Secret Key"로 적었던 부분을 "Access Key ID와 Secret Access Key"로, CloudFront CDN이 "리전" 기반이라고 적었던 부분을 "엣지 로케이션" 기반으로 바로잡았습니다.
