@@ -1,146 +1,138 @@
 import Link from 'next/link';
 
+import { renderRichText } from '@/components/resume/highlight';
 import { META_AUTHOR_NAME } from '@/constant';
-import { PORTFOLIO_CASES } from '@/portfolio/cases';
-import { EXHIBITS } from '@/portfolio/exhibits';
+import { buildCasePath, PORTFOLIO_CASES, type PortfolioCase } from '@/portfolio/cases';
 import {
 	getPortfolioActivities,
 	getPortfolioExperience,
+	PORTFOLIO_KEY_RESULTS,
 	PORTFOLIO_LINKS,
-	PORTFOLIO_SECTIONS,
 } from '@/portfolio/overview';
+import { cn } from '@/utils/utils';
 
-import CaseCard from './CaseCard';
-import PortfolioNav from './PortfolioNav';
-import PortfolioWorld from './PortfolioWorld';
+import CaseRow from './CaseRow';
+import { Column, FOCUS_RING, ListHeader, ListRow, SectionTitle, TEXT_LINK_CLASS } from './ui';
 
-const sectionTitleStyle = 'text-2xl font-bold tracking-tight md:text-3xl';
-const sectionStyle = 'scroll-mt-32 py-12 md:py-16';
-const buttonStyle =
-	'inline-flex h-11 items-center rounded-md px-5 text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FF5A1F] motion-reduce:transition-none';
+const buttonBase = cn(
+	'inline-flex h-[52px] flex-1 items-center justify-center rounded-2xl px-6 text-[17px] font-bold transition-[background-color,transform] duration-200 ease-in-out active:scale-[0.98] sm:flex-none',
+	FOCUS_RING,
+);
+
+/** 경력 순서를 지키며 회사별로 묶는다. */
+const groupByOrganization = (cases: PortfolioCase[]) =>
+	cases.reduce<{ organization: string; items: PortfolioCase[] }[]>((groups, item) => {
+		const last = groups[groups.length - 1];
+
+		if (last?.organization === item.organization) last.items.push(item);
+		else groups.push({ organization: item.organization, items: [item] });
+
+		return groups;
+	}, []);
 
 const PortfolioOverview = () => {
 	const experience = getPortfolioExperience();
 	const activities = getPortfolioActivities();
-	const caseGroups = PORTFOLIO_CASES.reduce<{ organization: string; items: typeof PORTFOLIO_CASES }[]>(
-		(groups, item) => {
-			const last = groups[groups.length - 1];
-
-			if (last?.organization === item.organization) last.items.push(item);
-			else groups.push({ organization: item.organization, items: [item] });
-
-			return groups;
-		},
-		[],
-	);
-	const summary = `${PORTFOLIO_CASES.length}개 프로젝트 · ${experience.map(career => `${career.organization} ${career.period.replace(/\s*\(.*\)/, '')}`).join(' · ')}`;
-	const metas = PORTFOLIO_CASES.map(({ slug, organization, period }) => ({ slug, organization, period }));
+	const groups = groupByOrganization(PORTFOLIO_CASES);
+	const organizations = experience.map(career => career.organization).join('·');
 
 	return (
-		<div>
-			<PortfolioNav sections={PORTFOLIO_SECTIONS} />
-
-			<PortfolioWorld exhibits={EXHIBITS} metas={metas}>
-				<header className="mx-auto w-full max-w-6xl px-4 pb-10 pt-12 sm:px-6 md:pb-14 md:pt-20">
-					<p className="font-mono text-xs uppercase tracking-[0.18em] text-pf-ink/60">
-						Front-End Developer · Portfolio
-					</p>
-					<h2 className="mt-4 max-w-4xl break-keep text-5xl font-bold leading-[1.1] tracking-tight md:text-8xl">
-						{META_AUTHOR_NAME}
+		<div className="pb-24">
+			<Column className="pt-14 md:pt-20">
+				<section aria-labelledby="hero-title">
+					<h2
+						id="hero-title"
+						className="break-keep text-[28px] font-bold leading-[1.4] tracking-[-0.02em] text-pf-gray-900 md:text-[44px]">
+						<span className="md:block">결제부터 마이데이터, 어드민까지</span>{' '}
+						<span className="md:block">만들어 온 프론트엔드 개발자 {META_AUTHOR_NAME}</span>
 					</h2>
-					<p className="mt-6 max-w-2xl text-base leading-7 text-pf-ink/75 md:text-lg md:leading-8">{summary}</p>
-					<div className="mt-7 flex flex-wrap gap-2">
-						<a href="#world-start" className={`${buttonStyle} bg-pf-ink text-pf-paper hover:opacity-90`}>
-							사례 보기
+					<p className="mt-4 break-keep text-[17px] leading-[1.6] text-pf-gray-700">
+						{organizations}에서 맡은 {PORTFOLIO_CASES.length}개 프로젝트를 문제와 결과로 정리했어요.
+					</p>
+					<div className="mt-8 flex gap-2">
+						<a href="#projects" className={cn(buttonBase, 'bg-pf-blue text-white hover:bg-pf-blue-700')}>
+							프로젝트 보기
 						</a>
 						<Link
 							href={PORTFOLIO_LINKS.resume.href}
-							className={`${buttonStyle} border border-pf-ink/40 hover:border-pf-ink`}>
-							이력서
+							className={cn(buttonBase, 'bg-pf-gray-100 text-pf-gray-800 hover:bg-pf-gray-200')}>
+							이력서 보기
 						</Link>
 					</div>
-				</header>
-			</PortfolioWorld>
+				</section>
 
-			<div className="mx-auto max-w-6xl px-4 sm:px-6">
-				<section id="cases" aria-labelledby="cases-title" className={`${sectionStyle} border-t border-pf-ink/20`}>
-					<h3 id="cases-title" className={sectionTitleStyle}>
-						사례 전체
-					</h3>
-					{caseGroups.map(group => (
-						<div key={group.organization} className="mt-8">
-							<h4 className="text-sm font-semibold text-pf-ink/60">{group.organization}</h4>
-							<ul className="mt-3 grid gap-5 md:grid-cols-2">
+				<section aria-labelledby="results-title" className="mt-16">
+					<SectionTitle id="results-title">이런 결과를 냈어요</SectionTitle>
+					<ul className="mt-5 grid gap-3 sm:grid-cols-3">
+						{PORTFOLIO_KEY_RESULTS.map(result => (
+							<li key={result.value}>
+								<Link
+									href={buildCasePath(result.slug)}
+									className={cn(
+										'flex h-full flex-col rounded-[20px] bg-pf-gray-100 p-5 transition-colors duration-200 hover:bg-pf-gray-200',
+										FOCUS_RING,
+									)}>
+									<span className="text-[32px] font-bold leading-[1.3] tracking-[-0.02em] text-pf-blue">
+										{result.value}
+									</span>
+									<span className="mt-1 break-keep text-[15px] leading-[1.5] text-pf-gray-700">{result.label}</span>
+								</Link>
+							</li>
+						))}
+					</ul>
+				</section>
+
+				<section id="projects" aria-labelledby="projects-title" className="mt-16 scroll-mt-6">
+					<SectionTitle id="projects-title">이런 프로젝트를 했어요</SectionTitle>
+					{groups.map(group => (
+						<div key={group.organization}>
+							<ListHeader id={`projects-${group.organization}`} title={group.organization} count={group.items.length} />
+							<ul aria-labelledby={`projects-${group.organization}`}>
 								{group.items.map(item => (
-									<CaseCard key={item.slug} item={item} />
+									<CaseRow key={item.slug} item={item} />
 								))}
 							</ul>
 						</div>
 					))}
 				</section>
 
-				<section
-					id="experience"
-					aria-labelledby="experience-title"
-					className={`${sectionStyle} border-t border-pf-ink/20`}>
-					<h3 id="experience-title" className={sectionTitleStyle}>
-						경력
-					</h3>
-					<ol className="mt-6 grid gap-6 md:grid-cols-2">
+				<section id="experience" aria-labelledby="experience-title" className="mt-16">
+					<SectionTitle id="experience-title">이런 곳에서 일했어요</SectionTitle>
+					<ul className="mt-2">
 						{experience.map(career => (
-							<li key={career.organization} className="border-l-2 border-pf-signal pl-4">
-								<h4 className="text-lg font-bold">{career.organization}</h4>
-								<p className="mt-1 text-sm text-pf-ink/70">
-									{career.position} · {career.period}
-								</p>
-								<ul className="mt-3 flex flex-wrap gap-1.5" aria-label={`${career.organization} 기술 스택`}>
-									{career.techStack.map(tech => (
-										<li key={tech} className="rounded-md border border-pf-ink/20 px-2 py-0.5 text-xs">
-											{tech}
-										</li>
-									))}
-								</ul>
-							</li>
+							<ListRow
+								key={career.organization}
+								title={career.organization}
+								description={`${career.position} · ${career.period}`}
+							/>
 						))}
-					</ol>
+					</ul>
 				</section>
 
-				<section
-					id="activities"
-					aria-labelledby="activities-title"
-					className={`${sectionStyle} border-t border-pf-ink/20`}>
-					<h3 id="activities-title" className={sectionTitleStyle}>
-						활동
-					</h3>
-					<ol className="mt-6 grid gap-6 md:grid-cols-3">
+				<section id="activities" aria-labelledby="activities-title" className="mt-16">
+					<SectionTitle id="activities-title">이런 활동도 했어요</SectionTitle>
+					<ul className="mt-2">
 						{activities.map(activity => (
-							<li key={activity.title} className="border-l-2 border-pf-ink/40 pl-4">
-								<h4 className="text-lg font-bold">{activity.title}</h4>
-								<p className="mt-1 text-sm text-pf-ink/70">
-									{[activity.organization, activity.period].filter(Boolean).join(' · ')}
-								</p>
-								<ul className="mt-3 grid gap-2 text-sm leading-6">
-									{activity.items.map(item => (
-										<li key={item.text}>
-											{item.text}
-											{item.links.map(link => (
-												<a
-													key={link.url}
-													href={link.url}
-													target="_blank"
-													rel="noopener noreferrer"
-													className="ml-1 text-destructive underline-offset-2 hover:underline">
-													[{link.title}]
-												</a>
+							<ListRow
+								key={activity.title}
+								title={activity.title}
+								description={[activity.organization, activity.period].filter(Boolean).join(' · ')}
+								extra={
+									activity.awards.length > 0 && (
+										<span className="mt-1 block break-keep text-[15px] leading-[1.6] text-pf-gray-800">
+											{activity.awards.map(award => (
+												<span key={award.text} className="block">
+													{renderRichText(award.text, [], award.links, TEXT_LINK_CLASS)}
+												</span>
 											))}
-										</li>
-									))}
-								</ul>
-							</li>
+										</span>
+									)
+								}
+							/>
 						))}
-					</ol>
+					</ul>
 				</section>
-			</div>
+			</Column>
 		</div>
 	);
 };

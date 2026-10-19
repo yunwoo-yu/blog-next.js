@@ -7,11 +7,6 @@ import { GITHUB_URL, LINKEDIN_URL } from '@/constant';
 
 export const PORTFOLIO_PATH = '/portfolio';
 
-export interface PortfolioSection {
-	id: string;
-	label: string;
-}
-
 export interface PortfolioLink {
 	label: string;
 	href: string;

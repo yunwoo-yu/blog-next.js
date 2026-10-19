@@ -1,153 +1,101 @@
+import { ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 
-import { renderHighlightedText } from '@/components/resume/highlight';
-import { buildCasePath, getAdjacentCases, type PortfolioCase } from '@/portfolio/cases';
+import { renderRichText } from '@/components/resume/highlight';
+import { getAdjacentCases, type PortfolioCase } from '@/portfolio/cases';
 import { getExhibit } from '@/portfolio/exhibits';
+import { PORTFOLIO_PATH } from '@/portfolio/links';
 import { getStory } from '@/portfolio/stories';
+import { cn } from '@/utils/utils';
 
-import CaseStory, { getVisibleStory } from './CaseStory';
-import PortfolioNav from './PortfolioNav';
-import ServiceExhibit from './ServiceExhibit';
+import CaseRow from './CaseRow';
+import CaseScreens from './CaseScreens';
+import CaseStory from './CaseStory';
+import { Column, FOCUS_RING, SectionTitle, TEXT_LINK_CLASS } from './ui';
 
 interface CaseStudyProps {
 	item: PortfolioCase;
-	/** 본문 뒤, 이전/다음 사례 앞에 들어가는 보조 영역. */
+	/** 본문 뒤, 다른 사례 앞에 들어가는 보조 영역. */
 	children?: ReactNode;
 }
 
-/** 실제로 렌더되는 섹션만 내비에 올린다. 없는 앵커로 가는 죽은 링크를 만들지 않는다. */
-const buildSections = (parts: { decisions: boolean; troubles: boolean; screens: boolean }) => [
-	{ id: 'record', label: '작업 기록' },
-	{ id: 'exhibit', label: '구조' },
-	...(parts.decisions ? [{ id: 'decisions', label: '판단' }] : []),
-	...(parts.troubles ? [{ id: 'troubles', label: '해결' }] : []),
-	...(parts.screens ? [{ id: 'screens', label: '화면' }] : []),
-];
-
-const BRIEF_ROWS = [
-	{ key: 'problem', label: '문제' },
-	{ key: 'decision', label: '결정' },
-	{ key: 'outcome', label: '결과' },
-] as const;
+/** 이력서 원문의 문제·기여·결과를 그대로 싣는 섹션 제목. id 는 예전에 공개한 앵커(#problem 등)를 유지한다. */
+const STAGE_TITLES = {
+	problem: '어떤 문제였나요',
+	contribution: '어떻게 풀었나요',
+	result: '결과가 어땠나요',
+} as const;
 
 const CaseStudy = ({ item, children }: CaseStudyProps) => {
 	const { prev, next } = getAdjacentCases(item.slug);
 	const exhibit = getExhibit(item.slug);
 	const story = getStory(item.slug);
-	const visible = getVisibleStory(story);
-	const sections = buildSections({
-		decisions: visible.decisions.length > 0,
-		troubles: visible.troubles.length > 0,
-		screens: Boolean(exhibit?.gallery?.length),
-	});
+	const meta = [item.organization, item.service, item.period].filter(Boolean).join(' · ');
+	const resultStage = item.stages.find(stage => stage.id === 'result');
+	// 상단 결과 박스와 같은 문장이면 아래에 같은 말을 한 번 더 쓰지 않는다. 박스가 #result 앵커를 맡는다.
+	const resultInBox = Boolean(exhibit && resultStage && resultStage.text.trim() === exhibit.callouts.outcome.trim());
 
 	return (
-		<div>
-			<PortfolioNav sections={sections} showBackLink />
-			<article className="mx-auto max-w-4xl px-4 pb-16 pt-8 sm:px-6 md:pt-12">
+		<Column className="pb-24 pt-4">
+			<Link
+				href={PORTFOLIO_PATH}
+				className={cn(
+					'-ml-2 inline-flex h-11 items-center gap-0.5 rounded-lg pl-1 pr-3 text-[15px] text-pf-gray-700 transition-colors duration-200 hover:bg-pf-gray-100',
+					FOCUS_RING,
+				)}>
+				<ChevronLeft aria-hidden="true" size={20} />
+				포트폴리오
+			</Link>
+
+			<article className="mt-6">
 				<header>
-					<p className="text-sm text-pf-ink/65">
-						{item.organization} · {item.service}
-						{item.period && ` · ${item.period}`}
-					</p>
-					<h2 className="mt-3 break-keep text-3xl font-bold leading-tight tracking-tight md:text-5xl">
-						{exhibit?.headline ?? item.title}
+					<h2 className="break-keep text-[28px] font-bold leading-[1.4] tracking-[-0.02em] text-pf-gray-900 md:text-[32px]">
+						{item.title}
 					</h2>
-					<p className="mt-3 text-base text-pf-ink/70">{item.title}</p>
+					<p className="mt-2 break-keep text-[15px] text-pf-gray-600">{meta}</p>
 				</header>
 
 				{exhibit && (
-					<section aria-label="요약" className="mt-8 rounded-xl border border-pf-ink/20 bg-pf-ink/[0.03] p-5 md:p-6">
-						<p className="text-sm leading-6 text-pf-ink/70">{exhibit.callouts.role}</p>
-						<dl className="mt-4 grid gap-5 md:grid-cols-3 md:gap-6">
-							{BRIEF_ROWS.map(row => (
-								<div key={row.key}>
-									<dt
-										className={
-											row.key === 'outcome'
-												? 'text-xs font-semibold text-pf-accent-text'
-												: 'text-xs font-semibold text-pf-ink/60'
-										}>
-										{row.label}
-									</dt>
-									<dd className="mt-1 text-base leading-7">{exhibit.callouts[row.key]}</dd>
-								</div>
-							))}
-						</dl>
-						<p className="mt-4 text-xs leading-5 text-pf-ink/60">결과 근거: {exhibit.callouts.outcomeBasis}</p>
+					<section aria-label="결과" id={resultInBox ? 'result' : undefined} className="mt-8 scroll-mt-6">
+						<p className="break-keep rounded-2xl bg-pf-blue-50 px-5 py-4 text-[17px] font-bold leading-[1.6] text-pf-blue-700">
+							{exhibit.callouts.outcome}
+						</p>
+						<p className="mt-2 break-keep text-[13px] leading-[1.5] text-pf-gray-600">
+							근거: {exhibit.callouts.outcomeBasis}
+						</p>
 					</section>
 				)}
 
-				<section id="record" aria-labelledby="record-title" className="mt-12 scroll-mt-32">
-					<h3 id="record-title" className="text-xl font-bold md:text-2xl">
-						작업 기록
-					</h3>
-					<p className="mt-2 text-sm leading-6 text-pf-ink/70">{item.summary}</p>
-					<ol className="mt-6 grid gap-6">
-						{item.stages.map(stage => (
-							<li
-								key={stage.id}
-								className="grid gap-2 border-t-2 border-pf-ink/80 pt-4 md:grid-cols-[88px_1fr] md:gap-6">
-								<section id={stage.id} aria-labelledby={`${stage.id}-title`} className="contents scroll-mt-32">
-									<h4 id={`${stage.id}-title`} className="text-sm font-bold">
-										{stage.label}
-									</h4>
-									<p className="text-base leading-8">
-										{renderHighlightedText(stage.text, stage.highlights)}
-										{stage.links.map(link => (
-											<a
-												key={link.url}
-												href={link.url}
-												target="_blank"
-												rel="noopener noreferrer"
-												className="ml-1 text-destructive underline-offset-2 hover:underline">
-												[{link.title}]
-											</a>
-										))}
-									</p>
-								</section>
-							</li>
-						))}
-					</ol>
-				</section>
+				<p className="mt-8 break-keep text-[17px] leading-[1.7] text-pf-gray-800">{item.summary}</p>
 
-				<div id="exhibit" className="mt-12 scroll-mt-32">
-					<h3 className="text-xl font-bold md:text-2xl">구조</h3>
-					<div className="mt-4">{exhibit && <ServiceExhibit exhibit={exhibit} showHeadline={false} priority />}</div>
-					{exhibit && !exhibit.screens.before && !exhibit.screens.after && !exhibit.identity && (
-						<p className="mt-3 text-xs leading-5 text-pf-ink/60">{exhibit.reconstructionNote}</p>
-					)}
-				</div>
+				{item.stages
+					.filter(stage => !(resultInBox && stage.id === 'result'))
+					.map(stage => (
+						<section key={stage.id} id={stage.id} aria-labelledby={`${stage.id}-title`} className="mt-14 scroll-mt-6">
+							<SectionTitle id={`${stage.id}-title`}>{STAGE_TITLES[stage.id]}</SectionTitle>
+							<p className="mt-4 break-keep text-[17px] leading-[1.75] text-pf-gray-800">
+								{renderRichText(stage.text, stage.highlights, stage.links, TEXT_LINK_CLASS)}
+							</p>
+							{stage.id === 'contribution' && <CaseStory story={story} />}
+						</section>
+					))}
 
-				{story && <CaseStory story={story} exhibit={exhibit} />}
+				{exhibit && <CaseScreens exhibit={exhibit} />}
 
 				{children}
-
-				{(prev || next) && (
-					<nav aria-label="다른 사례" className="mt-14 grid gap-3 border-t border-pf-ink/20 pt-6 sm:grid-cols-2">
-						{prev ? (
-							<Link
-								href={buildCasePath(prev.slug)}
-								className="rounded-lg border border-pf-ink/25 p-4 hover:border-pf-signal">
-								<span className="block text-xs text-pf-ink/60">이전 사례</span>
-								<span className="mt-1 block text-sm font-medium">{prev.title}</span>
-							</Link>
-						) : (
-							<span />
-						)}
-						{next && (
-							<Link
-								href={buildCasePath(next.slug)}
-								className="rounded-lg border border-pf-ink/25 p-4 hover:border-pf-signal sm:text-right">
-								<span className="block text-xs text-pf-ink/60">다음 사례</span>
-								<span className="mt-1 block text-sm font-medium">{next.title}</span>
-							</Link>
-						)}
-					</nav>
-				)}
 			</article>
-		</div>
+
+			{(prev || next) && (
+				<nav aria-labelledby="other-cases-title" className="mt-16">
+					<SectionTitle id="other-cases-title">다른 프로젝트도 볼 수 있어요</SectionTitle>
+					<ul className="mt-3">
+						{prev && <CaseRow item={prev} description={`이전 프로젝트 · ${prev.service}`} />}
+						{next && <CaseRow item={next} description={`다음 프로젝트 · ${next.service}`} />}
+					</ul>
+				</nav>
+			)}
+		</Column>
 	);
 };
 

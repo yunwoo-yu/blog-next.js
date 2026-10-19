@@ -27,17 +27,26 @@ const config: Config = {
 	theme: {
 		extend: {
 			colors: {
-				// 포트폴리오 전용. 투명도(/20 등)가 먹도록 rgb 채널 변수를 쓴다. 값은 portfolio.css 에 있다.
+				// 포트폴리오 전용(라이트 고정). 값은 src/app/portfolio/portfolio.css 의 토큰에 있다.
 				pf: {
-					ink: 'rgb(var(--pf-ink-rgb) / <alpha-value>)',
-					paper: 'rgb(var(--pf-paper-rgb) / <alpha-value>)',
-					stage: 'rgb(var(--pf-stage-rgb) / <alpha-value>)',
-					signal: 'rgb(var(--pf-signal-rgb) / <alpha-value>)',
-					accent: 'rgb(var(--pf-accent-rgb) / <alpha-value>)',
-					'accent-text': 'rgb(var(--pf-accent-text-rgb) / <alpha-value>)',
-					break: 'rgb(var(--pf-break-rgb) / <alpha-value>)',
-					ok: 'rgb(var(--pf-ok-rgb) / <alpha-value>)',
-					cool: 'rgb(var(--pf-cool-rgb) / <alpha-value>)',
+					blue: {
+						DEFAULT: 'var(--pf-blue-500)',
+						700: 'var(--pf-blue-700)',
+						50: 'var(--pf-blue-50)',
+						100: 'var(--pf-blue-100)',
+					},
+					gray: {
+						900: 'var(--pf-gray-900)',
+						800: 'var(--pf-gray-800)',
+						700: 'var(--pf-gray-700)',
+						600: 'var(--pf-gray-600)',
+						500: 'var(--pf-gray-500)',
+						400: 'var(--pf-gray-400)',
+						200: 'var(--pf-gray-200)',
+						100: 'var(--pf-gray-100)',
+						50: 'var(--pf-gray-50)',
+					},
+					line: 'var(--pf-line)',
 				},
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',

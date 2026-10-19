@@ -2,108 +2,100 @@
 
 import { render, screen, within } from '@testing-library/react';
 
-import { GITHUB_URL, LINKEDIN_URL } from '@/constant';
+import { GITHUB_URL } from '@/constant';
 import { buildCasePath, PORTFOLIO_CASES } from '@/portfolio/cases';
 import { getExhibit } from '@/portfolio/exhibits';
+import { PORTFOLIO_KEY_RESULTS } from '@/portfolio/overview';
+import { STORIES } from '@/portfolio/stories';
 
-import CaseCard from './CaseCard';
 import CaseStudy from './CaseStudy';
 import PortfolioOverview from './PortfolioOverview';
+import PortfolioTopBar from './PortfolioTopBar';
 
-const expectCompactNavLinks = (nav: HTMLElement) => {
-	expect(within(nav).getByRole('link', { name: '이력서' })).toHaveAttribute('href', '/resume');
-	expect(within(nav).getByRole('link', { name: '블로그' })).toHaveAttribute('href', '/blog/posts');
-	expect(within(nav).getByRole('link', { name: /GitHub/ })).toHaveAttribute('href', GITHUB_URL);
-	expect(within(nav).getByRole('link', { name: /LinkedIn/ })).toHaveAttribute('href', LINKEDIN_URL);
-};
-
-const expectNonShrinkingNav = (nav: HTMLElement) => {
-	const lists = nav.querySelectorAll('ul');
-	expect(lists.length).toBeGreaterThan(0);
-	for (const list of lists) {
-		expect(list).toHaveClass('shrink-0');
-		for (const item of list.querySelectorAll(':scope > li')) {
-			expect(item).toHaveClass('shrink-0');
-		}
-	}
-	for (const link of nav.querySelectorAll('a')) {
-		expect(link).toHaveClass('shrink-0');
-	}
-	for (const link of nav.querySelectorAll('a:not([target="_blank"])')) {
-		expect(link).toHaveClass('whitespace-nowrap');
-	}
-	// 가로 스크롤 컨테이너는 키보드 포커스 링과 마지막 링크를 잘라낸다. 줄바꿈으로 전부 보이게 한다.
-	expect(nav.querySelector('.overflow-x-auto, .overflow-auto, .overflow-hidden')).toBeNull();
-	expect(nav.querySelector('.flex-wrap')).not.toBeNull();
-};
-
-beforeEach(() => {
-	vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(null as never);
-});
+const escapeRegExp = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 afterEach(() => {
-	vi.restoreAllMocks();
+	vi.unstubAllEnvs();
+});
+
+describe('PortfolioTopBar', () => {
+	it('이름과 이력서·블로그·GitHub 텍스트 링크를 가진다', () => {
+		render(<PortfolioTopBar />);
+
+		const nav = screen.getByRole('navigation', { name: '포트폴리오 내비게이션' });
+
+		expect(within(nav).getByRole('link', { name: '유윤우' })).toHaveAttribute('href', '/portfolio');
+		expect(within(nav).getByRole('link', { name: '이력서' })).toHaveAttribute('href', '/resume');
+		expect(within(nav).getByRole('link', { name: '블로그' })).toHaveAttribute('href', '/blog/posts');
+
+		const github = within(nav).getByRole('link', { name: /GitHub/ });
+		expect(github).toHaveAttribute('href', GITHUB_URL);
+		expect(github).toHaveAttribute('target', '_blank');
+		expect(github.getAttribute('rel')).toContain('noopener');
+	});
 });
 
 describe('PortfolioOverview', () => {
-	it('내비가 각 섹션 앵커와 이력서·블로그·GitHub·LinkedIn 링크를 가진다', () => {
+	it('히어로는 큰 문장과 프로젝트 보기·이력서 보기 버튼을 가진다', () => {
 		render(<PortfolioOverview />);
 
-		const nav = screen.getByRole('navigation', { name: '포트폴리오 내비게이션' });
-
-		for (const [label, id] of [
-			['전시', 'exhibit'],
-			['사례', 'cases'],
-			['경력', 'experience'],
-		]) {
-			expect(within(nav).getByRole('link', { name: label })).toHaveAttribute('href', `#${id}`);
-			expect(document.getElementById(id)).not.toBeNull();
-		}
-		expectCompactNavLinks(nav);
-		expectNonShrinkingNav(nav);
+		expect(
+			screen.getByRole('heading', { level: 2, name: /결제부터 마이데이터, 어드민까지.*프론트엔드 개발자 유윤우/ }),
+		).toBeInTheDocument();
+		expect(screen.getByRole('link', { name: '프로젝트 보기' })).toHaveAttribute('href', '#projects');
+		expect(screen.getByRole('link', { name: '이력서 보기' })).toHaveAttribute('href', '/resume');
+		expect(document.getElementById('projects')).not.toBeNull();
 	});
 
-	it('외부 링크는 새 탭으로 열리고 rel 이 안전하다', () => {
+	it('핵심 숫자 3개가 수치가 나온 사례로 연결된다', () => {
 		render(<PortfolioOverview />);
 
-		const nav = screen.getByRole('navigation', { name: '포트폴리오 내비게이션' });
+		expect(PORTFOLIO_KEY_RESULTS).toHaveLength(3);
+		for (const result of PORTFOLIO_KEY_RESULTS) {
+			const link = screen.getByRole('link', { name: new RegExp(`${result.value}.*${result.label}`) });
 
-		for (const link of [
-			within(nav).getByRole('link', { name: /GitHub/ }),
-			within(nav).getByRole('link', { name: /LinkedIn/ }),
-		]) {
-			expect(link).toHaveAttribute('target', '_blank');
-			expect(link.getAttribute('rel')).toContain('noopener');
+			expect(link).toHaveAttribute('href', buildCasePath(result.slug));
 		}
 	});
 
-	it('모든 사례 카드가 사례 페이지로 연결되고 서비스 이미지나 구조 도식을 먼저 보여 준다', () => {
+	it('모든 사례가 회사별 목록에서 한 줄씩 사례 페이지로 연결된다', () => {
 		render(<PortfolioOverview />);
 
-		const cases = document.getElementById('cases')!;
+		const projects = document.getElementById('projects')!;
 
+		for (const organization of ['웰로', '살린']) {
+			const count = PORTFOLIO_CASES.filter(item => item.organization === organization).length;
+			const header = within(projects).getByRole('heading', { level: 4, name: new RegExp(`^${organization}`) });
+
+			expect(header.textContent).toContain(String(count));
+		}
 		for (const item of PORTFOLIO_CASES) {
-			const exhibit = getExhibit(item.slug)!;
-			const link = within(cases).getByRole('link', { name: exhibit.headline });
+			const link = within(projects).getByRole('link', { name: new RegExp(escapeRegExp(item.title)) });
 
 			expect(link).toHaveAttribute('href', buildCasePath(item.slug));
-
-			const card = link.closest('li')!;
-
-			expect(card.querySelector('img, svg')).not.toBeNull();
+			expect(link.textContent).toContain(item.service);
 		}
 	});
 
-	it('대표 전시는 서버 렌더만으로 평면 도식과 전·후·단계 컨트롤을 가진다', () => {
+	it('경력과 활동(수상)을 목록으로 보여 준다', () => {
 		render(<PortfolioOverview />);
 
-		const exhibit = screen.getByTestId('service-exhibit');
+		const experience = document.getElementById('experience')!;
+		const activities = document.getElementById('activities')!;
 
-		expect(within(exhibit).getByRole('img', { name: /시스템 구조 도식/ })).toBeInTheDocument();
-		expect(within(exhibit).getByRole('radio', { name: /위험 시나리오/ })).toBeInTheDocument();
-		// 계층 분해는 3D 를 켠 뒤에만 쓴다.
-		expect(within(exhibit).queryByRole('switch')).toBeNull();
-		expect(screen.queryByTestId('service-canvas')).not.toBeInTheDocument();
+		expect(experience.textContent).toContain('웰로');
+		expect(experience.textContent).toContain('살린');
+		expect(activities.textContent).toContain('과학기술정보통신부 장관상 대상 수상');
+		expect(activities.textContent).toContain('BP(Best Practice) 선정');
+	});
+
+	it('3D 캔버스·영문 장식 라벨·필터 버튼이 없다', () => {
+		const { container } = render(<PortfolioOverview />);
+
+		expect(container.querySelector('canvas')).toBeNull();
+		expect(container.querySelector('button, [aria-pressed]')).toBeNull();
+		expect(container.querySelector('.font-mono, .uppercase')).toBeNull();
+		expect(container.textContent).not.toMatch(/Front-End Developer|Portfolio/);
 	});
 
 	it('퇴사 사유와 광고 슬롯, 이메일을 렌더하지 않는다', () => {
@@ -115,68 +107,97 @@ describe('PortfolioOverview', () => {
 	});
 });
 
-describe('CaseCard 결과 요약', () => {
-	it('목록 카드에 사례의 결과 한 줄을 보여 준다', () => {
-		const item = PORTFOLIO_CASES[0];
-
-		render(<CaseCard item={item} />);
-
-		expect(screen.getByText(getExhibit(item.slug)!.callouts.outcome)).toBeInTheDocument();
-	});
-});
-
 describe('CaseStudy', () => {
 	const item = PORTFOLIO_CASES[1];
 
-	it('전시와 이력서 기록 섹션, 그리고 이를 가리키는 내비 앵커를 렌더한다', () => {
-		const { container } = render(<CaseStudy item={item} />);
-
-		const nav = screen.getByRole('navigation', { name: '포트폴리오 내비게이션' });
-
-		const exhibit = getExhibit(item.slug)!;
-
-		expect(screen.getByRole('heading', { level: 2, name: exhibit.headline })).toBeInTheDocument();
-		expect(screen.getByText(item.title)).toBeInTheDocument();
-		for (const [label, id] of [
-			['작업 기록', 'record'],
-			['구조', 'exhibit'],
-		]) {
-			expect(within(nav).getByRole('link', { name: label })).toHaveAttribute('href', `#${id}`);
-			expect(document.getElementById(id)).not.toBeNull();
-		}
-		// 이전에 공개했던 단계 앵커(#problem 등)도 유지한다.
-		for (const stage of item.stages) expect(container.querySelector(`section#${stage.id}`)).not.toBeNull();
-		expect(within(nav).getByRole('link', { name: /포트폴리오/ })).toHaveAttribute('href', '/portfolio');
-		expectCompactNavLinks(nav);
-		expectNonShrinkingNav(nav);
-	});
-
-	it('작업 기록(문제·기여·결과)은 접히지 않은 본문이고 구조 시각화보다 먼저 나온다', () => {
-		const { container } = render(<CaseStudy item={item} />);
-
-		const record = document.getElementById('record')!;
-		const exhibit = document.getElementById('exhibit')!;
-
-		expect(record.closest('details')).toBeNull();
-		expect(within(record).getByRole('heading', { level: 3, name: '작업 기록' })).toBeInTheDocument();
-		for (const stage of item.stages) expect(record.textContent).toContain(stage.text);
-		expect(record.compareDocumentPosition(exhibit) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-		expect(container.textContent).not.toContain('이력서 원문');
-	});
-
-	it('이웃 사례로 이동하는 링크를 준다', () => {
+	it('제목·메타·결과 박스를 먼저 보여 준다', () => {
 		render(<CaseStudy item={item} />);
 
-		const other = screen.getByRole('navigation', { name: '다른 사례' });
+		expect(screen.getByRole('link', { name: '포트폴리오' })).toHaveAttribute('href', '/portfolio');
+		expect(screen.getByRole('heading', { level: 2, name: item.title })).toBeInTheDocument();
+		expect(screen.getByText([item.organization, item.service, item.period].join(' · '))).toBeInTheDocument();
 
-		expect(within(other).getByRole('link', { name: new RegExp(PORTFOLIO_CASES[0].title) })).toHaveAttribute(
-			'href',
-			buildCasePath(PORTFOLIO_CASES[0].slug),
-		);
-		expect(within(other).getByRole('link', { name: new RegExp(PORTFOLIO_CASES[2].title) })).toHaveAttribute(
-			'href',
-			buildCasePath(PORTFOLIO_CASES[2].slug),
-		);
+		const result = screen.getByRole('region', { name: '결과' });
+		expect(result.textContent).toContain(getExhibit(item.slug)!.callouts.outcome);
+	});
+
+	it('이력서 원문(문제·기여·결과)을 접지 않고 순서대로 싣고 예전 앵커를 유지한다', () => {
+		for (const each of PORTFOLIO_CASES) {
+			const { container, unmount } = render(<CaseStudy item={each} />);
+			const outcome = getExhibit(each.slug)!.callouts.outcome.trim();
+			const sameAsBox = each.stages.find(stage => stage.id === 'result')!.text.trim() === outcome;
+			const titles = ['어떤 문제였나요', '어떻게 풀었나요', ...(sameAsBox ? [] : ['결과가 어땠나요'])];
+			const headings = titles.map(name => screen.getByRole('heading', { level: 3, name }));
+
+			for (let i = 1; i < headings.length; i += 1) {
+				expect(
+					headings[i - 1].compareDocumentPosition(headings[i]) & Node.DOCUMENT_POSITION_FOLLOWING,
+					each.slug,
+				).toBeTruthy();
+			}
+			// 세 앵커(#problem·#contribution·#result)는 항상 있고 본문은 접히지 않는다.
+			for (const stage of each.stages) {
+				const anchor = container.querySelector(`#${stage.id}`)!;
+
+				expect(anchor, `${each.slug} #${stage.id}`).not.toBeNull();
+				expect(anchor.closest('details')).toBeNull();
+				expect(anchor.textContent).toContain(stage.text);
+			}
+			// 결과 박스와 같은 문장은 한 번만 보여 준다.
+			if (sameAsBox) expect(container.textContent!.split(outcome).length - 1, each.slug).toBe(1);
+			expect(container.textContent).not.toContain('이력서 원문');
+			unmount();
+		}
+	});
+
+	it('공개 서비스 화면을 출처 캡션과 함께 보여 준다', () => {
+		render(<CaseStudy item={item} />);
+
+		const screens = document.getElementById('screens')!;
+		const exhibit = getExhibit(item.slug)!;
+
+		for (const shot of exhibit.gallery ?? []) {
+			expect(within(screens).getByRole('img', { name: shot.alt })).toBeInTheDocument();
+			expect(screens.textContent).toContain(shot.caption);
+		}
+	});
+
+	it('공개 화면이 없는 사례는 화면 섹션을 만들지 않는다', () => {
+		const donation = PORTFOLIO_CASES.find(each => each.slug === 'donation-duplicate-guard')!;
+
+		render(<CaseStudy item={donation} />);
+
+		expect(document.getElementById('screens')).toBeNull();
+	});
+
+	it('이웃 사례로 이동하는 목록을 준다', () => {
+		render(<CaseStudy item={item} />);
+
+		const other = screen.getByRole('navigation', { name: '다른 프로젝트도 볼 수 있어요' });
+
+		expect(
+			within(other).getByRole('link', { name: new RegExp(escapeRegExp(PORTFOLIO_CASES[0].title)) }),
+		).toHaveAttribute('href', buildCasePath(PORTFOLIO_CASES[0].slug));
+		expect(
+			within(other).getByRole('link', { name: new RegExp(escapeRegExp(PORTFOLIO_CASES[2].title)) }),
+		).toHaveAttribute('href', buildCasePath(PORTFOLIO_CASES[2].slug));
+	});
+
+	it('운영 빌드에서는 초안 판단·문제를 렌더하지 않는다', () => {
+		vi.stubEnv('NODE_ENV', 'production');
+
+		for (const story of STORIES) {
+			const each = PORTFOLIO_CASES.find(c => c.slug === story.slug)!;
+			const drafts = [
+				...story.decisions.flatMap(decision => decision.options.filter(o => o.basis === 'draft').map(o => o.reason)),
+				...story.troubles.filter(trouble => trouble.basis === 'draft').map(trouble => trouble.problem),
+			];
+			const { container, unmount } = render(<CaseStudy item={each} />);
+
+			expect(container.textContent).not.toContain('초안');
+			for (const draft of drafts) expect(container.textContent, `${story.slug}: ${draft}`).not.toContain(draft);
+			unmount();
+		}
 	});
 
 	it('퇴사 사유와 광고 슬롯을 렌더하지 않는다', () => {

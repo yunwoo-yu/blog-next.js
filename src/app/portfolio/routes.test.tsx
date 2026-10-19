@@ -16,14 +16,6 @@ const jsonLdOf = (container: HTMLElement) =>
 		JSON.parse(node.textContent ?? ''),
 	);
 
-beforeEach(() => {
-	vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(null as never);
-});
-
-afterEach(() => {
-	vi.restoreAllMocks();
-});
-
 describe('/portfolio', () => {
 	it('색인 가능하고 canonical 과 OG 이미지를 가진다', () => {
 		expect(metadata.robots).toMatchObject({ index: true });
@@ -61,7 +53,8 @@ describe('/portfolio/[slug]', () => {
 		const ui = await CasePage({ params: Promise.resolve({ slug: 'avatar-studio-performance' }) });
 		const { container } = render(ui);
 		expect(jsonLdOf(container).map(data => data['@type'])).toEqual(['CreativeWork', 'BreadcrumbList']);
-		expect(screen.getByTestId('service-exhibit')).toBeInTheDocument();
+		expect(screen.getByRole('heading', { level: 2, name: '아바타 스튜디오 성능 개선' })).toBeInTheDocument();
+		expect(container.querySelector('canvas')).toBeNull();
 	});
 
 	it('사례마다 색인 가능한 메타데이터와 고유 canonical 을 낸다', async () => {

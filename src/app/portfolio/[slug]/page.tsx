@@ -12,7 +12,7 @@ interface Params {
 // 목록에 없는 slug 는 정적 생성하지 않고 404 로 처리한다.
 export const dynamicParams = false;
 
-// 모든 사례가 같은 전시 컴포넌트를 쓴다. 3D 는 버튼을 누를 때만 받으므로 route 번들에는 포함되지 않는다.
+// 모든 사례가 같은 서버 컴포넌트(CaseStudy)로 정적 생성된다.
 export const generateStaticParams = () => PORTFOLIO_CASES.map(item => ({ slug: item.slug }));
 
 export const generateMetadata = async ({ params }: Params): Promise<Metadata> => {

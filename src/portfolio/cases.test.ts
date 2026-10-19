@@ -6,7 +6,7 @@ import { getCategoryList } from '@/utils/post-utils';
 
 import { CAREER_DETAIL, getCareerProjects } from './career-detail';
 import { buildCasePath, findResumeProject, getAdjacentCases, getPortfolioCase, PORTFOLIO_CASES } from './cases';
-import { getPortfolioExperience, PORTFOLIO_SECTIONS } from './overview';
+import { getPortfolioExperience, PORTFOLIO_KEY_RESULTS } from './overview';
 
 const projectText = (slug: string) => {
 	const item = PORTFOLIO_CASES.find(c => c.slug === slug)!;
@@ -95,10 +95,20 @@ describe('포트폴리오 개요 데이터', () => {
 		expect(JSON.stringify(experience)).not.toContain('권고사직');
 	});
 
-	it('섹션 id 는 중복되지 않는다', () => {
-		const ids = PORTFOLIO_SECTIONS.map(section => section.id);
+	it('핵심 숫자는 연결된 사례의 이력서 원문(career-detail.ts)에 그대로 나온다', () => {
+		expect(PORTFOLIO_KEY_RESULTS.map(result => result.value)).toEqual(['0건', '70%', '400~600ms']);
+		for (const result of PORTFOLIO_KEY_RESULTS) {
+			const item = getPortfolioCase(result.slug);
 
-		expect(new Set(ids).size).toBe(ids.length);
+			expect(item, result.slug).toBeDefined();
+			const text = projectText(result.slug);
+
+			expect(text.includes(result.value), `[${result.slug}] 원문에 없는 수치: ${result.value}`).toBe(true);
+			// 설명에 붙은 보조 수치(1개월·3초)도 원문에 있어야 한다.
+			for (const number of result.label.match(/\d[\d~.,]*\S?/g) ?? []) {
+				expect(text.includes(number), `[${result.slug}] 원문에 없는 수치: ${number}`).toBe(true);
+			}
+		}
 	});
 });
 
@@ -113,7 +123,7 @@ describe('블로그 콘텐츠와의 분리', () => {
 
 describe('블로그·루트 번들과의 분리', () => {
 	const SRC = join(process.cwd(), 'src');
-	const HEAVY = /ServiceSceneCanvas|@react-three|from 'three'|from "three"/;
+	const HEAVY = /ServiceSceneCanvas|@react-three|from 'three'|from "three"|import\('three'\)/;
 
 	const walk = (dir: string): string[] =>
 		readdirSync(dir, { withFileTypes: true }).flatMap(entry => {
@@ -130,15 +140,13 @@ describe('블로그·루트 번들과의 분리', () => {
 		for (const file of outside) expect(readFileSync(file, 'utf8'), file).not.toMatch(HEAVY);
 	});
 
-	it('포트폴리오 안에서도 3D 캔버스는 로더의 동적 import 한 곳에서만 값으로 불러온다', () => {
-		const importers = walk(join(SRC, 'components/portfolio')).filter(
-			file => !/ServiceScene/.test(file) && /ServiceSceneCanvas/.test(readFileSync(file, 'utf8')),
+	it('포트폴리오 소스도 3D(three·@react-three)를 전혀 참조하지 않는다', () => {
+		const portfolioFiles = ['app/portfolio', 'components/portfolio', 'portfolio'].flatMap(path =>
+			walk(join(SRC, path)),
 		);
 
-		expect(importers.map(file => file.split('/').pop())).toEqual(['ServiceStage.tsx']);
-		const source = readFileSync(importers[0], 'utf8');
-		expect(source).toMatch(/import\('\.\/ServiceSceneCanvas'\)/);
-		expect(source).not.toMatch(/^import [^t].*ServiceSceneCanvas/m);
+		expect(portfolioFiles.length).toBeGreaterThan(0);
+		for (const file of portfolioFiles) expect(readFileSync(file, 'utf8'), file).not.toMatch(HEAVY);
 	});
 
 	it('portfolio.css 는 portfolio layout 에서만 불러온다', () => {
@@ -156,7 +164,7 @@ describe('클라이언트 번들과 이력서 원문의 분리', () => {
 			.filter(file => file.endsWith('.tsx') && !file.includes('.test.'))
 			.filter(file => read(`src/components/portfolio/${file}`).trimStart().startsWith("'use client'"));
 
-		expect(clientFiles.length).toBeGreaterThan(0);
+		// 지금은 클라이언트 컴포넌트가 없다. 새로 생기면 아래 규칙이 그대로 적용된다.
 		for (const file of clientFiles) {
 			const source = read(`src/components/portfolio/${file}`);
 

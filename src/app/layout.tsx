@@ -9,6 +9,7 @@ import { ViewTransition } from 'react';
 import { pretendard } from '@/assets/fonts/fonts';
 import Footer from '@/components/common/Footer';
 import Header from '@/components/common/Header';
+import HideOnPortfolio from '@/components/common/HideOnPortfolio';
 import JsonLd from '@/components/common/JsonLd';
 import { ThemeProvider } from '@/components/common/provider/ThemeProvider';
 import { BASE_URL, GITHUB_URL, LINKEDIN_URL, META_AUTHOR_NAME, META_TITLE, ROOT_META_DATA } from '@/constant';
@@ -34,7 +35,9 @@ export default function RootLayout({
 						className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-md focus:bg-background focus:px-4 focus:py-2 focus:ring-2 focus:ring-ring">
 						본문 바로가기
 					</a>
-					<Header />
+					<HideOnPortfolio>
+						<Header />
+					</HideOnPortfolio>
 					{/* 이름을 주지 않으면 React가 자동 이름을 붙여 root와 별개 그룹이 생기고,
 					    같은 콘텐츠가 root와 함께 두 번 페이드된다. 이름을 고정해 CSS로 제어한다. */}
 					<ViewTransition name="page-content">
@@ -42,7 +45,9 @@ export default function RootLayout({
 							{children}
 						</main>
 					</ViewTransition>
-					<Footer />
+					<HideOnPortfolio>
+						<Footer />
+					</HideOnPortfolio>
 				</ThemeProvider>
 				<JsonLd
 					data={{
