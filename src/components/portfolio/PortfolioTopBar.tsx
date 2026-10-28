@@ -1,7 +1,7 @@
 import Link from 'next/link';
 
 import { META_AUTHOR_NAME } from '@/constant';
-import { PORTFOLIO_LINKS, PORTFOLIO_PATH } from '@/portfolio/links';
+import { PORTFOLIO_LINKS, PORTFOLIO_PATH, PORTFOLIO_PRINT_PATH } from '@/portfolio/links';
 import { cn } from '@/utils/utils';
 
 import { FOCUS_RING } from './ui';
@@ -27,6 +27,11 @@ const PortfolioTopBar = () => (
 				<li>
 					<Link href={PORTFOLIO_LINKS.posts.href} className={linkStyle}>
 						{PORTFOLIO_LINKS.posts.label}
+					</Link>
+				</li>
+				<li>
+					<Link href={PORTFOLIO_PRINT_PATH} className={linkStyle}>
+						PDF
 					</Link>
 				</li>
 				<li>

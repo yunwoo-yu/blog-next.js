@@ -1,4 +1,4 @@
-import { GITHUB_URL, LINKEDIN_URL } from '@/constant';
+import { BLOG_POSTS_PATH, GITHUB_URL, LINKEDIN_URL, RESUME_PATH } from '@/constant';
 
 /**
  * 클라이언트 컴포넌트가 가져오는 포트폴리오 상수. 이력서 원문(@/constant/resume)을 import 하면
@@ -6,6 +6,9 @@ import { GITHUB_URL, LINKEDIN_URL } from '@/constant';
  */
 
 export const PORTFOLIO_PATH = '/portfolio';
+
+/** 전체를 한 문서로 인쇄(PDF 저장)하는 페이지. noindex 이며 사이트맵에 넣지 않는다. */
+export const PORTFOLIO_PRINT_PATH = `${PORTFOLIO_PATH}/print`;
 
 export interface PortfolioLink {
 	label: string;
@@ -15,8 +18,8 @@ export interface PortfolioLink {
 }
 
 export const PORTFOLIO_LINKS = {
-	resume: { label: '이력서', href: '/resume', external: false },
-	posts: { label: '블로그', href: '/blog/posts', external: false },
+	resume: { label: '이력서', href: RESUME_PATH, external: false },
+	posts: { label: '블로그', href: BLOG_POSTS_PATH, external: false },
 	github: { label: 'GitHub', href: GITHUB_URL, external: true },
 	linkedin: { label: 'LinkedIn', href: LINKEDIN_URL, external: true },
 } satisfies Record<string, PortfolioLink>;
