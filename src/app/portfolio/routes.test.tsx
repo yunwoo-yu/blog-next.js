@@ -53,7 +53,7 @@ describe('/portfolio/[slug]', () => {
 		const ui = await CasePage({ params: Promise.resolve({ slug: 'avatar-studio-performance' }) });
 		const { container } = render(ui);
 		expect(jsonLdOf(container).map(data => data['@type'])).toEqual(['CreativeWork', 'BreadcrumbList']);
-		expect(screen.getByRole('heading', { level: 2, name: '아바타 스튜디오 성능 개선' })).toBeInTheDocument();
+		expect(screen.getByRole('heading', { level: 1, name: '아바타 스튜디오 성능 개선' })).toBeInTheDocument();
 		expect(container.querySelector('canvas')).toBeNull();
 	});
 

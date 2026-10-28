@@ -49,6 +49,8 @@ const config: Config = {
 						50: 'var(--pf-gray-50)',
 					},
 					line: 'var(--pf-line)',
+					// 문제 표시(시퀀스 도식의 "문제" 단계): 선·화살촉은 DEFAULT, 글자는 fg, 라벨 면은 bg.
+					bad: { DEFAULT: 'var(--pf-bad)', fg: 'var(--pf-bad-fg)', bg: 'var(--pf-bad-bg)' },
 					// 사례별 표지(아이콘 면) 색. 배경과 아이콘 색 한 쌍씩이다.
 					tone: {
 						mint: { bg: '#e3f7ee', fg: '#0b7a52' },
@@ -63,6 +65,8 @@ const config: Config = {
 				'print-ink-2': '#374151',
 				'print-ink-3': '#6b7280',
 				'print-rule': '#d1d5db',
+				// 사례 번호(장식 큰 글자)용. 흰 종이 대비 3.18:1(큰 글자 기준 3:1 이상).
+				'print-num': '#8a919c',
 				'print-fill': '#f3f4f6',
 				'print-accent': '#1d4ed8',
 				'print-bad': '#b91c1c',

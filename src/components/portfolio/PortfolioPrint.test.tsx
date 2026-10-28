@@ -43,6 +43,14 @@ describe('/portfolio/print', () => {
 		expect(metadata.title).toBe(PRINT_TITLE);
 	});
 
+	it('퇴사 사유는 인쇄 문서 어디에도 나오지 않는다', () => {
+		const { container } = render(<PortfolioPrintPage />);
+		const exitReasons = RESUME.careers.flatMap(career => career.exitReason ?? []);
+
+		expect(exitReasons.length).toBeGreaterThan(0);
+		for (const reason of exitReasons) expect(container.textContent).not.toContain(reason);
+	});
+
 	it('꼬리말 문구는 상수에서 만든 @page 규칙으로 들어간다', () => {
 		const { container } = render(<PortfolioPrintPage />);
 		const style = container.querySelector('style') as HTMLStyleElement;
@@ -226,7 +234,7 @@ describe('/portfolio/print', () => {
 
 			for (const ref of getPrintReferences()) {
 				expect(within(page).getByRole('link', { name: ref.url })).toHaveAttribute('href', ref.url);
-				expect(page.textContent).toContain(`이 글에서 확인할 판단: ${ref.point}`);
+				expect(page.textContent).toContain(`${ref.pointLabel}: ${ref.point}`);
 			}
 			for (const contact of getPrintContacts())
 				expect(within(page).getByRole('link', { name: contact.value })).toHaveAttribute('href', contact.href);

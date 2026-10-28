@@ -16,10 +16,11 @@ import { cn } from '@/utils/utils';
 
 import CaseRow from './CaseRow';
 import CountUp from './CountUp';
-import { Column, FOCUS_RING, ListHeader, ListRow, PRIMARY_BUTTON_CLASS, SectionTitle, TEXT_LINK_CLASS } from './ui';
+import { FOCUS_RING, PRIMARY_BUTTON_CLASS, TEXT_LINK_CLASS } from './styles';
+import { Column, ListHeader, ListRow, SectionTitle } from './ui';
 
 const buttonBase = cn(
-	'inline-flex h-[52px] flex-1 items-center justify-center rounded-2xl px-6 text-[17px] font-bold transition-[background-color,transform] duration-200 ease-in-out active:scale-[0.98] sm:flex-none',
+	'inline-flex h-[52px] flex-1 items-center justify-center rounded-2xl px-6 text-[17px] font-bold transition-[background-color,transform] duration-200 ease-in-out motion-safe:active:scale-[0.98] sm:flex-none',
 	FOCUS_RING,
 );
 
@@ -45,11 +46,11 @@ const PortfolioOverview = () => {
 			<Column className="pt-14 md:pt-20">
 				<section aria-labelledby="hero-title">
 					<p className="text-[17px] font-bold text-pf-blue-700">프론트엔드 개발자</p>
-					<h2
+					<h1
 						id="hero-title"
 						className="mt-2 break-keep text-[52px] font-bold leading-[1.15] tracking-[-0.03em] text-pf-gray-900 md:text-[80px]">
 						{META_AUTHOR_NAME}
-					</h2>
+					</h1>
 					<p className="mt-5 break-keep text-[17px] leading-[1.6] text-pf-gray-700">
 						{organizations}에서 {RESUME.projects.length}개 서비스를 맡아 풀어 온 {PORTFOLIO_CASES.length}가지
 						문제입니다.
@@ -77,7 +78,7 @@ const PortfolioOverview = () => {
 									<Link
 										href={buildCasePath(result.slug)}
 										className={cn(
-											'group flex h-full flex-col rounded-[28px] p-5 transition-[transform,background-color] duration-200 ease-in-out hover:-translate-y-0.5 active:scale-[0.99] md:p-8',
+											'group flex h-full flex-col rounded-[28px] p-5 transition-[transform,background-color] duration-200 ease-in-out motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-[0.99] md:p-8',
 											featured ? 'bg-pf-gray-900 text-white' : 'bg-pf-gray-100 text-pf-gray-800 hover:bg-pf-gray-200',
 											FOCUS_RING,
 										)}>
@@ -87,7 +88,11 @@ const PortfolioOverview = () => {
 												className={cn('flex size-9 items-center justify-center rounded-xl', tone)}>
 												<Icon size={18} strokeWidth={2.25} />
 											</span>
-											<span className={cn('text-[14px] font-bold', featured ? 'text-pf-blue-100' : 'text-pf-blue-700')}>
+											<span
+												className={cn(
+													'text-[14px] font-bold',
+													featured ? 'text-pf-blue-100' : 'text-pf-blue-700 group-hover:text-pf-blue-800',
+												)}>
 												{result.tag}
 											</span>
 										</span>
@@ -114,7 +119,7 @@ const PortfolioOverview = () => {
 											사례 보기
 											<ArrowUpRight
 												size={18}
-												className="transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+												className="transition-transform duration-200 motion-safe:group-hover:translate-x-0.5 motion-safe:group-hover:-translate-y-0.5"
 											/>
 										</span>
 									</Link>

@@ -2,6 +2,7 @@ import { renderRichText } from '@/components/resume/highlight';
 import type { PortfolioCase } from '@/portfolio/cases';
 import { getPrintDecisionRows, getPrintResultSentences, getPrintTroubles, type PrintFeatured } from '@/portfolio/print';
 import { cn } from '@/utils/utils';
+
 import { splitParagraphs } from './Paragraphs';
 import PrintDiagram from './PrintDiagram';
 import { PrintBlock, PrintSheet } from './PrintParts';
@@ -45,7 +46,7 @@ const PrintCase = ({ item, entry, index }: PrintCaseProps) => {
 		<article data-print-case={item.slug} aria-labelledby={titleId}>
 			<PrintSheet data-print-page="case-a">
 				<header className="flex items-baseline gap-[3mm] border-t-[2pt] border-print-ink pt-[3mm]">
-					<span className="text-[28pt] font-bold leading-none tabular-nums text-print-rule" aria-hidden="true">
+					<span className="text-[28pt] font-bold leading-none tabular-nums text-print-num" aria-hidden="true">
 						{number}
 					</span>
 					<span className="rounded-[1mm] border-[0.75pt] border-print-ink px-[2mm] py-[0.3mm] text-[9pt] font-bold text-print-ink">

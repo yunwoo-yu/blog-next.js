@@ -1,37 +1,38 @@
 import type { SequenceDiagram as SequenceDiagramData } from '@/portfolio/stories';
 import { cn } from '@/utils/utils';
+
 import DiagramReadout from './DiagramReadout';
 import { centerOf, getLabelSpan, getTone, TONE_LABEL, type Tone } from './diagram';
 import Reveal from './Reveal';
 
 const TONE_TEXT: Record<Tone, string> = {
 	normal: 'text-pf-gray-700',
-	problem: 'text-red-700',
+	problem: 'text-pf-bad-fg',
 	fix: 'text-pf-blue-700',
 };
 const TONE_LINE: Record<Tone, string> = {
 	normal: 'bg-pf-gray-400',
-	problem: 'bg-red-600',
+	problem: 'bg-pf-bad',
 	fix: 'bg-pf-blue',
 };
 const HEAD_RIGHT: Record<Tone, string> = {
 	normal: 'border-l-[8px] border-l-pf-gray-400',
-	problem: 'border-l-[8px] border-l-red-600',
+	problem: 'border-l-[8px] border-l-pf-bad',
 	fix: 'border-l-[8px] border-l-pf-blue',
 };
 const HEAD_LEFT: Record<Tone, string> = {
 	normal: 'border-r-[8px] border-r-pf-gray-400',
-	problem: 'border-r-[8px] border-r-red-600',
+	problem: 'border-r-[8px] border-r-pf-bad',
 	fix: 'border-r-[8px] border-r-pf-blue',
 };
 const LOOP: Record<Tone, string> = {
 	normal: 'border-pf-gray-400',
-	problem: 'border-red-600',
+	problem: 'border-pf-bad',
 	fix: 'border-pf-blue',
 };
 const TONE_PILL: Record<Tone, string> = {
 	normal: '',
-	problem: 'bg-red-50 text-red-700',
+	problem: 'bg-pf-bad-bg text-pf-bad-fg',
 	fix: 'bg-pf-blue-50 text-pf-blue-700',
 };
 

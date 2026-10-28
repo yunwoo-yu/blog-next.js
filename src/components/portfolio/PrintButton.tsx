@@ -2,7 +2,7 @@
 
 import { cn } from '@/utils/utils';
 
-import { FOCUS_RING, PRIMARY_BUTTON_CLASS } from './ui';
+import { FOCUS_RING, PRIMARY_BUTTON_CLASS } from './styles';
 
 /** 브라우저 인쇄 대화상자를 연다. 거기서 "PDF로 저장"을 고른다. 화면에서만 보인다. */
 const PrintButton = () => (

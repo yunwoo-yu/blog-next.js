@@ -63,7 +63,7 @@ describe('CaseStory 문제 섹션', () => {
 		const { container } = render(<CaseStory story={story} />);
 		const items = container.querySelectorAll('[data-testid="trouble"]');
 		const first = items[0];
-		const order = ['h5', '[data-testid="sequence-diagram"]', '[data-testid="trouble-fix"]'].map(
+		const order = ['h4', '[data-testid="sequence-diagram"]', '[data-testid="trouble-fix"]'].map(
 			selector => first.querySelector(selector)!,
 		);
 

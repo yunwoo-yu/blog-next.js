@@ -16,7 +16,8 @@ import CaseGlance from './CaseGlance';
 import CaseRow from './CaseRow';
 import CaseStory from './CaseStory';
 import Paragraphs from './Paragraphs';
-import { Column, FOCUS_RING, SectionTitle, TEXT_LINK_CLASS } from './ui';
+import { FOCUS_RING, TEXT_LINK_CLASS } from './styles';
+import { Column, SectionTitle } from './ui';
 
 interface CaseStudyProps {
 	item: PortfolioCase;
@@ -60,9 +61,9 @@ const CaseStudy = ({ item, children }: CaseStudyProps) => {
 						<span className={cn('rounded-md px-2 py-0.5 font-bold', tone)}>{item.organization}</span>
 						<span>{[item.service, item.period].filter(Boolean).join(' · ')}</span>
 					</p>
-					<h2 className="mt-3 break-keep text-[28px] font-bold leading-[1.4] tracking-[-0.02em] text-pf-gray-900 md:text-[32px]">
+					<h1 className="mt-3 break-keep text-[28px] font-bold leading-[1.4] tracking-[-0.02em] text-pf-gray-900 md:text-[32px]">
 						{item.title}
-					</h2>
+					</h1>
 				</header>
 
 				<CaseCover slug={item.slug} />

@@ -1,5 +1,4 @@
 import { getPrintOthers, getPrintReferences, PRINT_PORTFOLIO_URL } from '@/portfolio/print';
-
 import { cn } from '@/utils/utils';
 
 import PrintContacts from './PrintContacts';
@@ -60,7 +59,9 @@ const PrintOthers = () => {
 									{ref.url}
 								</a>
 							</p>
-							<p className="mt-[0.5mm] text-[9.5pt]">이 글에서 확인할 판단: {ref.point}</p>
+							<p className="mt-[0.5mm] text-[9.5pt]">
+								{ref.pointLabel}: {ref.point}
+							</p>
 						</li>
 					))}
 				</ul>

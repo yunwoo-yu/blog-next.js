@@ -1,5 +1,4 @@
 import { getPrintContacts } from '@/portfolio/print';
-
 import { cn } from '@/utils/utils';
 
 import { CONTACT_LABEL_CLASS } from './PrintParts';

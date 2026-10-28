@@ -7,16 +7,9 @@ import { getCaseCover } from '@/portfolio/covers';
 import type { ServiceScreen } from '@/portfolio/exhibits';
 import { cn } from '@/utils/utils';
 
-/** 포트폴리오 공용 조각. 모두 서버 컴포넌트라 클라이언트 번들을 늘리지 않는다. */
+import { FOCUS_RING } from './styles';
 
-export const FOCUS_RING =
-	'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pf-blue focus-visible:ring-offset-2 focus-visible:ring-offset-white';
-
-/** 파랑 면 버튼의 공통 색(흰 글자). 호버는 한 단계 진한 파랑. */
-export const PRIMARY_BUTTON_CLASS = 'bg-pf-blue-700 text-white hover:bg-pf-blue-800';
-
-/** 본문 크기의 링크. 파랑 500 은 본문 크기에서 대비가 모자라 700 을 쓰고 밑줄로 링크임을 드러낸다. */
-export const TEXT_LINK_CLASS = 'font-medium text-pf-blue-700 underline underline-offset-4 hover:no-underline';
+/** 포트폴리오 공용 조각. 모두 서버 컴포넌트라 클라이언트 번들을 늘리지 않는다. 클라이언트에서 쓰는 스타일 상수는 styles.ts 에 있다. */
 
 /** 본문 컬럼. 단일 열, 최대 720px, 가운데 정렬. */
 export const Column = ({ children, className }: { children: ReactNode; className?: string }) => (
@@ -30,19 +23,19 @@ interface SectionTitleProps {
 }
 
 export const SectionTitle = ({ id, children, className }: SectionTitleProps) => (
-	<h3
+	<h2
 		id={id}
 		className={cn(
 			'break-keep text-[22px] font-bold leading-[1.4] tracking-[-0.02em] text-pf-gray-900 md:text-[24px]',
 			className,
 		)}>
 		{children}
-	</h3>
+	</h2>
 );
 
 /** 목록 위의 소제목과 개수. */
 export const ListHeader = ({ title, count, id }: { title: string; count?: number; id?: string }) => (
-	<h4 id={id} className="flex items-baseline gap-1.5 pb-2 pt-6 text-[17px] font-bold text-pf-gray-900">
+	<h3 id={id} className="flex items-baseline gap-1.5 pb-2 pt-6 text-[17px] font-bold text-pf-gray-900">
 		{title}
 		{count !== undefined && (
 			<span className="text-[15px] font-normal text-pf-gray-600">
@@ -51,7 +44,7 @@ export const ListHeader = ({ title, count, id }: { title: string; count?: number
 				<span className="sr-only">개</span>
 			</span>
 		)}
-	</h4>
+	</h3>
 );
 
 /** 56px 둥근 썸네일. 공개 화면 캡처가 없으면 사례별 아이콘 면. 제목이 옆에 있으므로 장식으로 둔다. */
@@ -101,7 +94,7 @@ export const ListRow = ({ title, description, href, leading, extra }: ListRowPro
 				<ChevronRight
 					aria-hidden="true"
 					size={20}
-					className="shrink-0 text-pf-gray-400 transition-transform duration-200 ease-in-out group-hover:translate-x-0.5"
+					className="shrink-0 text-pf-gray-400 transition-transform duration-200 ease-in-out motion-safe:group-hover:translate-x-0.5"
 				/>
 			)}
 		</>

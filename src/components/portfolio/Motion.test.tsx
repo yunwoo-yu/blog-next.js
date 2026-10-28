@@ -55,9 +55,21 @@ describe('CountUp', () => {
 		expect(screen.getByTestId('count-up').textContent).toBe('400~600ms');
 	});
 
-	it('모션을 허용하면 0에서 시작해 보이는 순간 최종값까지 올라간다', () => {
+	it('마운트 시 이미 뷰포트 안에 있으면 최종값을 유지하고 애니메이션을 건너뛴다', () => {
 		stubObserver();
 		stubMotion(false);
+		vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue({ top: 100 } as DOMRect);
+		render(<CountUp value="70%" />);
+
+		expect(screen.getByTestId('count-up').textContent).toBe('70%');
+		expect(callbacks).toHaveLength(0);
+		vi.restoreAllMocks();
+	});
+
+	it('뷰포트 아래쪽에 있으면 0에서 시작해 보이는 순간 최종값까지 올라간다', () => {
+		stubObserver();
+		stubMotion(false);
+		vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue({ top: 5000 } as DOMRect);
 		let now = 0;
 		const frames: FrameRequestCallback[] = [];
 
@@ -70,6 +82,7 @@ describe('CountUp', () => {
 		now = 5000;
 		act(() => frames.shift()!(now));
 		expect(screen.getByTestId('count-up').textContent).toBe('70%');
+		vi.restoreAllMocks();
 	});
 
 	it('보조기기용 최종값을 따로 둔다', () => {

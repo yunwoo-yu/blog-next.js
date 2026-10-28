@@ -21,9 +21,9 @@ const CaseStory = ({ story }: { story: CaseStoryData | undefined }) => {
 		<>
 			{decisions.length > 0 && (
 				<section id="decisions" aria-labelledby="decisions-title" className="mt-10">
-					<h4 id="decisions-title" className={subTitle}>
+					<h3 id="decisions-title" className={subTitle}>
 						판단
-					</h4>
+					</h3>
 					<ul className="mt-3 grid gap-8">
 						{decisions.map(decision => {
 							const chosen = decision.options.filter(option => option.verdict === 'chosen');
@@ -48,7 +48,7 @@ const CaseStory = ({ story }: { story: CaseStoryData | undefined }) => {
 										))}
 										{rejected.map(option => (
 											<div key={option.name} data-testid="decision-rejected" className="rounded-2xl bg-pf-gray-50 p-5">
-												<p className="text-[13px] font-bold text-pf-gray-600">검토했지만 고르지 않은 방법</p>
+												<p className="text-[13px] font-bold text-pf-gray-700">검토했지만 고르지 않은 방법</p>
 												<p className="mt-1.5 break-keep text-[16px] font-bold leading-[1.5] text-pf-gray-800">
 													{option.name}
 													{option.basis === 'draft' && <DraftBadge />}
@@ -66,16 +66,16 @@ const CaseStory = ({ story }: { story: CaseStoryData | undefined }) => {
 
 			{troubles.length > 0 && (
 				<section id="troubles" aria-labelledby="troubles-title" className="mt-10">
-					<h4 id="troubles-title" className={subTitle}>
+					<h3 id="troubles-title" className={subTitle}>
 						풀었던 문제
-					</h4>
+					</h3>
 					<ol className="mt-3 divide-y divide-pf-line">
 						{troubles.map(trouble => (
 							<li key={trouble.problem} data-testid="trouble" className="py-8 first:pt-2 last:pb-0">
-								<h5 className="break-keep text-[19px] font-bold leading-[1.5] tracking-[-0.01em] text-pf-gray-900">
+								<h4 className="break-keep text-[19px] font-bold leading-[1.5] tracking-[-0.01em] text-pf-gray-900">
 									{trouble.problem}
 									{trouble.basis === 'draft' && <DraftBadge />}
-								</h5>
+								</h4>
 								{trouble.diagram && <SequenceDiagram diagram={trouble.diagram} />}
 								<div data-testid="trouble-fix" className="mt-5">
 									<Paragraphs text={trouble.fix} className="text-[16px] leading-[1.75] text-pf-gray-800" />

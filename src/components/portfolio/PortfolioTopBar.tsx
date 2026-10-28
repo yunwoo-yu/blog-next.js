@@ -4,7 +4,7 @@ import { META_AUTHOR_NAME } from '@/constant';
 import { PORTFOLIO_LINKS, PORTFOLIO_PATH, PORTFOLIO_PRINT_PATH } from '@/portfolio/links';
 import { cn } from '@/utils/utils';
 
-import { FOCUS_RING } from './ui';
+import { FOCUS_RING } from './styles';
 
 const linkStyle = cn(
 	'inline-flex h-11 items-center whitespace-nowrap rounded-lg px-2.5 text-[15px] text-pf-gray-700 transition-colors duration-200 hover:bg-pf-gray-100 hover:text-pf-gray-900',

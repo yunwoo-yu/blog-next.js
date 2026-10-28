@@ -21,6 +21,9 @@
   --pf-gray-100: #f2f4f6;
   --pf-gray-50: #f9fafb;
   --pf-white: #ffffff;
+  --pf-bad: #dc2626;
+  --pf-bad-fg: #b91c1c;
+  --pf-bad-bg: #fef2f2;
   --pf-line: rgba(0, 27, 55, 0.1);
   color-scheme: light;
   background: var(--pf-white);
@@ -46,13 +49,7 @@
   .pf-root *::after {
     transition: none !important;
   }
-
-  /* 인쇄 문서(.pf-print)의 도식은 정적 transform 으로 화살촉·세로선을 놓으므로 지우지 않는다. */
-  .pf-root :not(.pf-print, .pf-print *),
-  .pf-root :not(.pf-print, .pf-print *)::before,
-  .pf-root :not(.pf-print, .pf-print *)::after {
-    transform: none !important;
-  }
+  /* transform 은 지우지 않는다: 도식의 화살선·화살촉은 정적 translate 로 위치를 잡는다. 움직이는 transform(hover·active 모션)은 컴포넌트에서 motion-safe: 로 건다. */
 }
 
 /*
@@ -68,14 +65,14 @@
   /* 쪽 여백 상자는 문서 요소의 색을 상속하지 않으므로 print-ink-3 의 값을 직접 쓴다. */
   @bottom-left {
     font-size: 7.5pt;
-    color: #6b7280;
+    color: #6b7280; /* tailwind.config.ts 의 print-ink-3 와 같은 값. @page 안에서는 변수·유틸리티를 쓸 수 없다. */
   }
 
   /* counter(page)·counter(pages) 는 content 에서만 쓸 수 있다. 왼쪽 문구는 PrintPageStyle 이 상수에서 만들어 넣는다. */
   @bottom-right {
     content: counter(page) ' / ' counter(pages);
     font-size: 7.5pt;
-    color: #6b7280;
+    color: #6b7280; /* tailwind.config.ts 의 print-ink-3 와 같은 값. @page 안에서는 변수·유틸리티를 쓸 수 없다. */
   }
 }
 

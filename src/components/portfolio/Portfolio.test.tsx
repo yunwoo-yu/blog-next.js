@@ -3,6 +3,7 @@
 import { render, screen, within } from '@testing-library/react';
 
 import { GITHUB_URL } from '@/constant';
+import RESUME from '@/constant/resume';
 import { buildCasePath, PORTFOLIO_CASES } from '@/portfolio/cases';
 import { getExhibit } from '@/portfolio/exhibits';
 import { PORTFOLIO_KEY_RESULTS } from '@/portfolio/overview';
@@ -11,6 +12,9 @@ import { STORIES } from '@/portfolio/stories';
 import CaseStudy from './CaseStudy';
 import PortfolioOverview from './PortfolioOverview';
 import PortfolioTopBar from './PortfolioTopBar';
+
+/** 이력서에만 있어야 하는 퇴사 사유 전체. 포트폴리오 어디에도 나오면 안 된다. */
+const EXIT_REASONS = RESUME.careers.flatMap(career => career.exitReason ?? []);
 
 const escapeRegExp = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
@@ -39,7 +43,7 @@ describe('PortfolioOverview', () => {
 	it('히어로는 큰 이름과 프로젝트 보기·이력서 보기 버튼을 가진다', () => {
 		render(<PortfolioOverview />);
 
-		expect(screen.getByRole('heading', { level: 2, name: '유윤우' })).toBeInTheDocument();
+		expect(screen.getByRole('heading', { level: 1, name: '유윤우' })).toBeInTheDocument();
 		expect(document.body.textContent).not.toContain('만들어 온');
 		expect(screen.getByRole('link', { name: '프로젝트 보기' })).toHaveAttribute('href', '#projects');
 		expect(screen.getByRole('link', { name: '이력서 보기' })).toHaveAttribute('href', '/resume');
@@ -51,7 +55,9 @@ describe('PortfolioOverview', () => {
 
 		expect(PORTFOLIO_KEY_RESULTS).toHaveLength(2);
 		for (const result of PORTFOLIO_KEY_RESULTS) {
-			const link = screen.getByRole('link', { name: new RegExp(`${result.value}.*${result.label}`) });
+			const link = screen.getByRole('link', {
+				name: new RegExp(`${escapeRegExp(result.value)}.*${escapeRegExp(result.label)}`),
+			});
 
 			expect(link).toHaveAttribute('href', buildCasePath(result.slug));
 		}
@@ -64,7 +70,7 @@ describe('PortfolioOverview', () => {
 
 		for (const organization of ['웰로', '살린']) {
 			const count = PORTFOLIO_CASES.filter(item => item.organization === organization).length;
-			const header = within(projects).getByRole('heading', { level: 4, name: new RegExp(`^${organization}`) });
+			const header = within(projects).getByRole('heading', { level: 3, name: new RegExp(`^${organization}`) });
 
 			expect(header.textContent).toContain(String(count));
 		}
@@ -100,7 +106,8 @@ describe('PortfolioOverview', () => {
 	it('퇴사 사유와 광고 슬롯, 이메일을 렌더하지 않는다', () => {
 		const { container } = render(<PortfolioOverview />);
 
-		expect(container.textContent).not.toContain('권고사직');
+		expect(EXIT_REASONS.length).toBeGreaterThan(0);
+		for (const reason of EXIT_REASONS) expect(container.textContent).not.toContain(reason);
 		expect(container.querySelector('ins.adsbygoogle')).toBeNull();
 		expect(container.querySelector('a[href^="mailto:"]')).toBeNull();
 	});
@@ -113,7 +120,7 @@ describe('CaseStudy', () => {
 		render(<CaseStudy item={item} />);
 
 		expect(screen.getByRole('link', { name: '포트폴리오' })).toHaveAttribute('href', '/portfolio');
-		expect(screen.getByRole('heading', { level: 2, name: item.title })).toBeInTheDocument();
+		expect(screen.getByRole('heading', { level: 1, name: item.title })).toBeInTheDocument();
 		expect(screen.getByText(item.organization)).toBeInTheDocument();
 		expect(screen.getByText([item.service, item.period].filter(Boolean).join(' · '))).toBeInTheDocument();
 	});
@@ -154,7 +161,7 @@ describe('CaseStudy', () => {
 			const { container, unmount } = render(<CaseStudy item={each} />);
 			const outcome = getExhibit(each.slug)!.callouts.outcome.trim();
 			const sameAsOutcome = each.stages.find(stage => stage.id === 'result')!.text.trim() === outcome;
-			const headings = ['문제', '해결', '결과'].map(name => screen.getByRole('heading', { level: 3, name }));
+			const headings = ['문제', '해결', '결과'].map(name => screen.getByRole('heading', { level: 2, name }));
 
 			for (let i = 1; i < headings.length; i += 1) {
 				expect(
@@ -205,7 +212,7 @@ describe('CaseStudy', () => {
 		expect(decisions.textContent).toContain('선택한 방법');
 		expect(items.length).toBe(withStory.troubles.length);
 		withStory.troubles.forEach((trouble, index) => {
-			expect(items[index].querySelector('h5')!.textContent).toContain(trouble.problem);
+			expect(items[index].querySelector('h4')!.textContent).toContain(trouble.problem);
 			expect(items[index].textContent).toContain(trouble.fix.split(/\n{2,}/)[0]);
 		});
 	});
@@ -280,7 +287,7 @@ describe('CaseStudy', () => {
 		for (const each of PORTFOLIO_CASES) {
 			const { container, unmount } = render(<CaseStudy item={each} />);
 
-			expect(container.textContent).not.toContain('권고사직');
+			for (const reason of EXIT_REASONS) expect(container.textContent).not.toContain(reason);
 			expect(container.querySelector('ins.adsbygoogle')).toBeNull();
 			unmount();
 		}

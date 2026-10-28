@@ -11,7 +11,9 @@ export const scaleNumbers = (value: string, ratio: number) =>
 	value.replace(/\d+/g, digits => String(Math.round(Number(digits) * Math.max(0, ratio))));
 
 /**
- * 보이는 순간 한 번 0에서 최종값까지 올라간다. 모션을 줄였거나 관찰 API 가 없으면 처음부터 최종값이다.
+ * 서버가 최종값을 그리고, 마운트 시 이미 뷰포트 안에 있으면 그대로 두어 깜빡이지 않는다.
+ * 뷰포트 아래쪽에 있을 때만 0 으로 시작해 보이는 순간 한 번 최종값까지 올라간다.
+ * 모션을 줄였거나 관찰 API 가 없으면 항상 최종값이다.
  * 보조기기에는 최종값만 읽히도록 움직이는 글자는 숨기고 같은 값을 sr-only 로 둔다.
  */
 const CountUp = ({ value, className }: { value: string; className?: string }) => {
@@ -22,6 +24,8 @@ const CountUp = ({ value, className }: { value: string; className?: string }) =>
 		const el = ref.current;
 
 		if (!el || prefersReducedMotion() || !canObserve() || !/\d/.test(value)) return;
+		// 이미 보이는 자리(또는 지나친 자리)면 최종값을 유지하고 애니메이션을 건너뛴다. Reveal 과 같은 기준이다.
+		if (el.getBoundingClientRect().top < window.innerHeight) return;
 
 		let frame = 0;
 		const observer = new IntersectionObserver(entries => {
