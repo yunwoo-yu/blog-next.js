@@ -81,14 +81,15 @@ describe('전시 데이터', () => {
 		}
 	});
 
-	it('이미지 경로가 모두 public 에 실제 파일로 있고 출처·날짜 캡션을 가진다', () => {
+	it('이미지 경로가 모두 public 에 실제 파일로 있고 출처 캡션을 가지고 촬영일은 적지 않는다', () => {
 		const paths = getExhibitImagePaths();
 
 		expect(paths.length).toBeGreaterThan(0);
 		for (const src of paths) expect(existsSync(join(process.cwd(), 'public', src)), src).toBe(true);
 		for (const exhibit of EXHIBITS) {
 			for (const screen of getAllScreens(exhibit)) {
-				expect(screen.caption, screen.src).toMatch(/20\d{2}-\d{2}-\d{2}/);
+				expect(screen.caption.length, screen.src).toBeGreaterThan(0);
+				expect(screen.caption, screen.src).not.toMatch(/20\d{2}-\d{2}-\d{2}|촬영/);
 				expect(screen.alt.length, screen.src).toBeGreaterThan(10);
 			}
 		}

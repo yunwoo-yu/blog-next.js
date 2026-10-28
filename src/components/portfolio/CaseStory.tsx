@@ -1,4 +1,8 @@
-import { type CaseStory as CaseStoryData, isVisible } from '@/portfolio/stories';
+import { type CaseStory as CaseStoryData, getVisibleStory } from '@/portfolio/stories';
+import { cn } from '@/utils/utils';
+
+import Paragraphs from './Paragraphs';
+import SequenceDiagram from './SequenceDiagram';
 
 /** 초안(basis: draft)은 개발 모드에서만 보인다. 운영 빌드에서는 isVisible 이 걸러 낸다. */
 const DraftBadge = () => (
@@ -9,14 +13,6 @@ const DraftBadge = () => (
 
 const subTitle = 'text-[17px] font-bold text-pf-gray-900';
 
-/** 이 스토리에서 실제로 보이는 판단·문제 목록. */
-export const getVisibleStory = (story: CaseStoryData | undefined) => ({
-	decisions: (story?.decisions ?? [])
-		.map(decision => ({ ...decision, options: decision.options.filter(option => isVisible(option.basis)) }))
-		.filter(decision => decision.options.length > 0),
-	troubles: (story?.troubles ?? []).filter(trouble => isVisible(trouble.basis)),
-});
-
 /** 판단(고른 방법을 크게, 고르지 않은 방법을 회색으로)과 풀어야 했던 문제를 단순한 목록으로 보여 준다. */
 const CaseStory = ({ story }: { story: CaseStoryData | undefined }) => {
 	const { decisions, troubles } = getVisibleStory(story);
@@ -26,37 +22,41 @@ const CaseStory = ({ story }: { story: CaseStoryData | undefined }) => {
 			{decisions.length > 0 && (
 				<section id="decisions" aria-labelledby="decisions-title" className="mt-10">
 					<h4 id="decisions-title" className={subTitle}>
-						이렇게 판단했어요
+						판단
 					</h4>
-					<ul className="mt-2 divide-y divide-pf-gray-200">
+					<ul className="mt-3 grid gap-8">
 						{decisions.map(decision => {
 							const chosen = decision.options.filter(option => option.verdict === 'chosen');
 							const rejected = decision.options.filter(option => option.verdict === 'rejected');
 
 							return (
-								<li key={decision.question} className="py-5">
-									<p className="break-keep text-[14px] text-pf-gray-600">{decision.question}</p>
-									{chosen.map(option => (
-										<div key={option.name} className="mt-1.5">
-											<p className="break-keep text-[16px] font-bold leading-[1.5] text-pf-gray-900">
-												{option.name}
-												{option.basis === 'draft' && <DraftBadge />}
-											</p>
-											<p className="mt-1 break-keep text-[15px] leading-[1.7] text-pf-gray-700">{option.reason}</p>
-										</div>
-									))}
-									{rejected.length > 0 && (
-										<ul className="mt-3 grid gap-2 rounded-2xl bg-pf-gray-50 p-4">
-											{rejected.map(option => (
-												<li key={option.name} className="break-keep text-[14px] leading-[1.6] text-pf-gray-700">
-													<span className="font-bold text-pf-gray-800">고르지 않은 방법 · {option.name}</span>
-													<br />
-													{option.reason}
+								<li key={decision.question}>
+									<p className="break-keep text-[15px] font-bold leading-[1.5] text-pf-gray-700">{decision.question}</p>
+									<div className={cn('mt-3 grid gap-3', rejected.length > 0 && 'sm:grid-cols-2')}>
+										{chosen.map(option => (
+											<div
+												key={option.name}
+												data-testid="decision-chosen"
+												className="rounded-2xl border border-pf-blue-100 bg-pf-blue-50 p-5">
+												<p className="text-[13px] font-bold text-pf-blue-700">선택한 방법</p>
+												<p className="mt-1.5 break-keep text-[16px] font-bold leading-[1.5] text-pf-gray-900">
+													{option.name}
 													{option.basis === 'draft' && <DraftBadge />}
-												</li>
-											))}
-										</ul>
-									)}
+												</p>
+												<p className="mt-1.5 break-keep text-[15px] leading-[1.7] text-pf-gray-800">{option.reason}</p>
+											</div>
+										))}
+										{rejected.map(option => (
+											<div key={option.name} data-testid="decision-rejected" className="rounded-2xl bg-pf-gray-50 p-5">
+												<p className="text-[13px] font-bold text-pf-gray-600">검토했지만 고르지 않은 방법</p>
+												<p className="mt-1.5 break-keep text-[16px] font-bold leading-[1.5] text-pf-gray-800">
+													{option.name}
+													{option.basis === 'draft' && <DraftBadge />}
+												</p>
+												<p className="mt-1.5 break-keep text-[15px] leading-[1.7] text-pf-gray-700">{option.reason}</p>
+											</div>
+										))}
+									</div>
 								</li>
 							);
 						})}
@@ -67,16 +67,19 @@ const CaseStory = ({ story }: { story: CaseStoryData | undefined }) => {
 			{troubles.length > 0 && (
 				<section id="troubles" aria-labelledby="troubles-title" className="mt-10">
 					<h4 id="troubles-title" className={subTitle}>
-						이런 문제를 풀었어요
+						풀었던 문제
 					</h4>
-					<ol className="mt-2 divide-y divide-pf-gray-200">
+					<ol className="mt-3 divide-y divide-pf-line">
 						{troubles.map(trouble => (
-							<li key={trouble.problem} className="py-5">
-								<p className="break-keep text-[16px] font-bold leading-[1.5] text-pf-gray-900">
+							<li key={trouble.problem} data-testid="trouble" className="py-8 first:pt-2 last:pb-0">
+								<h5 className="break-keep text-[19px] font-bold leading-[1.5] tracking-[-0.01em] text-pf-gray-900">
 									{trouble.problem}
 									{trouble.basis === 'draft' && <DraftBadge />}
-								</p>
-								<p className="mt-1 break-keep text-[15px] leading-[1.7] text-pf-gray-700">{trouble.fix}</p>
+								</h5>
+								{trouble.diagram && <SequenceDiagram diagram={trouble.diagram} />}
+								<div data-testid="trouble-fix" className="mt-5">
+									<Paragraphs text={trouble.fix} className="text-[16px] leading-[1.75] text-pf-gray-800" />
+								</div>
 							</li>
 						))}
 					</ol>

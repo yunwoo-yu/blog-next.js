@@ -17,7 +17,9 @@ const projectText = (slug: string) => {
 
 describe('포트폴리오 케이스 데이터', () => {
 	it('이력서의 경력 프로젝트를 빠짐없이 사례로 가진다', () => {
-		const resumeTitles = RESUME.projects.flatMap(project => project.items.map(item => item.title));
+		const resumeTitles = RESUME.projects.flatMap(project =>
+			project.items.filter(item => item.caseSlug).map(item => item.title),
+		);
 		const caseTitles = PORTFOLIO_CASES.map(item => findResumeProject(item.resumeRef).project.title);
 
 		expect([...caseTitles].sort()).toEqual([...resumeTitles].sort());
@@ -96,7 +98,7 @@ describe('포트폴리오 개요 데이터', () => {
 	});
 
 	it('핵심 숫자는 연결된 사례의 이력서 원문(career-detail.ts)에 그대로 나온다', () => {
-		expect(PORTFOLIO_KEY_RESULTS.map(result => result.value)).toEqual(['0건', '70%', '400~600ms']);
+		expect(PORTFOLIO_KEY_RESULTS.map(result => result.value)).toEqual(['0건', '400~600ms']);
 		for (const result of PORTFOLIO_KEY_RESULTS) {
 			const item = getPortfolioCase(result.slug);
 

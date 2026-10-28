@@ -39,6 +39,20 @@ describe('사례 스토리 데이터', () => {
 		expect(isVisible('resume', 'production')).toBe(true);
 	});
 
+	it('코드·커밋으로 확인한 문장(code)은 운영 빌드에서도 보인다', () => {
+		expect(isVisible('code', 'production')).toBe(true);
+		expect(isVisible('code', 'development')).toBe(true);
+	});
+
+	it('사례마다 풀었던 문제가 있고 문제 문장은 사례 안에서 겹치지 않는다', () => {
+		for (const story of STORIES) {
+			const problems = story.troubles.map(trouble => trouble.problem);
+
+			expect(problems.length, story.slug).toBeGreaterThan(0);
+			expect(new Set(problems).size, story.slug).toBe(problems.length);
+		}
+	});
+
 	it('없는 slug 는 undefined 를 돌려준다', () => {
 		expect(getStory('nope')).toBeUndefined();
 		expect(getStory('wellomarket-checkout')?.slug).toBe('wellomarket-checkout');

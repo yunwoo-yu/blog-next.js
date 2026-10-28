@@ -9,8 +9,9 @@ const detailProjects = CAREER_DETAIL.flatMap(career =>
 	),
 );
 
+/** 포트폴리오 사례가 있는 이력서 항목만(이력서에만 싣는 항목은 상세 원문이 없다). */
 const resumeItems = RESUME.projects.flatMap(({ organization, service, items }) =>
-	items.map(item => ({ organization, service, item })),
+	items.filter(item => item.caseSlug).map(item => ({ organization, service, item })),
 );
 
 describe('getCareerProjects', () => {
@@ -108,6 +109,15 @@ describe('포트폴리오 상세 원문과 이력서의 일치', () => {
 
 			expect(found, item.title).toBeDefined();
 			expect(found?.resumeRef.project, item.title).toBe(item.title);
+		}
+	});
+
+	it('사례 slug 가 없는 이력서 전용 항목은 어느 포트폴리오 사례 제목과도 겹치지 않는다', () => {
+		const caseTitles = PORTFOLIO_CASES.map(item => item.resumeRef.project);
+
+		for (const { items } of RESUME.projects) {
+			for (const item of items.filter(entry => !entry.caseSlug))
+				expect(caseTitles, item.title).not.toContain(item.title);
 		}
 	});
 

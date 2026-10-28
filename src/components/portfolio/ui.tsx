@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 
+import { getCaseCover } from '@/portfolio/covers';
 import type { ServiceScreen } from '@/portfolio/exhibits';
 import { cn } from '@/utils/utils';
 
@@ -10,6 +11,9 @@ import { cn } from '@/utils/utils';
 
 export const FOCUS_RING =
 	'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pf-blue focus-visible:ring-offset-2 focus-visible:ring-offset-white';
+
+/** 파랑 면 버튼의 공통 색(흰 글자). 호버는 한 단계 진한 파랑. */
+export const PRIMARY_BUTTON_CLASS = 'bg-pf-blue-700 text-white hover:bg-[#1957c2]';
 
 /** 본문 크기의 링크. 파랑 500 은 본문 크기에서 대비가 모자라 700 을 쓰고 밑줄로 링크임을 드러낸다. */
 export const TEXT_LINK_CLASS = 'font-medium text-pf-blue-700 underline underline-offset-4 hover:no-underline';
@@ -50,14 +54,26 @@ export const ListHeader = ({ title, count, id }: { title: string; count?: number
 	</h4>
 );
 
-/** 56px 둥근 썸네일. 공개 화면 캡처가 없으면 회색 면. 제목이 옆에 있으므로 장식으로 둔다. */
-export const Thumbnail = ({ screen }: { screen?: ServiceScreen }) => (
-	<span
-		aria-hidden="true"
-		className="relative block size-14 shrink-0 overflow-hidden rounded-[14px] border border-pf-line bg-pf-gray-100">
-		{screen && <Image src={screen.src} alt="" fill sizes="56px" className="object-cover object-left-top" />}
-	</span>
-);
+/** 56px 둥근 썸네일. 공개 화면 캡처가 없으면 사례별 아이콘 면. 제목이 옆에 있으므로 장식으로 둔다. */
+export const Thumbnail = ({ screen, slug }: { screen?: ServiceScreen; slug?: string }) => {
+	const cover = slug ? getCaseCover(slug) : undefined;
+	const Icon = cover?.icon;
+
+	return (
+		<span
+			aria-hidden="true"
+			className={cn(
+				'relative flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-[14px] border border-pf-line',
+				screen || !cover ? 'bg-pf-gray-100' : cover.tone,
+			)}>
+			{screen ? (
+				<Image src={screen.src} alt="" fill sizes="56px" className="object-cover object-left-top" />
+			) : (
+				Icon && <Icon size={26} strokeWidth={2} />
+			)}
+		</span>
+	);
+};
 
 interface ListRowProps {
 	title: ReactNode;
@@ -81,7 +97,13 @@ export const ListRow = ({ title, description, href, leading, extra }: ListRowPro
 				)}
 				{extra}
 			</span>
-			{href && <ChevronRight aria-hidden="true" size={20} className="shrink-0 text-pf-gray-400" />}
+			{href && (
+				<ChevronRight
+					aria-hidden="true"
+					size={20}
+					className="shrink-0 text-pf-gray-400 transition-transform duration-200 ease-in-out group-hover:translate-x-0.5"
+				/>
+			)}
 		</>
 	);
 
@@ -91,7 +113,7 @@ export const ListRow = ({ title, description, href, leading, extra }: ListRowPro
 				<Link
 					href={href}
 					className={cn(
-						'-mx-3 flex min-h-[72px] items-center gap-4 rounded-2xl px-3 py-3 transition-colors duration-200 ease-in-out hover:bg-pf-gray-50 active:bg-pf-gray-100',
+						'group -mx-3 flex min-h-[72px] items-center gap-4 rounded-2xl px-3 py-3 transition-colors duration-200 ease-in-out hover:bg-pf-gray-50 active:bg-pf-gray-100',
 						FOCUS_RING,
 					)}>
 					{body}

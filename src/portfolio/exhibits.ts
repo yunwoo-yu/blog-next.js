@@ -122,7 +122,7 @@ const WELLO_MARKET_PC: ServiceScreen = {
 	alt: '웰마켙 공개 홈 화면. 상단 내비게이션과 기부 배너, 지역 상품 카드가 보입니다.',
 	device: 'desktop',
 	kind: 'public-live',
-	caption: '웰마켙 공개 홈, 2026-10-07 촬영. 주문·결제 화면이 아니며 작업 당시 화면과 다를 수 있습니다.',
+	caption: '웰마켙 공개 홈',
 };
 
 const WELLO_SEARCH_PC: ServiceScreen = {
@@ -132,7 +132,7 @@ const WELLO_SEARCH_PC: ServiceScreen = {
 	alt: 'Wello 통합검색 PC 화면. 검색창과 카테고리 선택, 아티클 결과 목록이 보입니다.',
 	device: 'desktop',
 	kind: 'public-live',
-	caption: 'Wello 공개 통합검색, 2026-10-07 촬영. 개편 당시 화면과 다를 수 있습니다.',
+	caption: 'Wello 공개 통합검색',
 };
 
 const WELLO_HOME_MOBILE: ServiceScreen = {
@@ -142,7 +142,7 @@ const WELLO_HOME_MOBILE: ServiceScreen = {
 	alt: 'Wello 홈 모바일 화면. 상단 검색·알림 아이콘과 서비스 바로가기, 정책 카드가 보입니다.',
 	device: 'mobile',
 	kind: 'public-live',
-	caption: 'Wello 공개 모바일 홈, 2026-10-07 촬영.',
+	caption: 'Wello 공개 모바일 홈.',
 };
 
 const WELLO_HOME_PC: ServiceScreen = {
@@ -152,7 +152,7 @@ const WELLO_HOME_PC: ServiceScreen = {
 	alt: 'Wello 홈 PC 화면. 왼쪽 내비게이션 아래 서비스 바로가기 아이콘과 피드, 오른쪽 안내 영역의 3단 레이아웃이 보입니다.',
 	device: 'desktop',
 	kind: 'public-live',
-	caption: 'Wello 공개 홈 PC 화면, 2026-10-12 촬영. PC 레이아웃 확장 이후의 현재 화면이며 당시와 다를 수 있습니다.',
+	caption: 'Wello 공개 홈 PC 화면',
 };
 
 const WELLO_SEARCH_MOBILE: ServiceScreen = {
@@ -162,7 +162,7 @@ const WELLO_SEARCH_MOBILE: ServiceScreen = {
 	alt: 'Wello 통합검색 모바일 화면. 검색창 오른쪽에 필터 아이콘이 있고 아래에 아티클 결과 목록이 보입니다.',
 	device: 'mobile',
 	kind: 'public-live',
-	caption: 'Wello 공개 통합검색 모바일 화면, 2026-10-12 촬영. 필터는 PC 사이드바 대신 드로어로 열립니다.',
+	caption: 'Wello 공개 통합검색 모바일 화면. 필터는 PC 사이드바 대신 드로어로 열립니다.',
 };
 
 const WELLO_MARKET_LIST_PC: ServiceScreen = {
@@ -172,7 +172,7 @@ const WELLO_MARKET_LIST_PC: ServiceScreen = {
 	alt: '웰마켙 PC 상품 목록 화면. 기부 안내 배너와 지역 상품 카드가 보입니다.',
 	device: 'desktop',
 	kind: 'public-live',
-	caption: '웰마켙 공개 상품 목록, 2026-10-12 촬영. 주문·결제 화면이 아니며 로그인 없이 볼 수 있는 화면입니다.',
+	caption: '웰마켙 공개 상품 목록',
 };
 
 const WELLO_MARKET_PRODUCT_PC: ServiceScreen = {
@@ -183,7 +183,7 @@ const WELLO_MARKET_PRODUCT_PC: ServiceScreen = {
 	device: 'desktop',
 	kind: 'public-live',
 	caption:
-		'웰마켙 공개 상품 상세, 2026-10-12 촬영. 웰포인트 혜택이 결제 금액에 더해지는 지점입니다. 결제 화면은 로그인이 필요해 싣지 않았습니다.',
+		'웰마켙 공개 상품 상세. 웰포인트 혜택이 결제 금액에 더해지는 지점입니다. 결제 화면은 로그인이 필요해 싣지 않았습니다.',
 };
 
 const WELLO_MARKET_MOBILE: ServiceScreen = {
@@ -193,7 +193,7 @@ const WELLO_MARKET_MOBILE: ServiceScreen = {
 	alt: '웰마켙 모바일 홈 화면. 상단 장바구니 아이콘, 기부 안내 배너와 상품 이미지, 하단 탭 바가 보입니다.',
 	device: 'mobile',
 	kind: 'public-live',
-	caption: '웰마켙 공개 모바일 홈, 2026-10-12 촬영.',
+	caption: '웰마켙 공개 모바일 홈.',
 };
 
 const CORE_EXHIBITS: Exhibit[] = [
@@ -207,12 +207,12 @@ const CORE_EXHIBITS: Exhibit[] = [
 		nodes: [
 			{ id: 'cart', label: '주문서', layer: 0, col: 0 },
 			{ id: 'calc', label: '화면 금액 계산', layer: 0, col: 1 },
-			{ id: 'user', label: '주문 내역', layer: 0, col: 3 },
+			{ id: 'user', label: '배송조회·리뷰', layer: 0, col: 3 },
 			{ id: 'benefit', label: '쿠폰·웰포인트', layer: 1, col: 0 },
 			{ id: 'api', label: '체크아웃 API', layer: 1, col: 1 },
 			{ id: 'order', label: '주문 상태', layer: 1, col: 2 },
-			{ id: 'admin', label: '운영 어드민', layer: 1, col: 3 },
-			{ id: 'pg', label: 'NICEPAY', layer: 2, col: 1 },
+			{ id: 'admin', label: '입점업체 어드민', layer: 1, col: 3 },
+			{ id: 'pg', label: '결제사', layer: 2, col: 1 },
 		],
 		edges: {
 			before: [
@@ -252,27 +252,33 @@ const CORE_EXHIBITS: Exhibit[] = [
 			],
 			after: [
 				{ title: '주문서', caption: '쿠폰·포인트 사용 내역을 체크아웃 API에 전달합니다.' },
-				{ title: '금액 확정', caption: 'API가 최종 결제 금액을 확정합니다. 화면 계산값은 참고용입니다.' },
-				{ title: '결제 승인', caption: 'API가 확정한 금액만 NICEPAY에 전달합니다.' },
+				{
+					title: '금액 확정',
+					caption: 'API가 최종 결제 금액을 확정하고, 결제 버튼을 누르면 한 번 더 호출해 재고와 쿠폰을 다시 검증합니다.',
+				},
+				{
+					title: '결제 승인',
+					caption: '서버가 확정한 금액만 결제사에 전달하고, 재고 오류와 인증 실패는 원인별 안내로 이어집니다.',
+				},
 				{
 					title: '주문 상태',
-					caption:
-						'결제 승인·배송·취소·반품·환불을 하나의 주문 상태로 잇고, 사용자 화면과 어드민이 같은 상태를 봅니다.',
+					caption: '서버 주문 상태 하나로 구매 후 버튼을 정하고, 입점업체 어드민도 같은 상태를 봅니다.',
 				},
 			],
 		},
 		ownedParts: [
 			'쿠폰·포인트 내역을 체크아웃 API로 전달하는 흐름',
-			'API가 확정한 금액만 PG로 보내는 결제 연동',
+			'서버가 확정한 금액만 결제사로 보내는 결제 연동과 결제 직전 재검증',
 			'인증 실패·재고 오류의 원인별 안내와 장바구니 재선택 연결',
-			'배송·취소·반품·환불 화면과 운영 어드민이 같은 서버 주문 상태 코드를 쓰도록 맞춘 흐름',
+			'서버 주문 상태 기반 구매 후 버튼, 택배 연동사별 배송 조회, 리뷰 작성',
+			'입점업체 어드민: 업체 목록·등록·상세, 반품 상태 패널, 역할별 접근, 개인정보 확인 모달',
 		],
 		callouts: {
-			role: '주문서부터 결제 승인, 배송, 취소·반품·환불, 운영 어드민까지 주문·결제 전 과정을 구축했습니다.',
+			role: '결제부터 배송조회·배송완료·리뷰 작성까지 사용자 화면과 입점업체 어드민을 구축했습니다. 상품 상세·장바구니·주문내역은 포함하지 않습니다.',
 			problem:
 				'화면과 서버의 금액 계산이 다르면 PG 승인 금액이 어긋나고, 재고 소진·주문 만료·인증 실패에서도 다음 행동이 보여야 했습니다.',
 			decision:
-				'서버가 확정한 금액만 PG에 요청하도록 기준을 서버로 고정했습니다. 화면은 사용 내역만 보내고, 확정은 API가 합니다.',
+				'서버가 확정한 금액만 PG에 요청하도록 기준을 서버로 고정하고, 구매 후 버튼도 서버 상태 하나로 정했습니다.',
 			outcome: '2026.03 오픈 후 1개월간 결제 금액 관련 CS 문의와 API 에러 로그가 0건이었습니다.',
 			outcomeBasis: '이력서 기재 내용. 이 페이지에서 측정한 값이 아닙니다.',
 		},
@@ -291,8 +297,8 @@ const CORE_EXHIBITS: Exhibit[] = [
 		nodes: [
 			{ id: 'pc', label: 'PC 화면', labelBefore: '600px 고정폭', layer: 0, col: 0 },
 			{ id: 'search', label: '통합검색', layer: 0, col: 1 },
-			{ id: 'side', label: 'PC 사이드바', layer: 0, col: 2 },
-			{ id: 'drawer', label: '모바일 드로어', layer: 0, col: 3 },
+			{ id: 'side', label: 'PC 체크박스', layer: 0, col: 2 },
+			{ id: 'drawer', label: '모바일 칩', layer: 0, col: 3 },
 			{ id: 'url', label: 'URL 쿼리', layer: 1, col: 1 },
 			{ id: 'state', label: '공통 필터 상태', layer: 1, col: 2 },
 			{ id: 'c1', label: '정책', layer: 2, col: 0 },
@@ -363,23 +369,36 @@ const CORE_EXHIBITS: Exhibit[] = [
 				{ title: '재진입', caption: '개선 전 화면에는 통합검색이 없어 각 메뉴를 다시 찾아 들어갑니다.' },
 			],
 			after: [
-				{ title: '진입', caption: '주요 화면을 PC 레이아웃으로 확장했습니다.' },
-				{ title: '검색어', caption: '통합검색에서 입력한 검색어가 URL과 동기화됩니다.' },
-				{ title: '카테고리·필터', caption: 'PC 사이드바와 모바일 드로어가 같은 필터 상태 로직을 씁니다.' },
-				{ title: '공유·복원', caption: '공유·새로고침·상세에서 돌아온 뒤에도 URL에서 같은 검색 조건이 복원됩니다.' },
+				{
+					title: '진입',
+					caption: '주요 화면을 필터·본문·보조 세 영역의 PC 레이아웃으로 확장하고 본문은 600px를 유지합니다.',
+				},
+				{
+					title: '검색어',
+					caption: '주소에서 검색 조건을 복원하고, 검색어 변경은 기록을 남기며 필터·정렬 변경은 기록을 교체합니다.',
+				},
+				{
+					title: '카테고리·필터',
+					caption: 'PC 체크박스와 모바일 칩이 같은 필터 상태를 쓰고, 상위 지역이 바뀌면 하위 지역을 비웁니다.',
+				},
+				{
+					title: '공유·복원',
+					caption: '공유·새로고침·뒤로가기 뒤에도 같은 조건이 복원되고, 잘못된 값은 기본값으로 돌아옵니다.',
+				},
 			],
 		},
 		ownedParts: [
 			'주요 화면의 PC 레이아웃 확장',
 			'카테고리별로 찾는 통합검색',
-			'검색어·카테고리·필터와 URL 동기화',
-			'PC 사이드바·모바일 드로어가 공유하는 필터 상태 로직',
+			'검색어·카테고리·필터·정렬·페이지와 URL 동기화(검색어 push, 필터·정렬 replace)',
+			'PC 체크박스·모바일 칩이 공유하는 필터 상태와 상위 지역 변경 시 하위 지역 초기화',
+			'잘못된 페이지·정렬 값의 기본값 복구',
 		],
 		callouts: {
 			role: 'PC 레이아웃 전환과 통합검색의 화면·상태·URL 동기화를 구축했습니다.',
 			problem: 'PC에서도 600px 고정폭 화면이 보였고, 정책·답례품·동네소식·기부사업은 메뉴마다 흩어져 있었습니다.',
 			decision:
-				'화면을 PC로 확장하고, 검색 조건을 URL에 두어 공유·재진입이 되게 했습니다. 필터 상태는 PC와 모바일이 함께 씁니다.',
+				'화면을 PC로 확장하고 검색 조건을 URL에 두어 공유·재진입이 되게 했으며, 필터 상태는 PC와 모바일이 함께 씁니다.',
 			outcome: '개편 전후 2주 GA4 단순 전후 비교에서 데스크톱 평균 참여 시간이 약 20% 증가했습니다.',
 			outcomeBasis: '이력서 기재 내용(GA4 2주 단순 전후 비교). 이 페이지에서 측정한 값이 아닙니다.',
 		},
@@ -400,7 +419,7 @@ const CORE_EXHIBITS: Exhibit[] = [
 			{ id: 'ui', label: '디자인 시스템 Modal·Button', labelBefore: 'Chakra 글로벌 컴포넌트', layer: 0, col: 0 },
 			{ id: 'form', label: '폼 화면', layer: 0, col: 2 },
 			{ id: 'schema', label: 'Zod 스키마', labelBefore: 'yup 스키마', layer: 1, col: 0 },
-			{ id: 'resolver', label: '폼 연결 어댑터', labelBefore: 'yupResolver', layer: 1, col: 2 },
+			{ id: 'resolver', label: '직접 만든 폼 resolver', labelBefore: 'yupResolver', layer: 1, col: 2 },
 			{ id: 'libs', label: 'Embla·Pointer Events', labelBefore: 'Swiper·react-swipeable', layer: 1, col: 3 },
 			{ id: 'rhf', label: 'react-hook-form 오류 형식', layer: 2, col: 0 },
 			{ id: 'strip', label: '선언되지 않은 필드 제거', layer: 2, col: 2 },
@@ -451,39 +470,37 @@ const CORE_EXHIBITS: Exhibit[] = [
 			after: [
 				{
 					title: '컴포넌트 대체',
-					caption: 'Chakra 의존 글로벌 컴포넌트를 공통 디자인 시스템의 Modal·Button 조합으로 대체합니다.',
+					caption: 'Chakra 의존 컴포넌트를 공통 디자인 시스템의 Modal·Button 조합으로 대체합니다.',
 				},
 				{
 					title: '서드파티 교체',
-					caption: '캐러셀은 Embla Carousel로, 스와이프는 브라우저 Pointer Events 직접 구현으로 바꿨습니다.',
+					caption: '캐러셀은 Embla Carousel로, 패널 크기 조절은 Pointer Events로 직접 만듭니다.',
 				},
 				{
 					title: '필드 제거',
-					caption: 'yup을 Zod로 옮기자 Zod가 스키마에 선언되지 않은 필드를 제출 데이터에서 제거합니다.',
+					caption: 'yup을 Zod로 옮기자 선언되지 않은 필드가 제출 데이터에서 사라집니다.',
 				},
 				{
 					title: '해결',
-					caption:
-						'느슨한 객체 스키마로 필드를 보존하고, 입력·출력 타입이 다른 스키마를 받는 어댑터로 폼 연결을 통일합니다.',
+					caption: '스키마를 looseObject로 선언해 필드를 보존하고, 직접 만든 resolver로 폼과 연결합니다.',
 				},
 			],
 		},
 		ownedParts: [
-			'Chakra 의존 글로벌 컴포넌트의 공통 디자인 시스템 대체',
-			'Swiper→Embla Carousel, react-swipeable→Pointer Events 직접 구현',
-			'yup 스키마의 Zod 전환과 느슨한 객체 스키마로 필드 보존',
-			'입력·출력 타입이 다른 스키마를 받는 폼 연결 어댑터',
+			'Chakra 의존 컴포넌트의 공통 디자인 시스템 대체',
+			'Swiper를 Embla Carousel로, 스와이프를 Pointer Events 직접 구현으로 교체',
+			'yup 스키마의 Zod 전환과 looseObject 스키마로 필드 보존',
+			'입력·출력 타입이 다른 스키마를 받고 오류를 중첩 구조로 바꾸는 폼 연결 resolver',
 		],
 		callouts: {
-			role: 'Wello-biz의 Chakra UI·yup과 서드파티 UI 라이브러리를 걷어내고 UI와 검증 기준을 공통 디자인 시스템·Zod로 맞췄습니다. Chakra 의존 컴포넌트 137개 파일, legacy-assets 123개 파일을 정리했습니다.',
+			role: 'Wello-biz의 Chakra UI·yup과 서드파티 UI 라이브러리를 걷어내고 UI와 검증 기준을 공통 디자인 시스템·Zod로 맞췄습니다.',
 			problem:
 				'Chakra UI 기반 공통 컴포넌트와 yup 검증, 여러 서드파티 UI 라이브러리가 섞여 있어, 공통 디자인 시스템과 Zod를 쓰는 모노레포의 다른 앱과 UI·검증 방식이 갈려 있었습니다.',
 			decision:
-				'컴포넌트는 공통 디자인 시스템으로, 캐러셀과 스와이프는 더 단순한 구현으로 바꾸고, Zod가 지우는 필드는 느슨한 객체 스키마로 보존했습니다.',
+				'컴포넌트는 공통 디자인 시스템으로, 캐러셀과 스와이프는 더 단순한 구현으로 바꾸고, 사라지는 필드는 looseObject 스키마로 보존했습니다.',
 			outcome:
-				'wello-biz에서 Chakra UI·yup·Swiper·react-swipeable·react-feather 의존성이 사라지고 검증이 Zod 하나로 통일돼 번들이 줄었습니다.',
-			outcomeBasis:
-				'이력서 기재 내용. 번들 감소는 라이브러리 단위 추정(제거분 gzip 약 137KB, 순감소 110KB 이상)이며 앱 번들 실측값이 아닙니다.',
+				'wello-biz 소스에 Chakra UI·yup·Swiper를 직접 가져오는 코드가 남아 있지 않고, UI는 공통 디자인 시스템으로 검증은 Zod 하나로 통일됐습니다.',
+			outcomeBasis: '이력서 기재 내용. 번들 크기는 실측하지 않아 수치를 싣지 않았습니다.',
 		},
 		screens: {},
 		reconstructionNote: '내부 코드 전환 작업이라 공개 캡처가 없어 구조를 다시 그린 도식입니다. 실제 화면이 아닙니다.',
@@ -549,25 +566,28 @@ const CORE_EXHIBITS: Exhibit[] = [
 			after: [
 				{ title: '진입점 분리', caption: '앱 진입점을 lazy loading과 Suspense 경계로 나눕니다.' },
 				{ title: '자산 이전', caption: '아바타 파츠·JSON 자산을 S3·CDN 경로에서 불러오도록 옮깁니다.' },
-				{ title: '역할 분리', caption: '3D 뷰와 편집 상태를 역할별 컴포넌트·훅으로 나눕니다.' },
+				{
+					title: '역할 분리',
+					caption: '편집 화면이 보일 대상을 계산하고 3D 뷰는 적용만 하며, 저장 화면은 별도 썸네일 뷰를 씁니다.',
+				},
 				{
 					title: '결과',
-					caption:
-						'첫 화면 표시가 Lighthouse FCP 기준 400~600ms가 됐고, 기존 동작을 전부 수정하지 않고도 편집 기능을 확장할 수 있게 됐습니다.',
+					caption: '첫 화면 표시가 Lighthouse FCP 기준 400~600ms가 됐고 편집 기능을 확장하기 쉬워졌습니다.',
 				},
 			],
 		},
 		ownedParts: [
 			'앱 진입점의 lazy loading·Suspense 경계 분리',
 			'아바타 파츠·JSON 자산의 S3·CDN 이전',
-			'3D 뷰와 편집 상태를 역할별 컴포넌트·훅으로 분리',
+			'3D 뷰와 편집 상태를 역할별 컴포넌트·훅으로 분리(편집 화면이 데이터를 계산, 3D 뷰는 표시)',
+			'업로드 이미지의 텍스처 반영, 16MB·정사각형 검사',
 		],
 		callouts: {
 			role: '외주 업체에서 인수한 WebGL 아바타 서비스의 초기 진입과 구조를 개선했습니다.',
 			problem:
 				'3D 렌더링과 대용량 정적 자산이 진입을 막아 3초 이상 빈 화면이 보였고, 3D·편집 로직이 섞여 작은 변경도 위험했습니다.',
 			decision:
-				'진입점을 lazy loading·Suspense로 나누고 정적 자산을 CDN으로 옮겼으며, 3D와 편집의 변경 경계를 나눴습니다.',
+				'진입점과 정적 자산을 나누고, 편집 화면은 데이터를 계산하고 3D 뷰는 표시만 하도록 변경 경계를 나눴습니다.',
 			outcome: '첫 화면 표시를 Lighthouse FCP 기준 400~600ms로 단축했습니다.',
 			outcomeBasis: '이력서 기재 내용. 이 페이지에서 측정한 값이 아닙니다.',
 		},
@@ -580,8 +600,8 @@ const CORE_EXHIBITS: Exhibit[] = [
 export const EXHIBIT_ORDER = [
 	'wellomarket-checkout',
 	'wello-responsive-search',
-	'admin-session-refresh',
 	'wellobiz-chakra-zod',
+	'admin-session-refresh',
 	'donation-duplicate-guard',
 	'mydata-integration',
 	'ai-chatbot-cms',

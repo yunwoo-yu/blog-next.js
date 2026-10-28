@@ -11,7 +11,7 @@ interface CaseRowProps {
 	description?: ReactNode;
 }
 
-/** 사례 한 줄. 공개 화면 캡처가 있으면 썸네일로, 없으면 회색 면을 둔다. */
+/** 사례 한 줄. 공개 화면 캡처가 있으면 썸네일로, 없으면 사례별 아이콘 면을 둔다. */
 const CaseRow = ({ item, description }: CaseRowProps) => {
 	const exhibit = getExhibit(item.slug);
 	const screen = exhibit && getStageScreen(exhibit, 'after');
@@ -19,7 +19,7 @@ const CaseRow = ({ item, description }: CaseRowProps) => {
 	return (
 		<ListRow
 			href={buildCasePath(item.slug)}
-			leading={<Thumbnail screen={screen} />}
+			leading={<Thumbnail screen={screen} slug={item.slug} />}
 			title={item.title}
 			description={description ?? [item.service, item.period].filter(Boolean).join(' · ')}
 		/>

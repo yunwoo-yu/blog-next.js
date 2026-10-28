@@ -4,14 +4,18 @@ import type { ReactNode } from 'react';
 
 import { renderRichText } from '@/components/resume/highlight';
 import { getAdjacentCases, type PortfolioCase } from '@/portfolio/cases';
+import { getCaseCover } from '@/portfolio/covers';
 import { getExhibit } from '@/portfolio/exhibits';
 import { PORTFOLIO_PATH } from '@/portfolio/links';
+import { PORTFOLIO_KEY_RESULTS } from '@/portfolio/overview';
 import { getStory } from '@/portfolio/stories';
 import { cn } from '@/utils/utils';
 
+import CaseCover from './CaseCover';
+import CaseGlance from './CaseGlance';
 import CaseRow from './CaseRow';
-import CaseScreens from './CaseScreens';
 import CaseStory from './CaseStory';
+import Paragraphs from './Paragraphs';
 import { Column, FOCUS_RING, SectionTitle, TEXT_LINK_CLASS } from './ui';
 
 interface CaseStudyProps {
@@ -22,19 +26,21 @@ interface CaseStudyProps {
 
 /** 이력서 원문의 문제·기여·결과를 그대로 싣는 섹션 제목. id 는 예전에 공개한 앵커(#problem 등)를 유지한다. */
 const STAGE_TITLES = {
-	problem: '어떤 문제였나요',
-	contribution: '어떻게 풀었나요',
-	result: '결과가 어땠나요',
+	problem: '문제',
+	contribution: '해결',
+	result: '결과',
 } as const;
 
 const CaseStudy = ({ item, children }: CaseStudyProps) => {
 	const { prev, next } = getAdjacentCases(item.slug);
 	const exhibit = getExhibit(item.slug);
 	const story = getStory(item.slug);
-	const meta = [item.organization, item.service, item.period].filter(Boolean).join(' · ');
 	const resultStage = item.stages.find(stage => stage.id === 'result');
-	// 상단 결과 박스와 같은 문장이면 아래에 같은 말을 한 번 더 쓰지 않는다. 박스가 #result 앵커를 맡는다.
-	const resultInBox = Boolean(exhibit && resultStage && resultStage.text.trim() === exhibit.callouts.outcome.trim());
+	const outcome = exhibit?.callouts.outcome.trim();
+	// 결과 섹션 본문에 callouts.outcome 문장이 이미 들어 있으면 한 번만 보여 주고, 아니면 결과 요약으로 본문 위에 덧붙인다.
+	const outcomeIsExtra = Boolean(outcome && resultStage && !resultStage.text.includes(outcome));
+	const keyResult = PORTFOLIO_KEY_RESULTS.find(result => result.slug === item.slug);
+	const { tone } = getCaseCover(item.slug);
 
 	return (
 		<Column className="pb-24 pt-4">
@@ -50,45 +56,44 @@ const CaseStudy = ({ item, children }: CaseStudyProps) => {
 
 			<article className="mt-6">
 				<header>
-					<h2 className="break-keep text-[28px] font-bold leading-[1.4] tracking-[-0.02em] text-pf-gray-900 md:text-[32px]">
+					<p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[14px] text-pf-gray-700">
+						<span className={cn('rounded-md px-2 py-0.5 font-bold', tone)}>{item.organization}</span>
+						<span>{[item.service, item.period].filter(Boolean).join(' · ')}</span>
+					</p>
+					<h2 className="mt-3 break-keep text-[28px] font-bold leading-[1.4] tracking-[-0.02em] text-pf-gray-900 md:text-[32px]">
 						{item.title}
 					</h2>
-					<p className="mt-2 break-keep text-[15px] text-pf-gray-600">{meta}</p>
 				</header>
 
-				{exhibit && (
-					<section aria-label="결과" id={resultInBox ? 'result' : undefined} className="mt-8 scroll-mt-6">
-						<p className="break-keep rounded-2xl bg-pf-blue-50 px-5 py-4 text-[17px] font-bold leading-[1.6] text-pf-blue-700">
-							{exhibit.callouts.outcome}
-						</p>
-						<p className="mt-2 break-keep text-[13px] leading-[1.5] text-pf-gray-600">
-							근거: {exhibit.callouts.outcomeBasis}
-						</p>
-					</section>
-				)}
+				<CaseCover slug={item.slug} />
 
-				<p className="mt-8 break-keep text-[17px] leading-[1.7] text-pf-gray-800">{item.summary}</p>
+				<CaseGlance summary={item.summary} keyResult={keyResult} />
 
-				{item.stages
-					.filter(stage => !(resultInBox && stage.id === 'result'))
-					.map(stage => (
-						<section key={stage.id} id={stage.id} aria-labelledby={`${stage.id}-title`} className="mt-14 scroll-mt-6">
-							<SectionTitle id={`${stage.id}-title`}>{STAGE_TITLES[stage.id]}</SectionTitle>
-							<p className="mt-4 break-keep text-[17px] leading-[1.75] text-pf-gray-800">
-								{renderRichText(stage.text, stage.highlights, stage.links, TEXT_LINK_CLASS)}
+				{item.stages.map(stage => (
+					<section key={stage.id} id={stage.id} aria-labelledby={`${stage.id}-title`} className="mt-14 scroll-mt-6">
+						<SectionTitle id={`${stage.id}-title`}>{STAGE_TITLES[stage.id]}</SectionTitle>
+						{stage.id === 'result' && outcomeIsExtra && (
+							<p className="mt-4 break-keep rounded-2xl bg-pf-blue-50 px-5 py-4 text-[17px] font-bold leading-[1.6] text-pf-blue-700">
+								{exhibit?.callouts.outcome}
 							</p>
-							{stage.id === 'contribution' && <CaseStory story={story} />}
-						</section>
-					))}
-
-				{exhibit && <CaseScreens exhibit={exhibit} />}
+						)}
+						<div className="mt-4">
+							<Paragraphs
+								text={stage.text}
+								className="text-[17px] leading-[1.75] text-pf-gray-800"
+								render={paragraph => renderRichText(paragraph, stage.highlights, stage.links, TEXT_LINK_CLASS)}
+							/>
+						</div>
+						{stage.id === 'contribution' && <CaseStory story={story} />}
+					</section>
+				))}
 
 				{children}
 			</article>
 
 			{(prev || next) && (
 				<nav aria-labelledby="other-cases-title" className="mt-16">
-					<SectionTitle id="other-cases-title">다른 프로젝트도 볼 수 있어요</SectionTitle>
+					<SectionTitle id="other-cases-title">다른 프로젝트</SectionTitle>
 					<ul className="mt-3">
 						{prev && <CaseRow item={prev} description={`이전 프로젝트 · ${prev.service}`} />}
 						{next && <CaseRow item={next} description={`다음 프로젝트 · ${next.service}`} />}
