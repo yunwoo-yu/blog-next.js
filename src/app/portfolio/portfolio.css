@@ -187,6 +187,11 @@
   flex-direction: column;
 }
 
+/* 높이가 고정된 쪽 안에서 블록이 줄어들며 겹치지 않게 한다. */
+.pf-cover > * {
+  flex-shrink: 0;
+}
+
 .pf-cover header {
   padding-bottom: 7mm;
   border-bottom: 0.75pt solid var(--pp-ink);
@@ -263,6 +268,11 @@
   gap: 5mm;
 }
 
+/* `.pf-print ul` 의 margin 초기화보다 우선하도록 선택자를 맞춘다. */
+.pf-print .pf-stats.pf-cover-block {
+  margin-top: 6mm;
+}
+
 .pf-stat {
   padding: 4mm 5mm;
   border: 1pt solid var(--pp-ink);
@@ -290,7 +300,7 @@
 .pf-toc li {
   display: flex;
   gap: 2mm;
-  padding: 2.4mm 0;
+  padding: 2mm 0;
   border-top: 0.5pt solid var(--pp-rule);
   break-inside: avoid;
 }
