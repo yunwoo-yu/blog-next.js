@@ -6,6 +6,7 @@ import {
 	META_AUTHOR_NAME,
 	RESUME_PATH,
 	REVERSE_INFINITE_SCROLL_POST_URL,
+	WWW_BASE_URL,
 } from '@/constant';
 import RESUME, { formatMonths, getCareerMonths, getSkills } from '@/constant/resume';
 
@@ -19,6 +20,8 @@ export const PRINT_TITLE = `${META_AUTHOR_NAME}_프론트엔드_포트폴리오`
 /** 꼬리말에 찍는 문서 이름. */
 export const PRINT_FOOTER_LABEL = `${META_AUTHOR_NAME} · 프론트엔드 포트폴리오`;
 export const PRINT_ROLE = '프론트엔드 개발자';
+/** 표지 소개글의 둘째 문장. */
+export const PRINT_IDENTITY_CLAIM = '결제·검색·인증에서 상태 불일치를 줄이는 프론트엔드 흐름을 구현했습니다.';
 
 /** 수치의 출처 구분. 측정: 도구로 잰 값, 관측: 운영 중 직접 본 값, 전언: 다른 사람이 전한 값. */
 export const EVIDENCE_TAGS = ['측정', '관측', '전언'] as const;
@@ -36,7 +39,7 @@ export interface PrintFeatured {
 	tocPhrase: string;
 }
 
-export interface PrintOther {
+interface PrintOther {
 	slug: string;
 	line: string;
 }
@@ -74,7 +77,7 @@ export const PRINT_FEATURED: readonly PrintFeatured[] = [
 			'정산 완료 후 최신 납부 이력을 재조회하고, 앱·웹뷰·웹에서 같은 서버 조회 기준으로 완료 여부를 확인하도록 개선했습니다.',
 		evidence: { tag: '전언', text: '중복 기부 관련 CS 재문의 약 70% 감소 · CS 담당자 전언' },
 		limit:
-			'70%는 CS 담당자 전언이며 별도 집계 데이터는 없습니다. 이 기능은 중복 기부를 막는 것이 아니라 재확인한 뒤 사용자가 선택하게 합니다.',
+			'약 70%는 CS 담당자 전언이며 별도 집계 데이터는 없습니다. 이 기능은 중복 기부를 막는 것이 아니라 재확인한 뒤 사용자가 선택하게 합니다.',
 		tocPhrase: '웹뷰 이탈·복귀 판별',
 	},
 	{
@@ -196,7 +199,7 @@ export const pickPrintTroubles = <T extends { diagram?: Pick<SequenceDiagram, 's
 		.map(trouble => (trouble === withDiagram || !trouble.diagram ? trouble : { ...trouble, diagram: undefined }));
 };
 
-export interface PrintDecisionRow {
+interface PrintDecisionRow {
 	question: string;
 	chosen: { name: string; reason: string }[];
 	/** 검토했지만 고르지 않은 방법의 이름(첫 번째). 데이터에 있을 때만. */
@@ -222,7 +225,7 @@ export const getPrintTroubles = (slug: string) => pickPrintTroubles(getVisibleSt
 export const getPrintContacts = () => [
 	{ label: '이메일', value: CONTACT_EMAIL, href: `mailto:${CONTACT_EMAIL}` },
 	{ label: 'GitHub', value: GITHUB_URL, href: GITHUB_URL },
-	{ label: '블로그', value: BASE_URL, href: BASE_URL },
+	{ label: '블로그', value: WWW_BASE_URL, href: WWW_BASE_URL },
 	{ label: '이력서', value: `${BASE_URL}${RESUME_PATH}`, href: `${BASE_URL}${RESUME_PATH}` },
 ];
 
@@ -231,12 +234,6 @@ export const getPrintCareers = () =>
 	getPortfolioExperience().map(({ organization, period }) => ({ organization, period }));
 
 export const getPrintSkills = () => getSkills(RESUME.careers).slice(0, PRINT_SKILL_COUNT);
-
-const findResumeLinkTitle = (url: string) =>
-	RESUME.projects
-		.flatMap(project => project.items)
-		.flatMap(item => item.links ?? [])
-		.find(link => link.url === url)?.title;
 
 /** 마지막 쪽 "더 확인할 수 있는 기술 자료": 블로그 글과 오픈소스 PR. 문구는 이력서 원문에서 가져온다. */
 export const getPrintReferences = () => {
@@ -247,13 +244,11 @@ export const getPrintReferences = () => {
 	return [
 		{
 			label: '블로그',
-			title: findResumeLinkTitle(REVERSE_INFINITE_SCROLL_POST_URL) ?? REVERSE_INFINITE_SCROLL_POST_URL,
 			url: REVERSE_INFINITE_SCROLL_POST_URL,
 			point: '스크롤 위치 보정 방식 두 가지 비교',
 		},
 		{
 			label: '오픈소스',
-			title: 'Argo Workflows',
 			url: ARGO_WORKFLOWS_PR_URL,
 			point: typeof prText === 'string' || !prText ? 'Argo Workflows UI 기여 PR 머지' : prText.text,
 		},

@@ -19,6 +19,7 @@ import {
 	getTotalCareerDuration,
 	PRINT_FEATURED_SLUGS,
 	PRINT_FOOTER_LABEL,
+	PRINT_IDENTITY_CLAIM,
 	PRINT_MAX_DECISIONS,
 	PRINT_MAX_DIAGRAM_STEPS,
 	PRINT_MAX_TROUBLES,
@@ -77,6 +78,7 @@ describe('/portfolio/print', () => {
 		expect(getPrintContacts()).toHaveLength(4);
 		for (const skill of getPrintSkills()) expect(cover.textContent).toContain(skill);
 		expect(cover.textContent).toContain(`${RESUME.projects.length}개 서비스`);
+		expect(cover.textContent).toContain(PRINT_IDENTITY_CLAIM);
 	});
 
 	it('표지의 숫자 카드는 테두리형 2개이고 값은 사례의 출처 있는 수치와 일치한다', () => {
@@ -97,17 +99,16 @@ describe('/portfolio/print', () => {
 	it('표지 목차는 대표 사례 5개 + 그 밖의 작업이고 쪽 번호가 실제 쪽과 맞다', () => {
 		const { container } = render(<PortfolioPrintPage />);
 		const toc = Array.from(pageOf(container, 'cover').querySelectorAll<HTMLElement>('[data-toc-item]'));
-		const pages = getPrintPages();
 		const featured = getPrintFeatured();
 
 		expect(toc).toHaveLength(featured.length + 1);
 		for (const [index, entry] of featured.entries()) {
 			expect(toc[index].textContent).toContain(entry.item.title);
 			expect(toc[index].textContent).toContain(entry.tocPhrase);
-			expect(toc[index].querySelector('.pf-toc-page')?.textContent).toBe(String(pages.caseStarts[index]));
+			expect(toc[index].querySelector('.pf-toc-page')?.textContent).toBe(String([2, 4, 6, 8, 10][index]));
 		}
 		expect(toc[featured.length].textContent).toContain(`그 밖의 작업 ${getPrintOthers().length}건`);
-		expect(toc[featured.length].querySelector('.pf-toc-page')?.textContent).toBe(String(pages.others));
+		expect(toc[featured.length].querySelector('.pf-toc-page')?.textContent).toBe('12');
 		expect(pageOf(container, 'cover').textContent).toContain(PRINT_PORTFOLIO_URL);
 	});
 
@@ -173,7 +174,7 @@ describe('/portfolio/print', () => {
 				for (const figure of entry.evidence?.text.match(/\d[\d.,~]*\s?(?:건|%|ms|초)/g) ?? [])
 					expect(result.textContent, entry.slug).not.toContain(figure);
 				expect(result.textContent, entry.slug).not.toMatch(/없습니다|아닙니다|않았습니다/);
-				expect(within(page).getByRole('heading', { level: 4, name: '한계' }).parentElement?.textContent).toContain(
+				expect(within(page).getByRole('heading', { level: 3, name: '한계' }).parentElement?.textContent).toContain(
 					entry.limit,
 				);
 				expect(page.textContent).toContain(`${entry.item.title} (계속)`);

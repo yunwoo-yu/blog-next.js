@@ -74,7 +74,7 @@ const CASE_SOURCES: PortfolioCaseSource[] = [
 		slug: 'donation-duplicate-guard',
 		title: '외부 납부 환경의 중복 기부 재확인',
 		summary:
-			'외부 지로 화면에서 납부를 마치는 고향사랑기부에서, 진입 시 정산하고 결제 시점에 최신 완료 이력을 다시 조회해 사용자가 확인한 뒤 진행하게 했고, 중복 기부 관련 CS 재문의가 70% 감소했다고 CS 담당자가 전했습니다.',
+			'외부 지로 화면에서 납부를 마치는 고향사랑기부에서, 진입 시 정산하고 결제 시점에 최신 완료 이력을 다시 조회해 사용자가 확인한 뒤 진행하게 했고, 중복 기부 관련 CS 재문의가 약 70% 감소했다고 CS 담당자가 전했습니다.',
 		keywords: ['정산', '납부 식별값', '웹뷰', 'CS 재문의'],
 		resumeRef: { organization: ORGANIZATIONS.WELLO, service: 'Wello', project: '외부 납부 환경의 중복 기부 재확인' },
 	},

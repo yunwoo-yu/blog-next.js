@@ -73,7 +73,9 @@ const PrintCase = ({ item, entry, index }: PrintCaseProps) => {
 
 				{decisions.length > 0 && (
 					<section className="pf-block pf-keep" aria-labelledby={`${titleId}-reason`}>
-						<h4 id={`${titleId}-reason`}>선택 이유</h4>
+						<h3 id={`${titleId}-reason`} className="pf-subhead">
+							선택 이유
+						</h3>
 						<table className="pf-reasons" data-print-reasons>
 							<thead>
 								<tr>
@@ -135,7 +137,9 @@ const PrintCase = ({ item, entry, index }: PrintCaseProps) => {
 						</section>
 					)}
 					<section className="pf-limit" aria-labelledby={`${titleId}-limit`}>
-						<h4 id={`${titleId}-limit`}>한계</h4>
+						<h3 id={`${titleId}-limit`} className="pf-subhead">
+							한계
+						</h3>
 						<p>{entry.limit}</p>
 					</section>
 				</div>

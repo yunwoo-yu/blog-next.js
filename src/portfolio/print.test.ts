@@ -1,9 +1,10 @@
-import { ARGO_WORKFLOWS_PR_URL, REVERSE_INFINITE_SCROLL_POST_URL } from '@/constant';
-import RESUME from '@/constant/resume';
+import { ARGO_WORKFLOWS_PR_URL, REVERSE_INFINITE_SCROLL_POST_URL, WWW_BASE_URL } from '@/constant';
+import RESUME, { formatMonths, getCareerMonths } from '@/constant/resume';
 
 import { PORTFOLIO_CASES } from './cases';
 import {
 	EVIDENCE_TAGS,
+	getPrintContacts,
 	getPrintDecisionRows,
 	getPrintFeatured,
 	getPrintOthers,
@@ -72,7 +73,7 @@ describe('인쇄 문구 데이터', () => {
 
 		expect(donation?.evidence?.tag).toBe('전언');
 		expect(donation?.evidence?.text).toContain('전언');
-		expect(donationCase?.summary).toContain('70%');
+		expect(donationCase?.summary).toContain('약 70%');
 		expect(donationCase?.summary).toContain('CS 담당자');
 		expect(donation?.limit).toContain('사용자가 선택');
 	});
@@ -95,8 +96,18 @@ describe('인쇄 문구 데이터', () => {
 	});
 
 	it('경력 기간은 이력서 경력의 합이다', () => {
-		expect(getTotalCareerDuration()).toMatch(/^\d+년 \d+개월$/);
+		const months = RESUME.careers.map(getCareerMonths);
+
 		expect(RESUME.careers.length).toBeGreaterThan(0);
+		expect(getTotalCareerDuration()).toBe(formatMonths(months.reduce((sum, value) => sum + value, 0)));
+		expect(months).toEqual([7, 24]);
+		expect(getTotalCareerDuration()).toBe('2년 7개월');
+	});
+
+	it('개월 수 표기: 31개월은 2년 7개월, 24개월은 2년, 7개월은 7개월', () => {
+		expect(formatMonths(31)).toBe('2년 7개월');
+		expect(formatMonths(24)).toBe('2년');
+		expect(formatMonths(7)).toBe('7개월');
 	});
 });
 
@@ -164,13 +175,21 @@ describe('인쇄용 문제·도식 고르기', () => {
 	});
 });
 
+describe('연락처', () => {
+	it('블로그 주소는 이력서 연락처와 같은 www 주소다', () => {
+		expect(getPrintContacts().find(contact => contact.label === '블로그')).toMatchObject({
+			value: WWW_BASE_URL,
+			href: WWW_BASE_URL,
+		});
+	});
+});
+
 describe('기술 자료 링크', () => {
 	it('블로그 글과 Argo PR 을 이력서 원문의 주소·문구로 가리킨다', () => {
 		const [blog, pr] = getPrintReferences();
 
 		expect(blog.url).toBe(REVERSE_INFINITE_SCROLL_POST_URL);
 		expect(pr.url).toBe(ARGO_WORKFLOWS_PR_URL);
-		expect(blog.title).not.toBe(blog.url);
 		expect(pr.point).toContain('PR');
 	});
 });

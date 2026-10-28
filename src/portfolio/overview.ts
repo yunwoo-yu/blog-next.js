@@ -19,7 +19,7 @@ export interface PortfolioKeyResult {
 	tag: string;
 }
 
-/** 첫 화면의 핵심 숫자 2개. 지어낸 수치를 넣지 않고, 집계 근거가 없는 전언(중복 기부 70%)은 올리지 않는다. */
+/** 첫 화면의 핵심 숫자 2개. 지어낸 수치를 넣지 않고, 집계 근거가 없는 전언(중복 기부 약 70%)은 올리지 않는다. */
 export const PORTFOLIO_KEY_RESULTS: PortfolioKeyResult[] = [
 	{
 		value: '0건',

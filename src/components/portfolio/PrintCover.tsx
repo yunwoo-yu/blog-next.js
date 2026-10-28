@@ -8,6 +8,7 @@ import {
 	getPrintPages,
 	getPrintSkills,
 	getTotalCareerDuration,
+	PRINT_IDENTITY_CLAIM,
 	PRINT_PORTFOLIO_URL,
 	PRINT_ROLE,
 } from '@/portfolio/print';
@@ -34,8 +35,8 @@ const PrintCover = () => {
 					총 경력 {getTotalCareerDuration()} · {joinNames(organizations, ' / ')}
 				</p>
 				<p className="pf-identity">
-					{joinNames(organizations, '·')}에서 {RESUME.projects.length}개 서비스의 프론트엔드를 맡았습니다. 결제
-					금액·검색 조건·인증 토큰처럼 어긋나기 쉬운 상태의 기준을 한 곳에 두는 일을 해 왔습니다.
+					{joinNames(organizations, '·')}에서 {RESUME.projects.length}개 서비스의 프론트엔드를 맡았습니다.{' '}
+					{PRINT_IDENTITY_CLAIM}
 				</p>
 			</header>
 

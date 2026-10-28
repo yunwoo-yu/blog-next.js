@@ -44,6 +44,12 @@
   .pf-root *::before,
   .pf-root *::after {
     transition: none !important;
+  }
+
+  /* 인쇄 문서(.pf-print)의 도식은 정적 transform 으로 화살촉·세로선을 놓으므로 지우지 않는다. */
+  .pf-root :not(.pf-print, .pf-print *),
+  .pf-root :not(.pf-print, .pf-print *)::before,
+  .pf-root :not(.pf-print, .pf-print *)::after {
     transform: none !important;
   }
 }
@@ -88,6 +94,7 @@
   --pp-arrow: #4b5563;
   --pp-dash: #9ca3af;
   --pp-paper: #fff;
+  --pf-page-min-height: 250mm;
 
   max-width: 174mm;
   margin: 0 auto;
@@ -97,13 +104,6 @@
   line-height: 1.6;
   word-break: keep-all;
   page: pf-print;
-}
-
-/* 화면에서도 인쇄 문서는 등장 효과 없이 최종 상태로 보인다. */
-.pf-print [data-revealed] {
-  opacity: 1 !important;
-  transform: none !important;
-  transition: none !important;
 }
 
 .pf-print a[href] {
@@ -150,7 +150,7 @@
 
 /* ---- 쪽 ---- */
 .pf-sheet {
-  min-height: 250mm;
+  min-height: var(--pf-page-min-height);
   padding: 6mm 0;
   border-bottom: 1px dashed var(--pp-rule);
 }
@@ -160,7 +160,6 @@
 }
 
 .pf-label {
-  margin-bottom: 2mm;
   color: var(--pp-ink-3);
   font-size: 9pt;
   font-weight: 700;
@@ -212,14 +211,12 @@
 }
 
 .pf-total {
-  margin-top: 2mm;
   color: var(--pp-ink);
   font-size: 11pt;
 }
 
 .pf-identity {
   max-width: 160mm;
-  margin-top: 5mm;
   font-size: 11pt;
 }
 
@@ -436,7 +433,7 @@
 
 .pf-block h4,
 .pf-troubles h4,
-.pf-limit h4 {
+.pf-print .pf-subhead {
   margin-bottom: 2mm;
   font-size: 11pt;
   font-weight: 700;
@@ -804,7 +801,7 @@
   }
 
   .pf-sheet {
-    min-height: 250mm;
+    min-height: var(--pf-page-min-height);
     padding: 0;
     border-bottom: 0;
   }
