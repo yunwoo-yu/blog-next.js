@@ -14,6 +14,11 @@ import {
 } from '@/portfolio/print';
 
 import PrintContacts from './PrintContacts';
+import { PrintLabel, PrintSheet } from './PrintParts';
+
+const TOC_ITEM_CLASS = 'flex gap-[2mm] break-inside-avoid border-t-[0.5pt] border-print-rule py-[2mm]';
+const TOC_NUM_CLASS = 'w-[8mm] flex-none text-[11pt] font-bold tabular-nums text-print-accent';
+const TOC_PAGE_CLASS = 'text-[10.5pt] font-bold tabular-nums text-print-ink';
 
 const joinNames = (names: string[], separator: string) => names.join(separator);
 
@@ -25,102 +30,114 @@ const PrintCover = () => {
 	const organizations = careers.map(career => career.organization);
 
 	return (
-		<section data-print-page="cover" aria-labelledby="print-title" className="pf-sheet pf-cover">
-			<header>
-				<p className="pf-eyebrow">{PRINT_ROLE}</p>
-				<h1 id="print-title" className="pf-name">
+		<PrintSheet
+			data-print-page="cover"
+			aria-labelledby="print-title"
+			breakBefore={false}
+			className="flex flex-col [&>*]:shrink-0">
+			<header className="border-b-[0.75pt] border-print-ink pb-[7mm]">
+				<p className="text-[10pt] font-bold text-print-accent">{PRINT_ROLE}</p>
+				<h1
+					id="print-title"
+					className="mt-[2mm] text-[32pt] font-extrabold leading-[1.2] tracking-[-0.02em] text-print-ink">
 					{META_AUTHOR_NAME}
 				</h1>
-				<p className="pf-total">
+				<p className="text-[11pt] text-print-ink">
 					총 경력 {getTotalCareerDuration()} · {joinNames(organizations, ' / ')}
 				</p>
-				<p className="pf-identity">
+				<p className="max-w-[160mm] text-[11pt]">
 					{joinNames(organizations, '·')}에서 {RESUME.projects.length}개 서비스의 프론트엔드를 맡았습니다.{' '}
 					{PRINT_IDENTITY_CLAIM}
 				</p>
 			</header>
 
-			<div className="pf-cover-grid">
+			<div className="mt-[7mm] grid grid-cols-2 gap-[10mm]">
 				<section aria-labelledby="print-careers">
-					<h2 id="print-careers" className="pf-label">
-						경력
-					</h2>
-					<ul className="pf-careers">
+					<PrintLabel id="print-careers">경력</PrintLabel>
+					<ul>
 						{careers.map(({ organization, period }) => (
-							<li key={organization}>
-								<span className="pf-career-org">{organization}</span>
+							<li key={organization} className="mb-[2mm] flex flex-col">
+								<span className="text-[11pt] font-bold text-print-ink">{organization}</span>
 								<span>{period}</span>
 							</li>
 						))}
 					</ul>
 				</section>
 				<section aria-labelledby="print-contacts">
-					<h2 id="print-contacts" className="pf-label">
-						연락처
-					</h2>
+					<PrintLabel id="print-contacts">연락처</PrintLabel>
 					<PrintContacts />
 				</section>
 			</div>
 
-			<section aria-labelledby="print-skills" className="pf-cover-block">
-				<h2 id="print-skills" className="pf-label">
-					기술 스택
-				</h2>
-				<ul className="pf-skills">
+			<section aria-labelledby="print-skills" className="mt-[7mm]">
+				<PrintLabel id="print-skills">기술 스택</PrintLabel>
+				<ul className="flex flex-wrap gap-[1.5mm]">
 					{getPrintSkills().map(skill => (
-						<li key={skill}>{skill}</li>
+						<li
+							key={skill}
+							className="rounded-[1mm] border-[0.75pt] border-print-ink-3 bg-print-fill px-[2.5mm] py-[0.5mm] text-[9pt] font-bold text-print-ink">
+							{skill}
+						</li>
 					))}
 				</ul>
 			</section>
 
-			<ul className="pf-stats pf-cover-block" aria-label="대표 숫자">
+			<ul className="mt-[6mm] grid grid-cols-2 gap-[5mm]" aria-label="대표 숫자">
 				{PORTFOLIO_KEY_RESULTS.map(result => (
-					<li key={result.value} className="pf-stat">
-						<p className="pf-stat-tag">{result.tag}</p>
-						<p className="pf-stat-value">{result.value}</p>
-						<p className="pf-stat-label">{result.label}</p>
+					<li key={result.value} className="border-[1pt] border-print-ink px-[5mm] py-[4mm]">
+						<p className="text-[9pt] font-bold text-print-accent">{result.tag}</p>
+						<p className="mt-[1mm] text-[26pt] font-bold text-print-ink">{result.value}</p>
+						<p className="mt-[1mm] text-[9pt]">{result.label}</p>
 					</li>
 				))}
 			</ul>
 
-			<section aria-labelledby="print-toc" className="pf-cover-block">
-				<h2 id="print-toc" className="pf-label">
-					대표 사례
-				</h2>
-				<ol className="pf-toc">
+			<section aria-labelledby="print-toc" className="mt-[7mm]">
+				<PrintLabel id="print-toc">대표 사례</PrintLabel>
+				<ol>
 					{featured.map(({ item, tocPhrase }, index) => (
-						<li key={item.slug} data-toc-item>
-							<span className="pf-toc-num">{index + 1}</span>
-							<span className="pf-toc-main">
-								<span className="pf-toc-line">
-									<span className="pf-toc-title">{item.title}</span>
-									<span className="pf-toc-leader" aria-hidden="true" />
-									<span className="pf-toc-page">{pages.caseStarts[index]}</span>
+						<li key={item.slug} data-toc-item className={TOC_ITEM_CLASS}>
+							<span className={TOC_NUM_CLASS}>{index + 1}</span>
+							<span className="min-w-0 flex-1">
+								<span className="flex items-baseline">
+									<span className="text-[10.5pt] font-bold text-print-ink">{item.title}</span>
+									<span
+										className="mx-[2mm] min-w-[6mm] flex-1 border-b-[1pt] border-dotted border-print-ink-3"
+										aria-hidden="true"
+									/>
+									<span data-toc-page className={TOC_PAGE_CLASS}>
+										{pages.caseStarts[index]}
+									</span>
 								</span>
-								<span className="pf-toc-sub">
+								<span className="block text-[9pt] text-print-ink-3">
 									{tocPhrase} · {item.organization} · {item.period}
 								</span>
 							</span>
 						</li>
 					))}
-					<li data-toc-item data-toc-others>
-						<span className="pf-toc-num" aria-hidden="true" />
-						<span className="pf-toc-main">
-							<span className="pf-toc-line">
-								<span className="pf-toc-title">그 밖의 작업 {getPrintOthers().length}건</span>
-								<span className="pf-toc-leader" aria-hidden="true" />
-								<span className="pf-toc-page">{pages.others}</span>
+					<li data-toc-item data-toc-others className={TOC_ITEM_CLASS}>
+						<span className={TOC_NUM_CLASS} aria-hidden="true" />
+						<span className="min-w-0 flex-1">
+							<span className="flex items-baseline">
+								<span className="text-[10.5pt] font-bold text-print-ink">그 밖의 작업 {getPrintOthers().length}건</span>
+								<span
+									className="mx-[2mm] min-w-[6mm] flex-1 border-b-[1pt] border-dotted border-print-ink-3"
+									aria-hidden="true"
+								/>
+								<span data-toc-page className={TOC_PAGE_CLASS}>
+									{pages.others}
+								</span>
 							</span>
 						</span>
 					</li>
 				</ol>
 			</section>
 
-			<p className="pf-cover-note">
+			<p className="mt-auto text-[8.5pt] text-print-ink-3">
 				수치는 측정·관측·전언으로 출처를 구분해 표기했습니다. 사례 {featured.length + getPrintOthers().length}개 전문:{' '}
 				<a href={PRINT_PORTFOLIO_URL}>{PRINT_PORTFOLIO_URL}</a>
 			</p>
-		</section>
+		</PrintSheet>
 	);
 };
 

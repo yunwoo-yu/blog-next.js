@@ -49,6 +49,16 @@ const config: Config = {
 					},
 					line: 'var(--pf-line)',
 				},
+				// 인쇄(PDF) 문서 전용 색. 흰 종이 기준이라 라이트 고정이며 글자색은 ink-3 보다 연하게 쓰지 않는다.
+				'print-ink': '#111827',
+				'print-ink-2': '#374151',
+				'print-ink-3': '#6b7280',
+				'print-rule': '#d1d5db',
+				'print-fill': '#f3f4f6',
+				'print-accent': '#1d4ed8',
+				'print-bad': '#b91c1c',
+				'print-arrow': '#4b5563',
+				'print-dash': '#9ca3af',
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
 				card: {

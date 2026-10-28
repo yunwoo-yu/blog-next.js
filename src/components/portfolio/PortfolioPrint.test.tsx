@@ -84,7 +84,7 @@ describe('/portfolio/print', () => {
 	it('표지의 숫자 카드는 테두리형 2개이고 값은 사례의 출처 있는 수치와 일치한다', () => {
 		const { container } = render(<PortfolioPrintPage />);
 		const cover = pageOf(container, 'cover');
-		const stats = cover.querySelectorAll('.pf-stat');
+		const stats = within(within(cover).getByRole('list', { name: '대표 숫자' })).getAllByRole('listitem');
 
 		expect(stats).toHaveLength(PORTFOLIO_KEY_RESULTS.length);
 		for (const [index, result] of PORTFOLIO_KEY_RESULTS.entries()) {
@@ -105,10 +105,10 @@ describe('/portfolio/print', () => {
 		for (const [index, entry] of featured.entries()) {
 			expect(toc[index].textContent).toContain(entry.item.title);
 			expect(toc[index].textContent).toContain(entry.tocPhrase);
-			expect(toc[index].querySelector('.pf-toc-page')?.textContent).toBe(String([2, 4, 6, 8, 10][index]));
+			expect(toc[index].querySelector('[data-toc-page]')?.textContent).toBe(String([2, 4, 6, 8, 10][index]));
 		}
 		expect(toc[featured.length].textContent).toContain(`그 밖의 작업 ${getPrintOthers().length}건`);
-		expect(toc[featured.length].querySelector('.pf-toc-page')?.textContent).toBe('12');
+		expect(toc[featured.length].querySelector('[data-toc-page]')?.textContent).toBe('12');
 		expect(pageOf(container, 'cover').textContent).toContain(PRINT_PORTFOLIO_URL);
 	});
 
@@ -144,7 +144,7 @@ describe('/portfolio/print', () => {
 			for (const entry of getPrintFeatured()) {
 				const tags = container
 					.querySelector(`[data-print-case="${entry.slug}"]`)
-					?.querySelectorAll('.pf-tag') as NodeListOf<HTMLElement>;
+					?.querySelectorAll('[data-print-tag]') as NodeListOf<HTMLElement>;
 
 				if (!entry.evidence) {
 					expect(tags, entry.slug).toHaveLength(0);
