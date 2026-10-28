@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 
+import { BASE_URL, CONTACT_EMAIL, META_AUTHOR_NAME } from '@/constant';
 import { buildAlternates } from '@/utils/seo';
 
 export const metadata: Metadata = {
@@ -18,9 +19,9 @@ const PrivacyPage = () => {
 				<h1>개인정보처리방침</h1>
 				<p className="text-sm">최종 업데이트: {LAST_UPDATED}</p>
 				<p>
-					Ycow Dev Blog(<a href="https://ycow-dev.com">https://ycow-dev.com</a>, 이하 &ldquo;본 사이트&rdquo;)는
-					이용자의 개인정보를 소중히 다루며, 「개인정보 보호법」등 관련 법령을 준수합니다. 본 방침은 본 사이트가
-					이용자의 정보를 어떻게 수집·이용·보호하는지 안내합니다.
+					Ycow Dev Blog(<a href={BASE_URL}>{BASE_URL}</a>, 이하 &ldquo;본 사이트&rdquo;)는 이용자의 개인정보를 소중히
+					다루며, 「개인정보 보호법」등 관련 법령을 준수합니다. 본 방침은 본 사이트가 이용자의 정보를 어떻게
+					수집·이용·보호하는지 안내합니다.
 				</p>
 
 				<h2>1. 수집하는 개인정보 항목</h2>
@@ -123,9 +124,9 @@ const PrivacyPage = () => {
 
 				<h2>7. 개인정보 보호책임자</h2>
 				<ul>
-					<li>성명: 유윤우</li>
+					<li>성명: {META_AUTHOR_NAME}</li>
 					<li>
-						이메일: <a href="mailto:skypnal12@gmail.com">skypnal12@gmail.com</a>
+						이메일: <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
 					</li>
 				</ul>
 

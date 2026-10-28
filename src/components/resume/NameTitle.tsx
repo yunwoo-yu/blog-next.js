@@ -1,5 +1,7 @@
+import { META_AUTHOR_NAME } from '@/constant';
+
 const NAME_TITLE = {
-	이름: '유윤우',
+	이름: META_AUTHOR_NAME,
 	직업: 'Front-End Developer',
 };
 

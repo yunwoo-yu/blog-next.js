@@ -1,12 +1,14 @@
 import type { MetadataRoute } from 'next';
 
+import { BASE_URL, RESUME_PATH } from '@/constant';
+
 export default function robots(): MetadataRoute.Robots {
 	return {
 		rules: {
 			userAgent: '*',
 			allow: '/',
-			disallow: ['/career', '/resume'],
+			disallow: ['/career', RESUME_PATH],
 		},
-		sitemap: 'https://ycow-dev.com/sitemap.xml',
+		sitemap: `${BASE_URL}/sitemap.xml`,
 	};
 }

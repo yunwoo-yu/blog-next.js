@@ -182,9 +182,10 @@ describe('getOrganizationItems', () => {
 });
 
 describe('이력서 공개 문구', () => {
-	it('퇴사 사유(권고사직 등)는 이력서 데이터에 싣지 않는다', () => {
-		expect(JSON.stringify(RESUME)).not.toContain('권고사직');
-		expect(JSON.stringify(RESUME)).not.toContain('exitReason');
+	it('퇴사 사유는 이력서 경력에 사용자가 확정한 문구 그대로 싣는다', () => {
+		const reasons = Object.fromEntries(RESUME.careers.map(career => [career.organization, career.exitReason]));
+
+		expect(reasons).toEqual({ 웰로: '경영 악화로 인한 구조조정', 살린: '경영 악화로 인한 권고사직' });
 	});
 });
 
@@ -213,7 +214,9 @@ describe('이력서 프로젝트 데이터', () => {
 		for (const project of RESUME.projects) {
 			expect(project.role.length, project.service).toBeGreaterThan(0);
 			expect(project.techStack.length, project.service).toBeGreaterThan(0);
-			for (const item of project.items) expect(item.caseSlug, item.title).toMatch(/^[a-z0-9]+(-[a-z0-9]+)*$/);
+			for (const item of project.items) {
+				if (item.caseSlug) expect(item.caseSlug, item.title).toMatch(/^[a-z0-9]+(-[a-z0-9]+)*$/);
+			}
 		}
 	});
 

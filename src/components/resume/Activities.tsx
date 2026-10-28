@@ -5,10 +5,10 @@ import ResumeContainer from './ResumeContainer';
 export default function Activities() {
 	return (
 		<ResumeContainer title="대외활동" titleClassName="print:mb-2 print:mt-2">
-			<div className="flex flex-col gap-7 print:gap-2">
+			<div className="flex flex-col gap-7 print:gap-1">
 				{RESUME.activities.map(activity => (
 					<article key={activity.title} className="print:break-inside-avoid">
-						<header className="flex flex-wrap items-baseline justify-between gap-x-8 gap-y-1 print:mb-1">
+						<header className="flex flex-wrap items-baseline justify-between gap-x-8 gap-y-1 print:mb-0">
 							<div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
 								<h4 className="text-base font-semibold leading-7 text-gray-950 dark:text-gray-100 print:!text-gray-950">
 									{activity.title}

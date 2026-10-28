@@ -3,11 +3,27 @@ import type { Author } from 'next/dist/lib/metadata/types/metadata-types';
 
 export const BASE_URL = 'https://ycow-dev.com';
 
+/** 이력서·주소 표기에 쓰는 www 호스트의 블로그 주소. BASE_URL 과 값이 다르므로 합치지 않는다. */
+export const WWW_BASE_URL = 'https://www.ycow-dev.com';
+
+export const BLOG_POSTS_PATH = '/blog/posts';
+export const RESUME_PATH = '/resume';
+
+/** 이력서와 포트폴리오 상세가 같이 가리키는 블로그 글(역방향 무한스크롤). */
+export const REVERSE_INFINITE_SCROLL_POST_URL = `${WWW_BASE_URL}${BLOG_POSTS_PATH}/next/reverse_infinite_scroll`;
+
 // 프로필 이름을 한글로 바꾸면 LinkedIn 공개 URL 슬러그도 따라 바뀐다.
 // 뒤 식별자(65095b263)는 그대로이므로 같은 프로필이다.
 export const LINKEDIN_URL = 'https://www.linkedin.com/in/%EC%9C%A4%EC%9A%B0-%EC%9C%A0-65095b263/';
 
 export const GITHUB_URL = 'https://github.com/yunwoo-yu';
+
+/** 오픈소스 기여 PR(머지됨) 목록. 이력서 대외활동과 포트폴리오 PDF 가 같이 가리킨다. */
+export const ARGO_WORKFLOWS_PR_URL =
+	'https://github.com/argoproj/argo-workflows/pulls?q=is%3Apr+is%3Amerged+involves%3Ayunwoo-yu';
+
+/** 이력서·포트폴리오 표지에 싣는 연락처 이메일. */
+export const CONTACT_EMAIL = 'skypnal12@gmail.com';
 
 // METADATA
 export const META_TITLE = 'Ycow FE Dev Blog';
@@ -65,7 +81,7 @@ export const ROOT_META_DATA: Metadata = {
 
 export const WEB_PATH = {
 	POSTS: {
-		path: () => '/blog/posts',
+		path: () => BLOG_POSTS_PATH,
 		label: 'Posts',
 	},
 };

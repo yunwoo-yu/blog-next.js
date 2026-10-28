@@ -26,14 +26,18 @@ export default function Careers() {
 							<h4 className="text-xl font-bold text-gray-950 dark:text-gray-50 print:text-lg print:!text-gray-950">
 								{career.organization}
 							</h4>
-							<p className={`mt-1 text-sm ${body}`}>{career.position}</p>
-							<p className={`mt-1 text-sm ${muted}`}>
-								{text} {duration && <span className={isOngoing ? 'print:hidden' : ''}>({duration})</span>}
-							</p>
+							<div className="print:flex print:flex-wrap print:items-baseline print:gap-x-3">
+								<p className={`mt-1 text-sm ${body}`}>{career.position}</p>
+								<p className={`mt-1 text-sm ${muted}`}>
+									{text} {duration && <span className={isOngoing ? 'print:hidden' : ''}>({duration})</span>}
+									{career.exitReason && <span data-testid="exit-reason"> · {career.exitReason}</span>}
+								</p>
+							</div>
 							<p className={`mt-3 break-keep text-sm leading-7 print:mt-2 print:leading-6 ${body}`}>
 								{career.description}
 							</p>
-							<p data-testid="project-summary" className={`mt-2 text-sm font-medium ${body}`}>
+							{/* 같은 서비스 목록이 바로 아래 프로젝트 섹션에 있으므로 인쇄에서는 줄여 2쪽에 맞춘다. */}
+							<p data-testid="project-summary" className={`mt-2 text-sm font-medium print:hidden ${body}`}>
 								프로젝트 {projects}개
 								<span className={`font-normal ${muted}`}>
 									{' — '}

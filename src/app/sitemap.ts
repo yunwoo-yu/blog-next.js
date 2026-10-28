@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next';
 
-import { BASE_URL } from '@/constant';
+import { BASE_URL, BLOG_POSTS_PATH } from '@/constant';
 import { buildCasePath, PORTFOLIO_CASES } from '@/portfolio/cases';
 import { PORTFOLIO_PATH } from '@/portfolio/overview';
 import { countTags, getAllPosts, getAllPostsPath, getCategoryList } from '@/utils/post-utils';
@@ -22,7 +22,7 @@ const sitemap = async (): Promise<MetadataRoute.Sitemap> => {
 			priority: 1,
 		},
 		{
-			url: `${BASE_URL}/blog/posts`,
+			url: `${BASE_URL}${BLOG_POSTS_PATH}`,
 			lastModified: latestPostDate,
 			changeFrequency: 'weekly',
 			priority: 0.9,
@@ -39,7 +39,7 @@ const sitemap = async (): Promise<MetadataRoute.Sitemap> => {
 			priority: 0.6,
 		})),
 		...categoryData.categoryNameList.map(category => ({
-			url: `${BASE_URL}/blog/posts/${category.label}`,
+			url: `${BASE_URL}${BLOG_POSTS_PATH}/${category.label}`,
 			lastModified: latestPostDate,
 			changeFrequency: 'weekly' as const,
 			priority: 0.7,
@@ -51,7 +51,7 @@ const sitemap = async (): Promise<MetadataRoute.Sitemap> => {
 			priority: 0.5,
 		})),
 		...posts.map(post => ({
-			url: `${BASE_URL}/blog/posts/${post.category}/${post.slug}`,
+			url: `${BASE_URL}${BLOG_POSTS_PATH}/${post.category}/${post.slug}`,
 			lastModified: new Date(post.frontmatter.createdAt),
 			changeFrequency: 'monthly' as const,
 			priority: 0.8,

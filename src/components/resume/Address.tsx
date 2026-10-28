@@ -1,22 +1,23 @@
 import { Globe, Mail } from 'lucide-react';
 
 import { GitHubIcon } from '@/components/common/Icons';
+import { CONTACT_EMAIL, GITHUB_URL, WWW_BASE_URL } from '@/constant';
 
 const ADDRESS_DATA = [
 	{
 		icon: <Mail size={14} />,
 		label: '이메일',
-		href: 'skypnal12@gmail.com',
+		href: CONTACT_EMAIL,
 	},
 	{
 		icon: <GitHubIcon width={14} height={14} />,
 		label: '깃허브',
-		href: 'https://github.com/yunwoo-yu',
+		href: GITHUB_URL,
 	},
 	{
 		icon: <Globe size={14} />,
 		label: '블로그',
-		href: 'https://www.ycow-dev.com',
+		href: WWW_BASE_URL,
 	},
 ];
 

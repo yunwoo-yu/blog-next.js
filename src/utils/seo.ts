@@ -1,7 +1,7 @@
-import { BASE_URL, META_AUTHOR_NAME, META_TITLE } from '@/constant';
+import { BASE_URL, BLOG_POSTS_PATH, META_AUTHOR_NAME, META_TITLE } from '@/constant';
 import type { PostListTypes } from '@/types/common.types';
 
-export const buildPostPath = (category: string, slug: string) => `/blog/posts/${category}/${slug}`;
+export const buildPostPath = (category: string, slug: string) => `${BLOG_POSTS_PATH}/${category}/${slug}`;
 
 /**
  * Next.js는 페이지가 alternates를 정의하면 루트의 alternates를 통째로 대체한다.
@@ -76,7 +76,7 @@ export const buildBlogJsonLd = (posts: PostListTypes[]) => ({
 	'@context': 'https://schema.org',
 	'@type': 'Blog',
 	name: META_TITLE,
-	url: buildAbsoluteUrl('/blog/posts'),
+	url: buildAbsoluteUrl(BLOG_POSTS_PATH),
 	inLanguage: 'ko-KR',
 	author: { '@type': 'Person', name: META_AUTHOR_NAME, url: BASE_URL },
 	blogPost: posts.map(post => ({
