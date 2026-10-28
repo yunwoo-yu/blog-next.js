@@ -31,7 +31,7 @@ const REASON_HEAD_CLASS = cn(
 
 const circled = (index: number) => String.fromCodePoint(0x2460 + index);
 
-/** 사례 한 건 = 정확히 2쪽. A쪽: 머리·한 줄 성과·문제·해결·선택 이유, B쪽: 풀었던 문제·도식·결과·한계. */
+/** 사례 한 건 = 정확히 2쪽. A쪽: 머리·한 줄 성과·문제·해결·방식과 이유, B쪽: 구현 중 풀었던 문제·도식·결과·확인 범위. */
 const PrintCase = ({ item, entry, index }: PrintCaseProps) => {
 	const number = String(index + 1).padStart(2, '0');
 	const problem = item.stages.find(stage => stage.id === 'problem');
@@ -89,17 +89,17 @@ const PrintCase = ({ item, entry, index }: PrintCaseProps) => {
 				)}
 
 				{decisions.length > 0 && (
-					<PrintBlock id={`${titleId}-reason`} title="선택 이유" subhead className="break-inside-avoid">
+					<PrintBlock id={`${titleId}-reason`} title="어떻게 정했나" subhead className="break-inside-avoid">
 						<table
 							className="w-full break-inside-avoid border-collapse text-[9pt] leading-[1.5] [&_strong]:!text-print-ink"
 							data-print-reasons>
 							<thead>
 								<tr>
 									<th scope="col" className={REASON_HEAD_CLASS}>
-										질문
+										정할 것
 									</th>
 									<th scope="col" className={REASON_HEAD_CLASS}>
-										선택
+										방식과 이유
 									</th>
 								</tr>
 							</thead>
@@ -112,10 +112,15 @@ const PrintCase = ({ item, entry, index }: PrintCaseProps) => {
 										<td className={cn(REASON_CELL_CLASS, '[&_p+p]:mt-[1mm]')}>
 											{row.chosen.map(option => (
 												<p key={option.name}>
+													<span className="font-bold">{option.label}: </span>
 													<strong>{option.name}</strong> {option.reason}
 												</p>
 											))}
-											{row.alternative && <p className="text-print-ink-3">대안: {row.alternative}</p>}
+											{row.alternatives.map(option => (
+												<p key={option.name} className="text-print-ink-3">
+													{option.label}: {option.name}
+												</p>
+											))}
 										</td>
 									</tr>
 								))}
@@ -131,7 +136,7 @@ const PrintCase = ({ item, entry, index }: PrintCaseProps) => {
 				</p>
 
 				{troubles.length > 0 && (
-					<PrintBlock id={`${titleId}-troubles`} title="풀었던 문제">
+					<PrintBlock id={`${titleId}-troubles`} title="구현 중 풀었던 문제">
 						<ol>
 							{troubles.map((trouble, order) => (
 								<li
@@ -164,7 +169,7 @@ const PrintCase = ({ item, entry, index }: PrintCaseProps) => {
 					)}
 					<PrintBlock
 						id={`${titleId}-limit`}
-						title="한계"
+						title="확인 범위와 한계"
 						subhead
 						className="mt-[8mm] border-t-[0.5pt] border-print-rule pt-[6mm]">
 						<p>{entry.limit}</p>

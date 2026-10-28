@@ -209,7 +209,15 @@ describe('CaseStudy', () => {
 		const items = troubles.querySelectorAll('[data-testid="trouble"]');
 
 		expect(within(decisions).getAllByTestId('decision-chosen').length).toBeGreaterThan(0);
-		expect(decisions.textContent).toContain('선택한 방법');
+		expect(within(decisions).getByRole('heading', { name: '어떻게 정했나' })).toBeInTheDocument();
+		for (const decision of withStory.decisions) {
+			for (const option of decision.options) {
+				const card = within(decisions).getByText(option.name).closest('[data-testid]')!;
+
+				expect(card.textContent).toContain(option.label);
+			}
+		}
+		expect(decisions.textContent).not.toMatch(/선택한 방법|검토했지만 고르지 않은 방법/);
 		expect(items.length).toBe(withStory.troubles.length);
 		withStory.troubles.forEach((trouble, index) => {
 			expect(items[index].querySelector('h4')!.textContent).toContain(trouble.problem);

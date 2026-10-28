@@ -22,7 +22,7 @@ const CaseStory = ({ story }: { story: CaseStoryData | undefined }) => {
 			{decisions.length > 0 && (
 				<section id="decisions" aria-labelledby="decisions-title" className="mt-10">
 					<h3 id="decisions-title" className={subTitle}>
-						판단
+						어떻게 정했나
 					</h3>
 					<ul className="mt-3 grid gap-8">
 						{decisions.map(decision => {
@@ -38,7 +38,7 @@ const CaseStory = ({ story }: { story: CaseStoryData | undefined }) => {
 												key={option.name}
 												data-testid="decision-chosen"
 												className="rounded-2xl border border-pf-blue-100 bg-pf-blue-50 p-5">
-												<p className="text-[13px] font-bold text-pf-blue-700">선택한 방법</p>
+												<p className="text-[13px] font-bold text-pf-blue-700">{option.label}</p>
 												<p className="mt-1.5 break-keep text-[16px] font-bold leading-[1.5] text-pf-gray-900">
 													{option.name}
 													{option.basis === 'draft' && <DraftBadge />}
@@ -48,7 +48,7 @@ const CaseStory = ({ story }: { story: CaseStoryData | undefined }) => {
 										))}
 										{rejected.map(option => (
 											<div key={option.name} data-testid="decision-rejected" className="rounded-2xl bg-pf-gray-50 p-5">
-												<p className="text-[13px] font-bold text-pf-gray-700">검토했지만 고르지 않은 방법</p>
+												<p className="text-[13px] font-bold text-pf-gray-700">{option.label}</p>
 												<p className="mt-1.5 break-keep text-[16px] font-bold leading-[1.5] text-pf-gray-800">
 													{option.name}
 													{option.basis === 'draft' && <DraftBadge />}
@@ -67,7 +67,7 @@ const CaseStory = ({ story }: { story: CaseStoryData | undefined }) => {
 			{troubles.length > 0 && (
 				<section id="troubles" aria-labelledby="troubles-title" className="mt-10">
 					<h3 id="troubles-title" className={subTitle}>
-						풀었던 문제
+						구현 중 풀었던 문제
 					</h3>
 					<ol className="mt-3 divide-y divide-pf-line">
 						{troubles.map(trouble => (

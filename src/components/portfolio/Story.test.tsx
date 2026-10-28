@@ -49,6 +49,28 @@ describe('Paragraphs', () => {
 });
 
 describe('CaseStory 문제 섹션', () => {
+	it('선택 여부와 별개로 각 옵션의 실제 라벨을 카드에 보여 준다', () => {
+		const options: CaseStoryData['decisions'][number]['options'] = [
+			{ label: '지금 접근', name: '현재', verdict: 'chosen', reason: '현재 이유', basis: 'code' },
+			{ label: '처음 접근', name: '이전', verdict: 'rejected', reason: '이전 이유', basis: 'resume' },
+		];
+		const { container } = render(
+			<CaseStory
+				story={{ slug: 'labels', checks: [], troubles: [], decisions: [{ question: '처리 방식', options }] }}
+			/>,
+		);
+
+		for (const option of options) {
+			const card = container.querySelector(`[data-testid="decision-${option.verdict}"]`)!;
+
+			expect(card.textContent).toContain(option.label);
+			expect(card.textContent).toContain(option.name);
+			expect(card.textContent).toContain(option.reason);
+		}
+		expect(container.querySelector('.sm\\:grid-cols-2')).not.toBeNull();
+		expect(container.textContent).not.toMatch(/선택한 방법|검토했지만 고르지 않은 방법/);
+	});
+
 	const story: CaseStoryData = {
 		slug: 's',
 		decisions: [],
@@ -92,11 +114,16 @@ describe('CaseStory 문제 섹션', () => {
 			...story,
 			troubles: [],
 			decisions: [
-				{ question: '무엇을 고르나', options: [{ name: 'A', verdict: 'chosen', reason: '이유', basis: 'resume' }] },
+				{
+					question: '무엇을 고르나',
+					options: [{ label: '준비한 방식', name: 'A', verdict: 'chosen', reason: '이유', basis: 'resume' }],
+				},
 			],
 		};
 		const { container } = render(<CaseStory story={only} />);
 
+		expect(screen.getByText('준비한 방식')).toBeInTheDocument();
+		expect(screen.getByRole('heading', { name: '어떻게 정했나' })).toBeInTheDocument();
 		expect(container.querySelectorAll('[data-testid="decision-chosen"]')).toHaveLength(1);
 		expect(container.querySelector('[data-testid="decision-rejected"]')).toBeNull();
 		expect(container.querySelector('.sm\\:grid-cols-2')).toBeNull();

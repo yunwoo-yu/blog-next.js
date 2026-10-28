@@ -11,7 +11,7 @@ import {
 import RESUME, { formatMonths, getCareerMonths, getSkills } from '@/constant/resume';
 import { PORTFOLIO_CASES, type PortfolioCase } from './cases';
 import { getPortfolioExperience } from './overview';
-import { getStory, getVisibleStory, type SequenceDiagram } from './stories';
+import { type DecisionOption, getStory, getVisibleStory, type SequenceDiagram } from './stories';
 
 /** PDF 문서 제목(브라우저가 PDF 저장 시 파일명으로 쓴다). */
 export const PRINT_TITLE = `${META_AUTHOR_NAME}_프론트엔드_포트폴리오`;
@@ -47,7 +47,7 @@ export const PRINT_FEATURED: readonly PrintFeatured[] = [
 	{
 		slug: 'wellomarket-checkout',
 		oneLine:
-			'PG에 전달하는 금액을 서버 체크아웃 응답 하나로 통일하고, 구매 후 화면과 입점업체 어드민을 같은 서버 주문 상태 기준으로 구현했습니다.',
+			'결제사에 보내는 금액은 서버 확정값 하나로 정하고, 구매 후 화면과 판매 업체용 관리 화면도 서버 주문 상태를 기준으로 만들었습니다.',
 		evidence: { tag: '관측', text: '오픈 후 1개월 · 결제 금액 관련 CS 문의·API 에러 로그 0건' },
 		limit:
 			'0건은 오픈 후 1개월 동안 결제 금액 관련 항목만 관측한 값입니다. PG 승인 이후의 서버 검증은 이 사례의 범위가 아닙니다.',
@@ -56,7 +56,7 @@ export const PRINT_FEATURED: readonly PrintFeatured[] = [
 	{
 		slug: 'wello-responsive-search',
 		oneLine:
-			'흩어진 콘텐츠를 통합검색으로 모으고, URL에서 검색 조건을 복원해 공유·새로고침·뒤로가기 후에도 유지되도록 구현했습니다.',
+			'흩어진 콘텐츠를 통합검색으로 모으고, 주소에 검색 조건을 담아 공유·새로고침·뒤로가기 뒤에도 같은 조건으로 볼 수 있게 했습니다.',
 		evidence: { tag: '측정', text: '데스크톱 평균 참여 시간 약 20% 증가 · GA4 개편 전후 2주 단순 비교' },
 		limit: '참여 시간 증가는 GA4 단순 전후 비교이며 A/B 테스트가 아니라서 이 작업만의 효과로 단정할 수 없습니다.',
 		tocPhrase: '검색 조건을 URL로',
@@ -64,16 +64,16 @@ export const PRINT_FEATURED: readonly PrintFeatured[] = [
 	{
 		slug: 'admin-session-refresh',
 		oneLine:
-			'401 응답의 갱신·재요청 흐름을 구현하고, 진행 중인 갱신 결과 공유와 도메인별 쿠키 분리로 어드민 인증 흐름을 정리했습니다.',
+			'인증 거절 시 갱신·재요청을 구현하고, 같은 탭 안의 동시 요청은 갱신 결과를 함께 기다리며 다른 탭의 갱신 여부는 저장값을 비교하게 했습니다.',
 		limit:
 			'갱신 토큰이 일회용인지는 코드로 확인하지 못했습니다. 탭 간 동시 갱신은 쿠키 비교로 줄였지만 완전한 보장은 아닙니다.',
-		tocPhrase: '동시 401을 한 번의 갱신으로',
+		tocPhrase: '같은 탭의 동시 요청은 갱신 공유',
 	},
 	{
 		slug: 'donation-duplicate-guard',
 		oneLine:
-			'정산 완료 후 최신 납부 이력을 재조회하고, 앱·웹뷰·웹에서 같은 서버 조회 기준으로 완료 여부를 확인하도록 개선했습니다.',
-		evidence: { tag: '전언', text: '중복 기부 관련 CS 재문의 약 70% 감소 · CS 담당자 전언' },
+			'이전 납부 결과가 서비스 내역에 반영된 뒤 최신 이력을 다시 조회하고, 완료 이력이 있으면 사용자가 기부를 계속할지 고르게 했습니다.',
+		evidence: { tag: '전언', text: '중복 기부 관련 CS(고객 상담) 재문의 약 70% 감소 · CS 담당자 전언' },
 		limit:
 			'약 70%는 CS 담당자 전언이며 별도 집계 데이터는 없습니다. 이 기능은 중복 기부를 막는 것이 아니라 재확인한 뒤 사용자가 선택하게 합니다.',
 		tocPhrase: '웹뷰 이탈·복귀 판별',
@@ -81,30 +81,40 @@ export const PRINT_FEATURED: readonly PrintFeatured[] = [
 	{
 		slug: 'avatar-studio-performance',
 		oneLine:
-			'3D 뷰를 Suspense 경계로 분리하고 CDN 자산 경로를 환경 변수 상수로 정리했으며, 편집 상태와 3D 표시의 책임을 분리했습니다.',
-		evidence: { tag: '기재', text: 'FCP(첫 콘텐츠 표시) 3초 이상 → 400~600ms · 이력서 기재' },
+			'3D 화면의 로딩 경계를 나누고, 편집 상태와 3D 표시의 역할을 분리했습니다. 파일 경로도 별도로 한 곳에 모아 관리했습니다.',
+		evidence: { tag: '기재', text: 'FCP 3초 이상 → 400~600ms · 이력서 기재' },
 		limit: 'FCP는 첫 콘텐츠가 그려진 시점이며, 3D 편집 화면이 조작 가능해지는 시점과는 구분됩니다.',
 		tocPhrase: '첫 콘텐츠 표시(FCP) 개선',
 	},
 ];
 
+/** 마지막 쪽 아래의 용어 풀이. 한 줄씩 짧게 써서 별도 쪽이 생기지 않도록 한다. */
+export const PRINT_GLOSSARY = [
+	{ term: 'PG', description: '결제 대행사' },
+	{ term: 'FCP', description: '화면에 첫 콘텐츠가 그려지는 시점' },
+	{ term: '웹뷰', description: '앱 안에 띄운 웹 화면' },
+	{ term: '401·토큰·쿠키', description: '인증 거절 응답·로그인 증명값·브라우저 저장값' },
+	{ term: 'CS', description: '고객 상담' },
+	{ term: 'Suspense', description: '화면 일부의 로딩을 나눠 다루는 React 기능' },
+] as const;
+
 /** 그 밖의 작업. 표 한 줄씩 이 순서로 나온다. */
 export const PRINT_OTHERS: readonly PrintOther[] = [
 	{
 		slug: 'ai-chatbot-ssr',
-		line: '고객사 설정을 서버 메타데이터에 반영하고 CMS 편집을 연결해, 프론트엔드 재배포 없이 OG 정보 변경과 신규 고객사 반영이 가능하게 했습니다.',
+		line: '고객사별 페이지·링크 미리보기 정보를 서버에서 만들고 관리 화면에서 고치게 해, 재배포 없이 변경·신규 고객사 반영이 가능하게 했습니다.',
 	},
 	{
 		slug: 'ai-chatbot-cms',
-		line: '스트림 답변과 이전 대화 로딩 시 읽던 위치 유지를 구현하고, 지식 파일·OG·통계 운영 화면을 개발했습니다.',
+		line: '답변을 조각으로 받아 보여 주고 이전 대화를 불러와도 읽던 위치를 유지했으며, 지식 파일·링크 미리보기·통계 관리 화면을 개발했습니다.',
 	},
 	{
 		slug: 'wellobiz-chakra-zod',
-		line: 'Chakra UI·yup·Swiper 직접 사용을 정리하고 공통 디자인 시스템·Zod로 전환하며, 중첩 필드 오류를 연결하는 resolver를 구현했습니다.',
+		line: '화면 구성·검증 도구를 공통 기준으로 바꾸고, 배열·객체 안의 입력 칸에도 오류가 표시되게 검증 결과를 연결했습니다.',
 	},
 	{
 		slug: 'swing-frontend',
-		line: '서비스 웹을 단독 개발하고 관리자 CMS 프론트엔드를 개발했으며, 계약 첨부파일 유지와 웹 인증의 Unity WebGL 진입 연동을 구현했습니다.',
+		line: '사용자 웹을 단독 개발하고 관리자 화면도 개발했으며, 계약 첨부파일 유지와 웹 로그인의 3D 가상 오피스 진입 연결을 구현했습니다.',
 	},
 	{
 		slug: 'mydata-integration',
@@ -200,9 +210,9 @@ export const pickPrintTroubles = <T extends { diagram?: Pick<SequenceDiagram, 's
 
 interface PrintDecisionRow {
 	question: string;
-	chosen: { name: string; reason: string }[];
-	/** 검토했지만 고르지 않은 방법의 이름(첫 번째). 데이터에 있을 때만. */
-	alternative?: string;
+	chosen: Pick<DecisionOption, 'label' | 'name' | 'reason'>[];
+	/** 실제 데이터에 있는 고르지 않은 방식만 싣는다. */
+	alternatives: Pick<DecisionOption, 'label' | 'name'>[];
 }
 
 /** 선택 이유 표의 행. 보이는 판단만, 최대 PRINT_MAX_DECISIONS 개. */
@@ -212,8 +222,10 @@ export const getPrintDecisionRows = (slug: string): PrintDecisionRow[] =>
 			question: decision.question,
 			chosen: decision.options
 				.filter(option => option.verdict === 'chosen')
-				.map(({ name, reason }) => ({ name, reason })),
-			alternative: decision.options.find(option => option.verdict === 'rejected')?.name,
+				.map(({ label, name, reason }) => ({ label, name, reason })),
+			alternatives: decision.options
+				.filter(option => option.verdict === 'rejected')
+				.map(({ label, name }) => ({ label, name })),
 		}))
 		.filter(row => row.chosen.length > 0)
 		.slice(0, PRINT_MAX_DECISIONS);

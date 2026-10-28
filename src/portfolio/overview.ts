@@ -24,13 +24,13 @@ export interface PortfolioKeyResult {
 export const PORTFOLIO_KEY_RESULTS: PortfolioKeyResult[] = [
 	{
 		value: '0건',
-		label: '오픈 후 1개월, 결제 금액 관련 CS 문의·API 에러',
+		label: '오픈 후 1개월, 결제 금액 관련 CS(고객 상담) 문의·API(서버 기능) 에러',
 		slug: 'wellomarket-checkout',
 		tag: '결제',
 	},
 	{
 		value: '400~600ms',
-		label: '아바타 FCP(첫 콘텐츠 표시), 기존 3초 이상',
+		label: '아바타 FCP(화면에 첫 콘텐츠가 그려지는 시점), 기존 3초 이상',
 		slug: 'avatar-studio-performance',
 		tag: '성능',
 	},

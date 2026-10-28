@@ -17,7 +17,7 @@ const publicTexts = () => [
 	...STORIES.flatMap(story => [
 		...story.decisions.flatMap(decision => [
 			decision.question,
-			...decision.options.flatMap(option => [option.name, option.reason]),
+			...decision.options.flatMap(option => [option.label, option.name, option.reason]),
 		]),
 		...story.troubles.flatMap(trouble => [
 			trouble.problem,
@@ -117,6 +117,20 @@ describe('포트폴리오 본문 규칙', () => {
 					}
 					expect(step.label.trim().length, story.slug).toBeGreaterThan(0);
 				}
+			}
+		}
+	});
+
+	it('모든 판단 옵션의 라벨은 비어 있지 않은 12자 이하이며 한 결정 안에서 겹치지 않는다', () => {
+		for (const story of STORIES) {
+			for (const decision of story.decisions) {
+				const labels = decision.options.map(option => option.label);
+
+				for (const label of labels) {
+					expect(label.trim().length, `${story.slug}: ${decision.question}`).toBeGreaterThan(0);
+					expect(label.length, `${story.slug}: ${label}`).toBeLessThanOrEqual(12);
+				}
+				expect(new Set(labels).size, `${story.slug}: ${decision.question}`).toBe(labels.length);
 			}
 		}
 	});

@@ -147,7 +147,7 @@ const CORE_EXHIBITS: Exhibit[] = [
 				'화면과 서버의 금액 계산이 다르면 PG 승인 금액이 어긋나고, 재고 소진·주문 만료·인증 실패에서도 다음 행동이 보여야 했습니다.',
 			decision:
 				'서버가 확정한 금액만 PG에 요청하도록 기준을 서버로 고정하고, 구매 후 버튼도 서버 상태 하나로 정했습니다.',
-			outcome: '2026.03 오픈 후 1개월간 결제 금액 관련 CS 문의와 API 에러 로그가 0건이었습니다.',
+			outcome: '2026.03 오픈 후 1개월간 결제 금액 관련 고객 상담 문의와 API 에러 로그가 0건이었습니다.',
 			outcomeBasis: '이력서 기재 내용. 이 페이지에서 측정한 값이 아닙니다.',
 		},
 		screens: {},
@@ -202,7 +202,7 @@ const CORE_EXHIBITS: Exhibit[] = [
 	{
 		slug: 'avatar-studio-performance',
 		shortTitle: '아바타 스튜디오',
-		headline: '3D 뷰를 Suspense 경계로 분리해 첫 콘텐츠 표시(FCP) 400~600ms',
+		headline: '3D 뷰의 로딩 경계 분리와 첫 콘텐츠 표시 개선',
 		ownedParts: [
 			'3D 뷰의 Suspense 경계 분리',
 			'CDN 자산 경로의 환경 변수 상수화',
@@ -214,8 +214,9 @@ const CORE_EXHIBITS: Exhibit[] = [
 			problem:
 				'3D 렌더링과 대용량 정적 자산이 진입을 막아 3초 이상 빈 화면이 보였고, 3D·편집 로직이 섞여 작은 변경도 위험했습니다.',
 			decision:
-				'3D 뷰를 Suspense 경계로 나누고 CDN 자산 경로는 환경 변수 상수로 정리하며, 편집 화면은 데이터를 계산하고 3D 뷰는 표시만 하도록 변경 경계를 나눴습니다.',
-			outcome: '첫 콘텐츠 표시(FCP)를 Lighthouse 기준 400~600ms로 단축했습니다.',
+				'3D 뷰의 로딩 경계와 편집 기능의 역할을 나눴습니다. CDN 경로는 파일 주소를 한 곳에서 관리하도록 별도로 정리했습니다.',
+			outcome:
+				'FCP를 Lighthouse 기준 400~600ms로 단축했으며, 이는 첫 콘텐츠가 그려진 시점으로 3D 편집 조작 가능 시점과는 다릅니다.',
 			outcomeBasis: '이력서 기재 내용. 이 페이지에서 측정한 값이 아닙니다.',
 		},
 		screens: {},

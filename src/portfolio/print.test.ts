@@ -15,6 +15,7 @@ import {
 	getTotalCareerDuration,
 	PRINT_FEATURED,
 	PRINT_FEATURED_SLUGS,
+	PRINT_GLOSSARY,
 	PRINT_LIMITS,
 	PRINT_MAX_DECISIONS,
 	PRINT_MAX_DIAGRAM_STEPS,
@@ -24,6 +25,7 @@ import {
 	pickPrintTroubles,
 	splitSentences,
 } from './print';
+import { getStory, getVisibleStory } from './stories';
 
 describe('인쇄 문구 데이터', () => {
 	it('대표 사례는 5개이고 모두 실제 사례이며 그 밖의 작업과 겹치지 않는다', () => {
@@ -34,6 +36,54 @@ describe('인쇄 문구 데이터', () => {
 		expect(new Set([...PRINT_FEATURED_SLUGS, ...PRINT_OTHERS.map(entry => entry.slug)])).toEqual(new Set(slugs));
 		expect(getPrintFeatured().map(entry => entry.item.slug)).toEqual([...PRINT_FEATURED_SLUGS]);
 		expect(getPrintOthers().map(entry => entry.item.slug)).toEqual(PRINT_OTHERS.map(entry => entry.slug));
+	});
+
+	it('용어 풀이는 지정한 6개 이내이고 각 풀이가 짧은 한 줄이다', () => {
+		expect(PRINT_GLOSSARY.map(entry => entry.term)).toEqual(['PG', 'FCP', '웹뷰', '401·토큰·쿠키', 'CS', 'Suspense']);
+		expect(PRINT_GLOSSARY.length).toBeLessThanOrEqual(6);
+		for (const { term, description } of PRINT_GLOSSARY) {
+			expect(description.trim().length, term).toBeGreaterThan(0);
+			expect(description.length, term).toBeLessThanOrEqual(40);
+			expect(description, term).not.toMatch(/[\r\n]/);
+		}
+	});
+
+	it('인쇄 판단 행은 모든 옵션의 라벨을 보존하며 없는 대안을 만들지 않는다', () => {
+		for (const item of PORTFOLIO_CASES) {
+			const decisions = getVisibleStory(getStory(item.slug)).decisions;
+			const rows = getPrintDecisionRows(item.slug);
+
+			expect(rows.map(row => row.question)).toEqual(decisions.map(decision => decision.question));
+			decisions.forEach((decision, index) => {
+				expect(rows[index].chosen).toEqual(
+					decision.options
+						.filter(option => option.verdict === 'chosen')
+						.map(({ label, name, reason }) => ({ label, name, reason })),
+				);
+				expect(rows[index].alternatives).toEqual(
+					decision.options.filter(option => option.verdict === 'rejected').map(({ label, name }) => ({ label, name })),
+				);
+			});
+		}
+	});
+
+	it('운영 인쇄 행에서는 근거 미확인 초안을 제외한다', () => {
+		vi.stubEnv('NODE_ENV', 'production');
+		try {
+			for (const item of PORTFOLIO_CASES) {
+				const rows = getPrintDecisionRows(item.slug);
+				const drafts = getStory(item.slug)!.decisions.flatMap(decision =>
+					decision.options.filter(option => option.basis === 'draft'),
+				);
+
+				for (const draft of drafts)
+					expect(rows.flatMap(row => [...row.chosen, ...row.alternatives]).map(option => option.name)).not.toContain(
+						draft.name,
+					);
+			}
+		} finally {
+			vi.unstubAllEnvs();
+		}
 	});
 
 	it('대표 사례 순서: 결제와 중복 기부가 연달아 오지 않는다', () => {

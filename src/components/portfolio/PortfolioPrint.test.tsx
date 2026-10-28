@@ -11,6 +11,7 @@ import { getPortfolioExperience, PORTFOLIO_KEY_RESULTS } from '@/portfolio/overv
 import {
 	EVIDENCE_TAGS,
 	getPrintContacts,
+	getPrintDecisionRows,
 	getPrintFeatured,
 	getPrintOthers,
 	getPrintPages,
@@ -19,6 +20,7 @@ import {
 	getTotalCareerDuration,
 	PRINT_FEATURED_SLUGS,
 	PRINT_FOOTER_LABEL,
+	PRINT_GLOSSARY,
 	PRINT_IDENTITY_CLAIM,
 	PRINT_MAX_DECISIONS,
 	PRINT_MAX_DIAGRAM_STEPS,
@@ -121,7 +123,7 @@ describe('/portfolio/print', () => {
 	});
 
 	describe('사례', () => {
-		it('A쪽: 번호·회사·제목·한 줄 성과와 문제·해결·선택 이유 표가 있고 판단 카드는 없다', () => {
+		it('A쪽: 번호·회사·제목·한 줄 성과와 문제·해결·방식과 이유 표가 있고 판단 카드는 없다', () => {
 			const { container } = render(<PortfolioPrintPage />);
 
 			for (const [index, entry] of getPrintFeatured().entries()) {
@@ -139,8 +141,19 @@ describe('/portfolio/print', () => {
 					within(table)
 						.getAllByRole('columnheader')
 						.map(el => el.textContent),
-				).toEqual(['질문', '선택']);
+				).toEqual(['정할 것', '방식과 이유']);
 				expect(within(table).getAllByRole('rowheader').length).toBeLessThanOrEqual(PRINT_MAX_DECISIONS);
+				expect(within(page).getByRole('heading', { name: '어떻게 정했나' })).toBeInTheDocument();
+				for (const row of getPrintDecisionRows(entry.slug)) {
+					const rendered = within(table).getByRole('rowheader', { name: row.question }).closest('tr')!;
+
+					for (const option of [...row.chosen, ...row.alternatives]) {
+						expect(rendered.textContent).toContain(`${option.label}:`);
+						expect(rendered.textContent).toContain(option.name);
+					}
+				}
+				for (const paragraph of table.querySelectorAll('p'))
+					expect(paragraph.textContent?.startsWith('대안:')).toBe(false);
 				expect(page.querySelector('[data-testid="decision-chosen"]')).toBeNull();
 				expect(page.querySelector('#decisions')).toBeNull();
 			}
@@ -164,7 +177,7 @@ describe('/portfolio/print', () => {
 			}
 		});
 
-		it('B쪽: 풀었던 문제 2개 이하, 도식은 5단계 이하로 1개 이하, 결과에는 수치·해명 문장이 없고 한계가 있다', () => {
+		it('B쪽: 풀었던 문제 2개 이하, 도식은 5단계 이하로 1개 이하, 결과에는 수치·해명 문장이 없고 확인 범위와 한계가 있다', () => {
 			const { container } = render(<PortfolioPrintPage />);
 
 			for (const entry of getPrintFeatured()) {
@@ -182,9 +195,9 @@ describe('/portfolio/print', () => {
 				for (const figure of entry.evidence?.text.match(/\d[\d.,~]*\s?(?:건|%|ms|초)/g) ?? [])
 					expect(result.textContent, entry.slug).not.toContain(figure);
 				expect(result.textContent, entry.slug).not.toMatch(/없습니다|아닙니다|않았습니다/);
-				expect(within(page).getByRole('heading', { level: 3, name: '한계' }).parentElement?.textContent).toContain(
-					entry.limit,
-				);
+				expect(
+					within(page).getByRole('heading', { level: 3, name: '확인 범위와 한계' }).parentElement?.textContent,
+				).toContain(entry.limit);
 				expect(page.textContent).toContain(`${entry.item.title} (계속)`);
 			}
 		});
@@ -225,6 +238,20 @@ describe('/portfolio/print', () => {
 				expect(rows[index].textContent).toContain(item.title);
 				expect(rows[index].textContent).toContain(line);
 				expect(container.querySelector(`[data-print-case="${item.slug}"]`)).toBeNull();
+			}
+		});
+
+		it('용어 풀이는 마지막 쪽의 맨 아래에 6줄로만 나온다', () => {
+			const { container } = render(<PortfolioPrintPage />);
+			const page = pageOf(container, 'others');
+			const glossary = within(page).getByRole('region', { name: '자주 나오는 용어' });
+
+			expect(container.querySelectorAll('#print-glossary-title')).toHaveLength(1);
+			expect(page.lastElementChild).toBe(glossary);
+			expect(glossary.querySelectorAll('dt')).toHaveLength(PRINT_GLOSSARY.length);
+			for (const { term, description } of PRINT_GLOSSARY) {
+				expect(within(glossary).getByText(term)).toBeInTheDocument();
+				expect(within(glossary).getByText(description)).toBeInTheDocument();
 			}
 		});
 

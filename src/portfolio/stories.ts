@@ -9,6 +9,8 @@
 export type Basis = 'resume' | 'code' | 'draft';
 
 export interface DecisionOption {
+	/** 실제 작업에서 이 방식이 차지한 지위. */
+	label: string;
 	name: string;
 	verdict: 'chosen' | 'rejected';
 	reason: string;
@@ -60,6 +62,7 @@ export const STORIES: CaseStory[] = [
 				question: '최종 결제 금액은 누가 확정해야 하는가',
 				options: [
 					{
+						label: '바꾼 방식',
 						name: '서버(체크아웃 API)가 확정',
 						verdict: 'chosen',
 						reason:
@@ -67,6 +70,7 @@ export const STORIES: CaseStory[] = [
 						basis: 'code',
 					},
 					{
+						label: '기존 방식',
 						name: '화면이 계산하고 서버는 검증만',
 						verdict: 'rejected',
 						reason:
@@ -79,10 +83,11 @@ export const STORIES: CaseStory[] = [
 				question: '구매 후 화면의 버튼과 어드민의 상태 기준을 어떻게 맞출 것인가',
 				options: [
 					{
+						label: '적용한 방식',
 						name: '서버 주문 상태를 기준으로 한 곳에서 버튼을 결정',
 						verdict: 'chosen',
 						reason:
-							'한 곳에서 주문 상태로 보여 줄 버튼을 정하고 버튼은 그리기만 하므로, 사용자 화면과 어드민이 같은 상태를 기준으로 동작합니다.',
+							'프론트엔드 코드 한 곳에서 서버 주문 상태에 맞는 버튼 목록을 정하고 화면은 그 목록을 그리며, 판매 업체용 관리 화면도 서버의 반품 상태를 표시합니다.',
 						basis: 'code',
 					},
 				],
@@ -108,7 +113,7 @@ export const STORIES: CaseStory[] = [
 			{
 				problem:
 					'결제 버튼을 누르는 사이에 재고가 먼저 소진되거나 주문이 만료될 수 있어, 그때마다 사용자가 다음에 할 일을 알 수 있어야 했습니다.',
-				fix: '결제 버튼을 누르면 체크아웃을 다시 호출해 서버가 재고와 쿠폰을 검증하게 하고, 재고 오류는 모달로 알린 뒤 장바구니에서 다시 고르게 했습니다.',
+				fix: '결제 버튼을 누르면 체크아웃을 다시 호출해 서버가 재고와 쿠폰을 검증하게 하고, 재고 오류는 안내 창으로 알린 뒤 장바구니에서 다시 고르게 했습니다.',
 				basis: 'code',
 				diagram: {
 					actors: ['결제 화면', '체크아웃 API', '장바구니'],
@@ -122,8 +127,8 @@ export const STORIES: CaseStory[] = [
 			},
 			{
 				problem:
-					'구매 후에는 주문 상태마다 보여 줄 버튼이 달랐고, 입점업체 어드민도 같은 상태를 기준으로 봐야 했습니다.',
-				fix: '서버 주문 상태를 보고 버튼 목록을 돌려주는 곳을 한 군데로 모으고, 버튼 컴포넌트는 받은 목록을 그리기만 하게 했습니다.',
+					'구매 후에는 주문 상태마다 보여 줄 버튼이 달랐고, 입점업체 어드민의 반품 상태 표시도 서버 상태를 기준으로 봐야 했습니다.',
+				fix: '프론트엔드 코드 한 곳에서 서버 주문 상태를 읽어 버튼 목록을 정하고, 버튼 컴포넌트는 그 목록을 그리기만 하게 했습니다.',
 				basis: 'code',
 			},
 		],
@@ -141,6 +146,7 @@ export const STORIES: CaseStory[] = [
 				question: '검색 조건을 어디에 둘 것인가',
 				options: [
 					{
+						label: '적용한 방식',
 						name: 'URL과 동기화',
 						verdict: 'chosen',
 						reason:
@@ -150,15 +156,17 @@ export const STORIES: CaseStory[] = [
 				],
 			},
 			{
-				question: 'PC 체크박스와 모바일 칩의 필터를 어떻게 만들 것인가',
+				question: 'PC 체크박스와 모바일 선택 버튼의 필터를 어떻게 만들 것인가',
 				options: [
 					{
-						name: '같은 상태와 콜백을 공유',
+						label: '적용한 방식',
+						name: '같은 필터 상태와 변경 함수를 공유',
 						verdict: 'chosen',
 						reason: '필터 상태가 하나라서 화면 모양만 다르게 그려도 PC와 모바일의 결과가 어긋나지 않습니다.',
 						basis: 'code',
 					},
 					{
+						label: '확인 전 대안',
 						name: '화면별로 따로 구현',
 						verdict: 'rejected',
 						reason: '[확인 필요] 실제로 두 구현이 어긋났던 경험이 있었는지 작성자 확인 전 초안입니다.',
@@ -170,8 +178,8 @@ export const STORIES: CaseStory[] = [
 		troubles: [
 			{
 				problem:
-					'검색어·필터·정렬·페이지를 정한 뒤 상세 화면에 다녀오거나 링크를 공유해도 같은 조건이 유지돼야 했고, 상태를 바꾸는 함수 안에서 라우터를 직접 호출해서도 안 됐습니다.',
-				fix: '주소를 원본으로 두고, 사용자가 조작하면 상태만 바꾼 뒤 effect에서 주소에 반영했습니다. 검색어는 push, 필터와 정렬은 replace로 써서 체크박스를 누를 때마다 기록이 쌓이지 않게 했습니다.',
+					'상세 화면에 다녀오거나 링크를 공유해도 검색 조건이 유지돼야 했고, 화면 상태 갱신과 라우터(페이지 이동·주소 변경 기능) 호출도 분리해야 했습니다.',
+				fix: '진입·뒤로가기 때는 주소에서 상태를 복원하고, 사용자가 조작할 때는 상태를 갱신한 뒤 effect(상태 변경 후 실행하는 처리)에서 주소에 기록했습니다. 검색어는 push(방문 기록 추가), 필터·정렬은 replace(현재 기록 교체)로 써서 체크박스를 누를 때마다 기록이 쌓이지 않게 했습니다.',
 				basis: 'code',
 				diagram: {
 					actors: ['사용자', '검색 화면', '주소(URL)'],
@@ -218,16 +226,25 @@ export const STORIES: CaseStory[] = [
 		slug: 'wellobiz-chakra-zod',
 		decisions: [
 			{
-				question: 'Chakra에 의존한 글로벌 컴포넌트와 서드파티 UI 라이브러리를 어떻게 정리할 것인가',
+				question: '기존 화면 도구와 공통 부품을 어떻게 바꿀 것인가',
 				options: [
 					{
+						label: '바꾼 방식',
 						name: '공통 디자인 시스템과 더 단순한 구현으로 대체',
 						verdict: 'chosen',
 						reason:
-							'Modal·Alert·Table 등은 공통 디자인 시스템으로, 캐러셀은 Embla Carousel로, 패널 크기 조절은 Pointer Events 직접 구현으로 바꿨습니다.',
+							'대화창·알림·표는 공통 디자인 시스템으로, 카드 슬라이드는 Embla Carousel로, 패널 크기 조절은 Pointer Events 직접 구현으로 바꿨습니다.',
 						basis: 'code',
 					},
 					{
+						label: '기존 방식',
+						name: 'Chakra UI·Swiper 등 화면 도구를 직접 사용',
+						verdict: 'rejected',
+						reason: '다른 앱은 공통 디자인 시스템을 쓰고 있어 Wello-biz의 화면 구성 방식이 갈려 있었습니다.',
+						basis: 'resume',
+					},
+					{
+						label: '확인 전 대안',
 						name: '어댑터를 두고 화면 단위로 점진 교체',
 						verdict: 'rejected',
 						reason: '[확인 필요] 이 방식을 검토했는지, 일괄 전환을 택한 이유가 무엇인지 작성자 확인 전 초안입니다.',
@@ -236,16 +253,18 @@ export const STORIES: CaseStory[] = [
 				],
 			},
 			{
-				question: 'Zod가 선언되지 않은 필드를 제거하는 문제를 어떻게 풀 것인가',
+				question: '제출할 때 값이 빠지는 문제를 어떻게 풀 것인가',
 				options: [
 					{
-						name: '값을 그대로 보내야 하는 폼의 스키마를 looseObject로 선언',
+						label: '보존 방식',
+						name: '값을 그대로 보내야 하는 폼의 검증 설정을 looseObject로 선언',
 						verdict: 'chosen',
 						reason:
 							'선언하지 않은 필드도 제출 데이터에서 빠지지 않아 API 응답 전체를 폼 값으로 쓰는 화면에서도 값이 유지됩니다.',
 						basis: 'code',
 					},
 					{
+						label: '확인 전 대안',
 						name: '모든 필드를 스키마에 선언',
 						verdict: 'rejected',
 						reason: '[확인 필요] 이 방식을 검토했는지, 버린 이유가 무엇인지 작성자 확인 전 초안입니다.',
@@ -271,12 +290,13 @@ export const STORIES: CaseStory[] = [
 			},
 			{
 				problem: '배열이나 객체 안에 있는 필드의 검증 오류도 해당 입력에 보여야 했습니다.',
-				fix: '직접 만든 resolver가 Zod의 오류 경로를 따라 중첩 오류 객체를 만들어 필드마다 오류가 붙게 했습니다.',
+				fix: '직접 만든 resolver가 배열·객체 안에서 오류가 난 위치를 따라 검증 결과를 연결해, 해당 입력 칸에 오류가 표시되게 했습니다.',
 				basis: 'code',
 			},
 			{
-				problem: 'Zod가 스키마에 선언되지 않은 필드를 제출 데이터에서 제거했습니다.',
-				fix: '값을 그대로 보내야 하는 폼의 스키마를 looseObject로 바꿔 필드가 빠지지 않게 했습니다.',
+				problem:
+					'서버 응답 전체를 폼 값으로 쓰는 화면에서, Zod가 검증 설정에 선언되지 않은 값을 제출 데이터에서 제거했습니다.',
+				fix: '값을 그대로 보내야 하는 폼의 검증 설정을 looseObject로 바꿔 필드가 빠지지 않게 했습니다.',
 				basis: 'resume',
 			},
 		],
@@ -292,12 +312,13 @@ export const STORIES: CaseStory[] = [
 		slug: 'admin-session-refresh',
 		decisions: [
 			{
-				question: '동시에 401을 받은 요청이 토큰 갱신을 어떻게 나눠 쓸 것인가',
+				question: '같은 탭에서 동시에 401을 받은 요청을 어떻게 처리할 것인가',
 				options: [
 					{
-						name: '진행 중인 갱신 Promise를 공유해 첫 요청만 갱신',
+						label: '같은 탭의 갱신',
+						name: '같은 탭의 진행 중인 갱신 Promise를 공유',
 						verdict: 'chosen',
-						reason: '첫 요청만 갱신을 호출하고 나머지는 같은 결과를 기다립니다.',
+						reason: '같은 탭 안의 첫 요청만 갱신을 호출하고 나머지 동시 요청은 그 결과를 기다립니다.',
 						basis: 'code',
 					},
 				],
@@ -306,6 +327,7 @@ export const STORIES: CaseStory[] = [
 				question: '다른 탭이 먼저 갱신한 경우를 어떻게 다룰 것인가',
 				options: [
 					{
+						label: '다른 탭 확인',
 						name: '실패한 요청의 토큰과 쿠키 토큰을 비교(Next.js 어드민)',
 						verdict: 'chosen',
 						reason: '쿠키 토큰이 다르면 다른 탭이 이미 갱신한 것으로 보고 갱신 없이 쿠키의 토큰으로 다시 요청합니다.',
@@ -317,11 +339,11 @@ export const STORIES: CaseStory[] = [
 		troubles: [
 			{
 				problem:
-					'요청 여러 개가 한꺼번에 401을 받을 때 갱신 토큰이 한 번만 쓸 수 있는 방식이라면, 요청마다 각자 갱신해 첫 요청만 성공하고 나머지는 로그아웃될 수 있습니다.',
-				fix: '진행 중인 갱신 Promise가 있으면 새로 요청하지 않고 같은 결과를 함께 기다리게 했습니다.',
+					'같은 탭의 요청 여러 개가 한꺼번에 401을 받을 때 갱신 토큰이 한 번만 쓸 수 있는 방식이라면, 요청마다 각자 갱신해 첫 요청만 성공하고 나머지는 로그아웃될 수 있습니다.',
+				fix: '같은 탭 안에서 진행 중인 갱신 Promise를 함께 기다리게 했고, 다른 탭이 먼저 갱신했는지는 쿠키 토큰 비교로 확인했습니다.',
 				basis: 'resume',
 				diagram: {
-					actors: ['요청 A', '요청 B', '인증 서버'],
+					actors: ['같은 탭 요청 A', '같은 탭 요청 B', '인증 서버'],
 					steps: [
 						{ from: 0, to: 2, label: '401 수신, 갱신 요청' },
 						{ from: 1, to: 2, label: '401 수신, 같은 갱신 토큰으로 갱신 요청', tone: 'problem' },
@@ -347,8 +369,8 @@ export const STORIES: CaseStory[] = [
 			},
 			{
 				problem:
-					'로그아웃 요청이 401을 받거나 갱신 요청 자신이 같은 인터셉터를 거치면, 갱신과 재시도와 401이 반복될 수 있습니다.',
-				fix: '로그아웃 요청은 복구 대상에서 빼고, 갱신은 인터셉터를 거치지 않는 fetch로 보냈습니다.',
+					'로그아웃 요청이 401을 받거나 갱신 요청 자신이 같은 인터셉터(응답을 가로채 처리하는 공통 코드)를 거치면, 갱신과 재시도와 401이 반복될 수 있습니다.',
+				fix: '로그아웃 요청은 복구 대상에서 빼고, 갱신은 인터셉터를 거치지 않는 별도 요청으로 보냈습니다.',
 				basis: 'code',
 			},
 		],
@@ -368,6 +390,7 @@ export const STORIES: CaseStory[] = [
 				question: '외부 납부 뒤 완료 여부를 어떻게 판별할 것인가',
 				options: [
 					{
+						label: '복귀 확인 방식',
 						name: '복귀 시 납부 식별값을 서버에 조회',
 						verdict: 'chosen',
 						reason:
@@ -375,6 +398,7 @@ export const STORIES: CaseStory[] = [
 						basis: 'code',
 					},
 					{
+						label: '확인 전 대안',
 						name: '외부 화면의 완료 응답을 그대로 신뢰',
 						verdict: 'rejected',
 						reason: '[확인 필요] 이 방식을 검토했는지, 버린 이유가 무엇인지 작성자 확인 전 초안입니다.',
@@ -386,10 +410,11 @@ export const STORIES: CaseStory[] = [
 				question: '중복 기부를 어느 시점에 재확인할 것인가',
 				options: [
 					{
+						label: '처리 순서',
 						name: '결제 시점에 정산 후 최신 완료 이력을 다시 조회',
 						verdict: 'chosen',
 						reason:
-							'정산이 끝나기를 기다린 뒤 최신 이력을 조회하고, 이력이 있으면 모달로 보여 준 뒤 사용자가 진행 여부를 선택합니다.',
+							'정산이 끝나기를 기다린 뒤 최신 이력을 조회하고, 이력이 있으면 확인 창으로 보여 준 뒤 사용자가 진행 여부를 선택합니다.',
 						basis: 'code',
 					},
 				],
@@ -399,7 +424,7 @@ export const STORIES: CaseStory[] = [
 			{
 				problem:
 					'결제 버튼을 누를 때 정산이 끝나기 전에 최신 완료 이력을 조회하면, 방금 납부한 건이 반영되지 않아 같은 기부를 다시 시도할 수 있습니다.',
-				fix: '진입할 때 정산 요청을 한 번 보내 Promise를 보관하고, 결제 버튼을 누르면 그 Promise를 기다린 뒤 최신 완료 이력을 조회하게 순서를 고정했습니다.',
+				fix: '진입할 때 정산 요청을 한 번 보내 Promise(나중에 받을 작업 결과를 담는 객체)를 보관하고, 결제 버튼을 누르면 그 결과를 기다린 뒤 최신 완료 이력을 조회하게 순서를 고정했습니다.',
 				basis: 'resume',
 				diagram: {
 					actors: ['사용자', '기부 화면', '서버'],
@@ -449,6 +474,7 @@ export const STORIES: CaseStory[] = [
 				question: '긴 연동 흐름의 중간값을 어디에 둘 것인가',
 				options: [
 					{
+						label: '저장·복원 방식',
 						name: '단계는 주소에, 입력값은 세션 스토리지에 저장',
 						verdict: 'chosen',
 						reason:
@@ -461,6 +487,7 @@ export const STORIES: CaseStory[] = [
 				question: '일괄 철회에서 일부가 실패하면 어떻게 할 것인가',
 				options: [
 					{
+						label: '요청 처리 방식',
 						name: '기관 요청을 병렬 처리하고 실패한 항목만 안내',
 						verdict: 'chosen',
 						reason:
@@ -488,7 +515,7 @@ export const STORIES: CaseStory[] = [
 			},
 			{
 				problem: '기관 요청을 일괄 철회할 때 네트워크나 기관 쪽 문제로 일부 요청만 실패할 수 있었습니다.',
-				fix: '기관 요청을 병렬로 보내 결과를 모은 뒤, 실패한 항목만 토스트로 안내했습니다.',
+				fix: '기관 요청을 병렬로 보내 결과를 모은 뒤, 실패한 항목만 토스트(잠깐 표시되는 안내 메시지)로 알렸습니다.',
 				basis: 'code',
 				diagram: {
 					actors: ['연결 관리 화면', '기관 1', '기관 2'],
@@ -503,7 +530,7 @@ export const STORIES: CaseStory[] = [
 			},
 			{
 				problem: 'KHIS·KOSCOM·NICE의 서로 다른 절차를 하나의 사용자 여정으로 연결해야 했습니다.',
-				fix: '기관별 인증·동의·전송요구·전자서명 화면을 구현하고, 분야별 연동 여부를 기준으로 직접 접근을 차단했습니다.',
+				fix: '기관별 인증·동의·전송요구·전자서명 화면을 구현하고, 분야별 연동 여부를 기준으로 해당 분야 화면에 주소로 바로 들어오는 접근을 제한했습니다.',
 				basis: 'resume',
 			},
 		],
@@ -521,6 +548,7 @@ export const STORIES: CaseStory[] = [
 				question: '답변을 어떻게 보여 줄 것인가',
 				options: [
 					{
+						label: '적용한 방식',
 						name: '스트림으로 순차 반영',
 						verdict: 'chosen',
 						reason:
@@ -533,9 +561,18 @@ export const STORIES: CaseStory[] = [
 				question: '이전 대화를 불러올 때 읽던 위치를 어떻게 유지할 것인가',
 				options: [
 					{
+						label: '적용한 방식',
 						name: '추가된 높이만큼 스크롤 위치를 보정',
 						verdict: 'chosen',
-						reason: '그리기 전에 스크롤 위치를 보정해 이전 대화가 위에 붙어도 읽던 지점이 그대로 유지됩니다.',
+						reason:
+							'목록 위에 대화를 추가하기 전후의 높이 차이만큼 스크롤 위치를 옮겨, 화면이 그려질 때 읽던 내용이 같은 자리에 보이게 합니다.',
+						basis: 'code',
+					},
+					{
+						label: '검토한 방식',
+						name: '화면이 그려진 뒤 타이머로 위치를 되돌림',
+						verdict: 'rejected',
+						reason: '타이머 시간을 정할 근거가 없어 실행 환경이 달라지면 읽던 위치와 어긋날 수 있었습니다.',
 						basis: 'code',
 					},
 				],
@@ -545,7 +582,7 @@ export const STORIES: CaseStory[] = [
 			{
 				problem:
 					'이전 대화를 위에서 불러와 붙이면 읽던 위치가 밀립니다. 렌더링이 끝난 뒤 타이머로 되돌리는 방법은 시간을 정할 근거가 없어 환경이 다르면 어긋납니다.',
-				fix: '그리기 전에 늘어난 높이만큼 스크롤 위치를 보정해 읽던 지점을 유지하고, 새 메시지를 보낸 경우에는 맨 아래로 내려가게 나눴습니다.',
+				fix: '목록 위에 대화를 추가하기 전후의 높이 차이만큼 스크롤 위치를 옮긴 뒤 화면을 그려 읽던 지점을 유지하고, 새 메시지를 보낸 경우에는 맨 아래로 내려가게 나눴습니다.',
 				basis: 'code',
 				diagram: {
 					actors: ['사용자', '채팅 목록', '서버'],
@@ -573,8 +610,9 @@ export const STORIES: CaseStory[] = [
 				},
 			},
 			{
-				problem: '스트림을 끈 설정에서 같은 답변이 두 번 표시됐습니다.',
-				fix: '답변이 끝나면 대화 이력을 다시 불러오는데, 이력을 화면에 있던 메시지 뒤에 이어 붙이던 방식을 이력으로 목록을 새로 만들도록 바꿨습니다.',
+				problem:
+					'답변을 조각으로 받지 않는 설정에서는 완료 후 대화 목록을 다시 불러왔는데, 이때 같은 답변이 두 번 표시됐습니다.',
+				fix: '다시 불러온 이력을 기존 메시지에 이어 붙이지 않고, 그 이력으로 목록을 새로 만들도록 바꿨습니다.',
 				basis: 'code',
 			},
 		],
@@ -592,6 +630,7 @@ export const STORIES: CaseStory[] = [
 				question: '고객사별 정보를 검색 엔진과 링크 미리보기에 어떻게 전달할 것인가',
 				options: [
 					{
+						label: '바꾼 방식',
 						name: '고객사 코드로 조회한 설정을 서버에서 메타데이터·Open Graph로 생성',
 						verdict: 'chosen',
 						reason:
@@ -599,7 +638,8 @@ export const STORIES: CaseStory[] = [
 						basis: 'code',
 					},
 					{
-						name: '고객사별 메타데이터를 코드에 직접 작성',
+						label: '기존 방식',
+						name: '고객사별 페이지 정보를 코드에 직접 작성',
 						verdict: 'rejected',
 						reason: '신규 고객사가 추가될 때마다 메타데이터를 코드에 직접 반영해야 해 고객사가 늘수록 부담이었습니다.',
 						basis: 'resume',
@@ -610,6 +650,7 @@ export const STORIES: CaseStory[] = [
 				question: '메타데이터 값은 어디서 고칠 것인가',
 				options: [
 					{
+						label: '운영 편집 방식',
 						name: 'CMS의 OG 편집 화면에서 고치고 서버가 조회',
 						verdict: 'chosen',
 						reason: '값을 CMS에서 고치고 서버가 조회해 쓰므로 프론트엔드 배포 없이 반영됩니다.',
@@ -666,15 +707,18 @@ export const STORIES: CaseStory[] = [
 		slug: 'swing-frontend',
 		decisions: [
 			{
-				question: '혼자 맡은 서비스 웹의 개발 속도를 어떻게 확보할 것인가',
+				question: '서비스 웹과 관리자 화면의 개발 기반을 어떻게 준비할 것인가',
 				options: [
 					{
-						name: '서비스 개발 전에 공통 기반(보일러플레이트·CMS UI 패키지)부터 구축',
+						label: '준비한 방식',
+						name: '서비스 개발 전에 보일러플레이트·CMS UI 패키지 구축',
 						verdict: 'chosen',
-						reason: '두 앱에 같은 보일러플레이트와 UI 패키지를 적용해 화면별 설정과 반복 UI를 일정하게 유지했습니다.',
+						reason:
+							'사용자 웹과 CMS에 각각 준비한 기본 구성을 적용하고 UI 패키지를 함께 써서 화면별 설정과 반복 화면 부품을 일정하게 유지했습니다.',
 						basis: 'resume',
 					},
 					{
+						label: '확인 전 대안',
 						name: '화면부터 바로 개발',
 						verdict: 'rejected',
 						reason: '[확인 필요] 기반 작업을 먼저 한 이유가 무엇이었는지 작성자 확인 전 초안입니다.',
@@ -700,21 +744,21 @@ export const STORIES: CaseStory[] = [
 			},
 			{
 				problem: '웹 서비스의 인증과 Unity WebGL 가상 오피스 진입을 하나의 흐름으로 이어야 했습니다.',
-				fix: '웹 로그인 토큰을 쿠키에 저장하고 진입 스크립트가 쿠키에서 읽어 인증하도록 연결했으며, 게스트는 예외로 두고 토큰이 없으면 로그인으로 돌려보냈습니다. Unity 개발은 담당하지 않았습니다.',
+				fix: '게스트는 토큰 없이 진입하도록 두고, 로그인 사용자는 진입 스크립트가 쿠키의 토큰을 읽어 인증하게 했으며, 게스트가 아닌데 토큰이 없으면 로그인으로 돌려보냈습니다. Unity 개발은 담당하지 않았습니다.',
 				basis: 'code',
 				diagram: {
 					actors: ['웹 서비스', '쿠키', '진입 스크립트'],
 					steps: [
 						{ from: 0, to: 1, label: '로그인: 토큰을 쿠키에 저장' },
 						{ from: 2, to: 1, label: '가상 오피스 진입: 쿠키에서 토큰 읽기' },
-						{ from: 2, to: 0, label: '토큰이 없으면 로그인 화면으로 보냄', tone: 'fix' },
+						{ from: 2, to: 0, label: '게스트가 아닌데 토큰이 없으면 로그인으로 이동', tone: 'fix' },
 						{ from: 2, to: 1, label: '게스트는 토큰 없이 진입' },
 					],
 				},
 			},
 			{
 				problem: '계약 관리번호가 중복이면 일반적인 실패 알림만 떠서 무엇이 문제인지 알기 어려웠습니다.',
-				fix: '서버가 충돌(409)로 응답하면 관리번호 입력 항목에 오류를 표시했습니다. 생성과 수정 모두 같은 방식입니다.',
+				fix: '서버가 409(요청이 서버의 현재 상태와 충돌했다는 응답)를 보내면 관리번호 입력 항목에 오류를 표시했습니다. 생성과 수정 모두 같은 방식입니다.',
 				basis: 'code',
 			},
 		],
@@ -730,15 +774,18 @@ export const STORIES: CaseStory[] = [
 		slug: 'avatar-studio-performance',
 		decisions: [
 			{
-				question: '첫 콘텐츠 표시(FCP)를 막는 비용을 어떻게 줄일 것인가',
+				question: '첫 콘텐츠 표시 시간을 어떻게 줄일 것인가',
 				options: [
 					{
+						label: '적용한 방식',
 						name: '3D 뷰를 Suspense 경계로 분리',
 						verdict: 'chosen',
-						reason: '3D 렌더링이 끝나기를 기다리지 않고 나머지 화면이 먼저 그려지도록 경계를 나눕니다.',
+						reason:
+							'3D 뷰의 로딩을 별도 경계에서 다루도록 나눴으며, 경계 밖에 둔 화면의 구성과 각 조치의 개별 효과는 확인하지 못했습니다.',
 						basis: 'resume',
 					},
 					{
+						label: '기여 확인 전',
 						name: 'CDN 자산 경로를 환경 변수 상수로 정리',
 						verdict: 'chosen',
 						reason:
@@ -751,9 +798,11 @@ export const STORIES: CaseStory[] = [
 				question: '3D 뷰와 편집 기능을 어떻게 나눌 것인가',
 				options: [
 					{
+						label: '적용한 방식',
 						name: '편집 화면이 데이터를 계산하고 3D 뷰는 표시만',
 						verdict: 'chosen',
-						reason: '편집 화면이 표시할 메시와 텍스처를 계산하고 3D 뷰는 받은 값을 모델에 적용해 보여 주기만 합니다.',
+						reason:
+							'편집 화면이 표시할 메시(3D 물체의 형태)와 텍스처(표면 이미지)를 계산하고 3D 뷰는 받은 값을 모델에 적용해 보여 주기만 합니다.',
 						basis: 'code',
 					},
 				],
@@ -763,7 +812,7 @@ export const STORIES: CaseStory[] = [
 			{
 				problem:
 					'3D 렌더링과 대용량 정적 자산이 초기 진입을 막아 3초 이상 빈 화면이 노출됐고, 3D·편집 로직이 큰 컴포넌트에 섞여 작은 기능 변경도 기존 동작에 영향을 주기 쉬웠습니다.',
-				fix: '3D 뷰의 Suspense 경계 분리, CDN 자산 경로의 환경 변수 상수화, 역할별 컴포넌트 분리를 함께 적용해 Lighthouse 기준 FCP(첫 콘텐츠 표시)를 400~600ms로 줄였습니다.',
+				fix: '3D 뷰의 로딩 경계와 역할별 컴포넌트를 나눴고, FCP는 400~600ms로 측정됐습니다. CDN 경로 상수화는 파일 주소를 한 곳에서 관리하는 별도 정리이며, 속도 개선에 얼마나 기여했는지는 확인하지 못했습니다.',
 				basis: 'resume',
 				diagram: {
 					actors: ['사용자', '앱', '정적 자산 CDN'],
@@ -772,7 +821,7 @@ export const STORIES: CaseStory[] = [
 						{ from: 1, to: 2, label: '3D 렌더링과 대용량 자산을 받을 때까지 화면이 비어 있음', tone: 'problem' },
 						{ from: 1, to: 0, label: '3초 이상 빈 화면', tone: 'problem' },
 						{ from: 1, to: 0, label: '3D 뷰를 Suspense 경계로 분리', tone: 'fix' },
-						{ from: 1, to: 2, label: 'CDN 자산 경로를 환경 변수 상수로 정리', tone: 'fix' },
+						{ from: 1, to: 0, label: '측정된 FCP 400~600ms(조작 가능 시점과는 다름)', tone: 'fix' },
 					],
 				},
 			},

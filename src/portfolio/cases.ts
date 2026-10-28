@@ -51,7 +51,7 @@ const CASE_SOURCES: PortfolioCaseSource[] = [
 		slug: 'wellomarket-checkout',
 		title: '웰마켙 결제·배송·리뷰와 입점업체 어드민 구축',
 		summary:
-			'쿠폰·웰포인트를 조합한 최종 결제 금액을 서버 체크아웃 응답 하나로 정해 결제사에 보내고, 결제 뒤 배송조회·리뷰 작성 화면과 입점업체 어드민을 서버 주문 상태 기준으로 만들었습니다.',
+			'쿠폰·포인트를 반영한 최종 금액은 서버에서 결제 직전에 확인한 값 하나로 정해 결제사에 보내고, 배송조회·리뷰 작성 화면과 판매 업체용 관리 화면은 서버의 주문 상태를 기준으로 만들었습니다.',
 		keywords: ['PG', '쿠폰·포인트', '주문 상태', '결제 금액'],
 		resumeRef: {
 			organization: ORGANIZATIONS.WELLO,
@@ -63,7 +63,7 @@ const CASE_SOURCES: PortfolioCaseSource[] = [
 		slug: 'wello-responsive-search',
 		title: 'Wello PC 반응형 전환 및 통합검색 구축',
 		summary:
-			'PC에서도 600px 고정폭으로 보이던 화면을 PC 레이아웃으로 확장하고, 흩어진 콘텐츠를 카테고리별로 찾는 통합검색을 만들었습니다. 검색 조건은 URL이 원본이라 공유·새로고침·뒤로가기 뒤에도 복원됩니다.',
+			'PC에서도 600px 고정폭으로 보이던 화면을 넓히고, 흩어진 콘텐츠를 한 화면에서 찾는 통합검색을 만들었습니다. 검색 조건을 주소에 기록해 링크를 공유하거나 새로고침해도 다시 불러올 수 있게 했습니다.',
 		keywords: ['PC 반응형', '통합검색', 'URL', 'GA4'],
 		resumeRef: {
 			organization: ORGANIZATIONS.WELLO,
@@ -75,7 +75,7 @@ const CASE_SOURCES: PortfolioCaseSource[] = [
 		slug: 'donation-duplicate-guard',
 		title: '외부 납부 환경의 중복 기부 재확인',
 		summary:
-			'외부 지로 화면에서 납부를 마치는 고향사랑기부에서, 진입 시 정산하고 결제 시점에 최신 완료 이력을 다시 조회해 사용자가 확인한 뒤 진행하게 했고, 중복 기부 관련 CS 재문의가 약 70% 감소했다고 CS 담당자가 전했습니다.',
+			'외부 납부 화면을 다녀온 뒤 서버에서 최신 납부 내역을 다시 확인하고, 완료 이력이 있으면 사용자가 계속 기부할지 고르게 했습니다. 중복 기부 관련 CS(고객 상담) 재문의가 약 70% 감소했다고 CS 담당자가 전했습니다.',
 		keywords: ['정산', '납부 식별값', '웹뷰', 'CS 재문의'],
 		resumeRef: { organization: ORGANIZATIONS.WELLO, service: 'Wello', project: '외부 납부 환경의 중복 기부 재확인' },
 	},
@@ -83,7 +83,7 @@ const CASE_SOURCES: PortfolioCaseSource[] = [
 		slug: 'mydata-integration',
 		title: '의료·통신·신용 마이데이터 연동 및 연결 관리 구축',
 		summary:
-			'KHIS·KOSCOM·NICE의 서로 다른 절차를 본인인증부터 전송요구, 재동의, 철회, 전송 이력까지 이어지는 화면으로 구현하고, 진행 단계는 주소에, 단계별 입력값은 세션 스토리지에 나눠 보관했습니다.',
+			'기관마다 달랐던 개인정보 전송 절차를 본인인증부터 동의·전송·철회·이력 확인까지 이어지는 화면으로 만들었습니다. 외부 인증을 다녀와도 진행 단계를 이어갈 수 있도록 단계와 입력값을 저장했습니다.',
 		keywords: ['본인인증 SDK', '세션 스토리지', '일괄 철회', '전송 이력'],
 		resumeRef: {
 			organization: ORGANIZATIONS.WELLO,
@@ -95,7 +95,7 @@ const CASE_SOURCES: PortfolioCaseSource[] = [
 		slug: 'wellobiz-chakra-zod',
 		title: 'Wello-biz 레거시 UI 스택 정리 (Chakra UI·yup 제거)',
 		summary:
-			'Wello-biz의 Chakra UI·yup·Swiper를 걷어내고, UI는 공통 디자인 시스템으로 검증은 Zod 하나로 통일했습니다. 입력과 출력 타입이 다른 폼도 받는 폼 연결 resolver를 직접 만들었습니다.',
+			'앱마다 달랐던 화면 구성·입력값 검증 도구를 공통 기준으로 바꿨습니다. 빠르게 끌면 놓치던 패널 크기 조절과 입력 칸의 오류 표시, 제출할 때 값이 빠지는 문제도 고쳤습니다.',
 		keywords: ['Chakra UI', 'yup', 'Embla Carousel', 'Zod'],
 		resumeRef: {
 			organization: ORGANIZATIONS.WELLO,
@@ -107,7 +107,7 @@ const CASE_SOURCES: PortfolioCaseSource[] = [
 		slug: 'admin-session-refresh',
 		title: 'Next.js·Vue 통합 어드민 토큰 자동 갱신',
 		summary:
-			'토큰이 만료돼도 갱신되지 않던 Next.js·Vue 어드민에서 401을 받으면 토큰을 갱신해 다시 요청하게 하고, 웰로·웰로비즈 어드민의 쿠키를 접속 도메인별로 분리해 서로의 로그인 정보를 덮어쓰지 않게 했습니다.',
+			'로그인 증명값이 만료되면 자동으로 갱신해 요청을 다시 보내도록 관리 화면을 고쳤습니다. 웰로·웰로비즈의 로그인 저장값도 접속 주소별로 나눠 서로 덮어쓰지 않게 했습니다.',
 		keywords: ['401', '갱신', '쿠키', '도메인별로 분리'],
 		resumeRef: {
 			organization: ORGANIZATIONS.WELLO,
@@ -119,7 +119,7 @@ const CASE_SOURCES: PortfolioCaseSource[] = [
 		slug: 'ai-chatbot-cms',
 		title: 'AI 챗봇 사용자 서비스·운영 CMS 구축',
 		summary:
-			'OpenAI Assistants의 답변을 스트림으로 순차 반영하고 이전 대화를 불러올 때 읽던 위치를 유지했으며, 운영 CMS의 OG 편집, 미리보기 채팅, 유튜브 요약 지식 파일 등록 화면을 만들었습니다.',
+			'답변이 만들어지는 동안 글자를 순서대로 보여 주고, 이전 대화를 불러와도 읽던 위치를 유지했습니다. 운영 CMS(콘텐츠 관리 화면)에서는 지식 파일과 링크 미리보기 정보를 고칠 수 있게 했습니다.',
 		keywords: ['OpenAI Assistants', '스크롤 위치', 'CMS', '벡터 스토어'],
 		resumeRef: {
 			organization: ORGANIZATIONS.SALIN,
@@ -131,7 +131,7 @@ const CASE_SOURCES: PortfolioCaseSource[] = [
 		slug: 'ai-chatbot-ssr',
 		title: 'AI 챗봇 고객사별 메타데이터·Open Graph 서버 렌더링 구축',
 		summary:
-			'고객사 코드로 조회한 설정을 서버에서 메타데이터·Open Graph에 반영하고 CMS에서 OG를 편집할 수 있게 해, 프론트엔드 배포 없이 값을 바꾸고 신규 고객사에도 적용되게 했습니다.',
+			'고객사 설정을 찾아 서버에서 페이지 제목·설명·링크 공유 이미지를 넣고, 운영자가 관리 화면에서 고칠 수 있게 했습니다. 프론트엔드를 다시 배포하지 않고 값을 바꾸거나 신규 고객사에 적용할 수 있습니다.',
 		keywords: ['Next.js 15', 'Open Graph', 'generateMetadata', 'App Router'],
 		resumeRef: {
 			organization: ORGANIZATIONS.SALIN,
@@ -143,7 +143,7 @@ const CASE_SOURCES: PortfolioCaseSource[] = [
 		slug: 'swing-frontend',
 		title: `Swing ${SWING_PROJECT_TITLE}`,
 		summary:
-			'Webpack 사용자 웹 프론트엔드를 단독 개발하고 Vite 관리자 CMS 프론트엔드를 개발했습니다. 계약 수정 때 첨부파일이 사라지던 문제를 고치고, 웹 인증을 Unity WebGL 가상 오피스 진입에 연결했습니다. Unity 개발은 담당하지 않았습니다.',
+			'사용자 웹 프론트엔드를 단독 개발하고 관리자 CMS(콘텐츠 관리 화면) 프론트엔드도 개발했습니다. 계약 수정 때 첨부파일이 사라지던 문제를 고치고, 웹 로그인을 3D 가상 오피스 진입에 연결했습니다. Unity 개발은 담당하지 않았습니다.',
 		keywords: ['Webpack 5', 'Vite', 'S3'],
 		resumeRef: {
 			organization: ORGANIZATIONS.SALIN,
@@ -155,7 +155,7 @@ const CASE_SOURCES: PortfolioCaseSource[] = [
 		slug: 'avatar-studio-performance',
 		title: '아바타 스튜디오 성능 개선',
 		summary:
-			'3초 이상 빈 화면이 노출되던 WebGL 아바타 서비스의 3D 뷰를 Suspense 경계로 분리하고 CDN 자산 경로를 환경 변수 상수로 정리해, Lighthouse 기준 FCP(첫 콘텐츠 표시)를 400~600ms로 단축했습니다.',
+			'3초 이상 빈 화면이 보이던 3D 아바타 서비스에서 화면의 로딩 경계를 나누고 편집 기능과 3D 표시를 분리했습니다. 첫 콘텐츠 표시 시간은 400~600ms로 줄었고, 파일 경로를 한 곳에 모으는 정리도 함께 했습니다.',
 		keywords: ['WebGL', 'Suspense', 'CDN', 'Lighthouse', 'FCP'],
 		resumeRef: { organization: ORGANIZATIONS.SALIN, service: 'Localo', project: '아바타 스튜디오 성능 개선' },
 	},

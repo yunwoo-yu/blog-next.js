@@ -16,7 +16,7 @@ import {
 import PrintContacts from './PrintContacts';
 import { PrintLabel, PrintSheet } from './PrintParts';
 
-const TOC_ITEM_CLASS = 'flex gap-[2mm] break-inside-avoid border-t-[0.5pt] border-print-rule py-[2mm]';
+const TOC_ITEM_CLASS = 'flex gap-[2mm] break-inside-avoid border-t-[0.5pt] border-print-rule py-[1.5mm]';
 const TOC_NUM_CLASS = 'w-[8mm] flex-none text-[11pt] font-bold tabular-nums text-print-accent';
 const TOC_PAGE_CLASS = 'text-[10.5pt] font-bold tabular-nums text-print-ink';
 
@@ -51,7 +51,7 @@ const PrintCover = () => {
 				</p>
 			</header>
 
-			<div className="mt-[7mm] grid grid-cols-2 gap-[10mm]">
+			<div className="mt-[6mm] grid grid-cols-2 gap-[10mm]">
 				<section aria-labelledby="print-careers">
 					<PrintLabel id="print-careers">경력</PrintLabel>
 					<ul>
@@ -92,7 +92,7 @@ const PrintCover = () => {
 				))}
 			</ul>
 
-			<section aria-labelledby="print-toc" className="mt-[7mm]">
+			<section aria-labelledby="print-toc" className="mt-[5mm]">
 				<PrintLabel id="print-toc">대표 사례</PrintLabel>
 				<ol>
 					{featured.map(({ item, tocPhrase }, index) => (
