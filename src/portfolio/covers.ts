@@ -20,11 +20,11 @@ export interface CaseCoverStyle {
 }
 
 const BLUE = 'bg-pf-blue-50 text-pf-blue-700';
-const MINT = 'bg-[#e3f7ee] text-[#0b7a52]';
-const VIOLET = 'bg-[#f0eaff] text-[#5b3fd0]';
-const AMBER = 'bg-[#fff2dc] text-[#a35a05]';
-const ROSE = 'bg-[#ffebee] text-[#c0283d]';
-const SLATE = 'bg-[#eceff3] text-pf-gray-800';
+const MINT = 'bg-pf-tone-mint-bg text-pf-tone-mint-fg';
+const VIOLET = 'bg-pf-tone-violet-bg text-pf-tone-violet-fg';
+const AMBER = 'bg-pf-tone-amber-bg text-pf-tone-amber-fg';
+const ROSE = 'bg-pf-tone-rose-bg text-pf-tone-rose-fg';
+const SLATE = 'bg-pf-tone-slate-bg text-pf-tone-slate-fg';
 
 export const CASE_COVERS: Record<string, CaseCoverStyle> = {
 	'wellomarket-checkout': { icon: CreditCard, tone: BLUE },

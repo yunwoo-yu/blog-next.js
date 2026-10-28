@@ -8,6 +8,7 @@ export const WWW_BASE_URL = 'https://www.ycow-dev.com';
 
 export const BLOG_POSTS_PATH = '/blog/posts';
 export const RESUME_PATH = '/resume';
+export const PORTFOLIO_PATH = '/portfolio';
 
 /** 이력서와 포트폴리오 상세가 같이 가리키는 블로그 글(역방향 무한스크롤). */
 export const REVERSE_INFINITE_SCROLL_POST_URL = `${WWW_BASE_URL}${BLOG_POSTS_PATH}/next/reverse_infinite_scroll`;
@@ -83,5 +84,13 @@ export const WEB_PATH = {
 	POSTS: {
 		path: () => BLOG_POSTS_PATH,
 		label: 'Posts',
+	},
+	PORTFOLIO: {
+		path: () => PORTFOLIO_PATH,
+		label: '포트폴리오',
+	},
+	RESUME: {
+		path: () => RESUME_PATH,
+		label: '이력서',
 	},
 };

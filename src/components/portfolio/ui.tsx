@@ -13,7 +13,7 @@ export const FOCUS_RING =
 	'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pf-blue focus-visible:ring-offset-2 focus-visible:ring-offset-white';
 
 /** 파랑 면 버튼의 공통 색(흰 글자). 호버는 한 단계 진한 파랑. */
-export const PRIMARY_BUTTON_CLASS = 'bg-pf-blue-700 text-white hover:bg-[#1957c2]';
+export const PRIMARY_BUTTON_CLASS = 'bg-pf-blue-700 text-white hover:bg-pf-blue-800';
 
 /** 본문 크기의 링크. 파랑 500 은 본문 크기에서 대비가 모자라 700 을 쓰고 밑줄로 링크임을 드러낸다. */
 export const TEXT_LINK_CLASS = 'font-medium text-pf-blue-700 underline underline-offset-4 hover:no-underline';

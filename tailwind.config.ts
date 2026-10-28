@@ -33,6 +33,7 @@ const config: Config = {
 					blue: {
 						DEFAULT: 'var(--pf-blue-500)',
 						700: 'var(--pf-blue-700)',
+						800: 'var(--pf-blue-800)',
 						50: 'var(--pf-blue-50)',
 						100: 'var(--pf-blue-100)',
 					},
@@ -48,6 +49,14 @@ const config: Config = {
 						50: 'var(--pf-gray-50)',
 					},
 					line: 'var(--pf-line)',
+					// 사례별 표지(아이콘 면) 색. 배경과 아이콘 색 한 쌍씩이다.
+					tone: {
+						mint: { bg: '#e3f7ee', fg: '#0b7a52' },
+						violet: { bg: '#f0eaff', fg: '#5b3fd0' },
+						amber: { bg: '#fff2dc', fg: '#a35a05' },
+						rose: { bg: '#ffebee', fg: '#c0283d' },
+						slate: { bg: '#eceff3', fg: 'var(--pf-gray-800)' },
+					},
 				},
 				// 인쇄(PDF) 문서 전용 색. 흰 종이 기준이라 라이트 고정이며 글자색은 ink-3 보다 연하게 쓰지 않는다.
 				'print-ink': '#111827',
