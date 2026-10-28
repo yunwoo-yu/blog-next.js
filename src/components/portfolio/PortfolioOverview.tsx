@@ -67,13 +67,13 @@ const PortfolioOverview = () => {
 				</section>
 
 				<section aria-label="주요 결과" className="mt-14">
-					<ul className="grid grid-cols-2 gap-3">
+					<ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
 						{PORTFOLIO_KEY_RESULTS.map((result, index) => {
 							const featured = index === 0;
 							const { icon: Icon, tone } = getCaseCover(result.slug);
 
 							return (
-								<li key={result.value} className={cn(featured && PORTFOLIO_KEY_RESULTS.length > 2 && 'col-span-2')}>
+								<li key={result.value}>
 									<Link
 										href={buildCasePath(result.slug)}
 										className={cn(
@@ -94,9 +94,7 @@ const PortfolioOverview = () => {
 										<span
 											className={cn(
 												'mt-3 font-bold leading-[1.1] tracking-[-0.03em]',
-												featured
-													? 'text-[56px] md:text-[88px]'
-													: 'text-[26px] text-pf-blue sm:text-[36px] md:text-[40px]',
+												featured ? 'text-[56px] md:text-[88px]' : 'text-[36px] text-pf-blue md:text-[40px]',
 											)}>
 											<CountUp value={result.value} />
 										</span>
