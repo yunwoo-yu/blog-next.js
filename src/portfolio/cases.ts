@@ -154,8 +154,8 @@ const CASE_SOURCES: PortfolioCaseSource[] = [
 		slug: 'avatar-studio-performance',
 		title: '아바타 스튜디오 성능 개선',
 		summary:
-			'3초 이상 빈 화면이 노출되던 WebGL 아바타 서비스의 진입점을 lazy loading과 Suspense 경계로 나누고 정적 자산을 S3·CDN으로 이전해, Lighthouse FCP 기준 400~600ms로 단축했습니다.',
-		keywords: ['WebGL', 'lazy loading', 'Suspense', 'S3·CDN', 'Lighthouse FCP'],
+			'3초 이상 빈 화면이 노출되던 WebGL 아바타 서비스의 3D 뷰를 Suspense 경계로 분리하고 정적 자산을 S3·CDN으로 이전해, Lighthouse 기준 FCP(첫 콘텐츠 표시)를 400~600ms로 단축했습니다.',
+		keywords: ['WebGL', 'Suspense', 'S3·CDN', 'Lighthouse', 'FCP'],
 		resumeRef: { organization: ORGANIZATIONS.SALIN, service: 'Localo', project: '아바타 스튜디오 성능 개선' },
 	},
 ];

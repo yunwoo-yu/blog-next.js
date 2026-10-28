@@ -2,11 +2,12 @@ import type { ResumeLinkProps } from '@/components/resume/ResumeLink';
 import { META_AUTHOR_NAME } from '@/constant';
 import RESUME, { getCareerPeriod } from '@/constant/resume';
 
+import { PORTFOLIO_CASES } from './cases';
+
 export { PORTFOLIO_LINKS, PORTFOLIO_PATH, type PortfolioLink } from './links';
 
 export const PORTFOLIO_TITLE = `${META_AUTHOR_NAME} 포트폴리오`;
-export const PORTFOLIO_DESCRIPTION =
-	'프론트엔드 개발자 유윤우의 포트폴리오. 결제·통합검색·마이데이터·폼 검증 전환·어드민 토큰 갱신·AI 챗봇·WebGL 성능 개선 등 웰로와 살린의 6개 서비스에서 풀어 온 10가지 문제를 문제, 해결, 결과 순서로 정리했습니다.';
+export const PORTFOLIO_DESCRIPTION = `프론트엔드 개발자 ${META_AUTHOR_NAME}의 포트폴리오. 결제·통합검색·마이데이터·폼 검증 전환·어드민 토큰 갱신·AI 챗봇·WebGL 성능 개선 등 웰로와 살린의 ${RESUME.projects.length}개 서비스에서 풀어 온 ${PORTFOLIO_CASES.length}가지 문제를 문제, 해결, 결과 순서로 정리했습니다.`;
 
 export interface PortfolioKeyResult {
 	/** 크게 보이는 수치. 해당 사례의 이력서 원문(career-detail.ts)에 그대로 있어야 한다(테스트로 보장). */
@@ -29,7 +30,7 @@ export const PORTFOLIO_KEY_RESULTS: PortfolioKeyResult[] = [
 	},
 	{
 		value: '400~600ms',
-		label: '아바타 첫 화면 FCP, 기존 3초 이상',
+		label: '아바타 FCP(첫 콘텐츠 표시), 기존 3초 이상',
 		slug: 'avatar-studio-performance',
 		tag: '성능',
 	},

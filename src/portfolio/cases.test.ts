@@ -1,5 +1,5 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 
 import RESUME from '@/constant/resume';
 import { getCategoryList } from '@/utils/post-utils';
@@ -7,6 +7,9 @@ import { getCategoryList } from '@/utils/post-utils';
 import { CAREER_DETAIL, getCareerProjects } from './career-detail';
 import { buildCasePath, findResumeProject, getAdjacentCases, getPortfolioCase, PORTFOLIO_CASES } from './cases';
 import { getPortfolioExperience, PORTFOLIO_KEY_RESULTS } from './overview';
+
+/** 이력서에만 있어야 하는 퇴사 사유 전체. */
+const EXIT_REASONS = RESUME.careers.flatMap(career => career.exitReason ?? []);
 
 const projectText = (slug: string) => {
 	const item = PORTFOLIO_CASES.find(c => c.slug === slug)!;
@@ -71,7 +74,8 @@ describe('포트폴리오 케이스 데이터', () => {
 	});
 
 	it('퇴사 사유 문구는 사례 데이터에 담기지 않는다', () => {
-		expect(JSON.stringify(PORTFOLIO_CASES)).not.toContain('권고사직');
+		expect(EXIT_REASONS.length).toBeGreaterThan(0);
+		for (const reason of EXIT_REASONS) expect(JSON.stringify(PORTFOLIO_CASES)).not.toContain(reason);
 	});
 
 	it('없는 이력서 프로젝트를 참조하면 던진다', () => {
@@ -94,7 +98,7 @@ describe('포트폴리오 개요 데이터', () => {
 		const experience = getPortfolioExperience();
 
 		expect(experience.map(career => career.organization)).toEqual(RESUME.careers.map(career => career.organization));
-		expect(JSON.stringify(experience)).not.toContain('권고사직');
+		for (const reason of EXIT_REASONS) expect(JSON.stringify(experience)).not.toContain(reason);
 	});
 
 	it('핵심 숫자는 연결된 사례의 이력서 원문(career-detail.ts)에 그대로 나온다', () => {
@@ -159,21 +163,98 @@ describe('블로그·루트 번들과의 분리', () => {
 });
 
 describe('클라이언트 번들과 이력서 원문의 분리', () => {
-	const read = (file: string) => readFileSync(join(process.cwd(), file), 'utf8');
+	const ROOT = process.cwd();
+	const SRC = join(ROOT, 'src');
+	const CLIENT_ROOTS = ['components/portfolio', 'app/portfolio'].map(path => join(SRC, path));
+	/** 클라이언트 번들에 실리면 안 되는 서버 전용 데이터·아이콘 모듈. */
+	const FORBIDDEN_FILES = [
+		'constant/resume',
+		'portfolio/print',
+		'portfolio/stories',
+		'portfolio/career-detail',
+		'portfolio/covers',
+	];
+	const FORBIDDEN_PACKAGES = ['lucide-react'];
 
-	it('클라이언트 컴포넌트가 가져오는 모듈은 이력서 원문과 사례 데이터를 가져오지 않는다', () => {
-		const clientFiles = readdirSync(join(process.cwd(), 'src/components/portfolio'))
-			.filter(file => file.endsWith('.tsx') && !file.includes('.test.'))
-			.filter(file => read(`src/components/portfolio/${file}`).trimStart().startsWith("'use client'"));
+	const walk = (dir: string): string[] =>
+		readdirSync(dir, { withFileTypes: true }).flatMap(entry => {
+			const full = join(dir, entry.name);
+			if (entry.isDirectory()) return walk(full);
+			return /\.tsx?$/.test(entry.name) && !/\.test\./.test(entry.name) ? [full] : [];
+		});
 
-		// 지금은 클라이언트 컴포넌트가 없다. 새로 생기면 아래 규칙이 그대로 적용된다.
-		for (const file of clientFiles) {
-			const source = read(`src/components/portfolio/${file}`);
+	const IMPORT_PATTERN = /(?:^|\n)\s*(?:import|export)\s+(?!type\s)(?:[^'";]*?\sfrom\s+)?['"]([^'"]+)['"]/g;
 
-			expect(source, file).not.toMatch(
-				/from\s+'@\/constant\/resume'|from\s+'@\/portfolio\/(cases|overview|career-detail)'/,
-			);
+	/** 모듈 지정자를 src 안의 실제 파일로 푼다. 패키지(외부)는 undefined. */
+	const resolveLocal = (from: string, specifier: string) => {
+		const base = specifier.startsWith('@/')
+			? join(SRC, specifier.slice(2))
+			: specifier.startsWith('.')
+				? join(dirname(from), specifier)
+				: undefined;
+
+		if (!base) return undefined;
+
+		return ['.ts', '.tsx', '/index.ts', '/index.tsx']
+			.map(ext => `${base}${ext}`)
+			.find(candidate => existsSync(candidate));
+	};
+
+	/** 시작 파일에서 import 사슬을 재귀로 따라가 도달하는 모든 로컬 파일과 외부 패키지를 모은다. */
+	const reach = (entry: string) => {
+		const files = new Set<string>();
+		const packages = new Set<string>();
+		const stack = [entry];
+
+		while (stack.length > 0) {
+			const file = stack.pop()!;
+
+			if (files.has(file)) continue;
+			files.add(file);
+			for (const [, specifier] of readFileSync(file, 'utf8').matchAll(IMPORT_PATTERN)) {
+				const local = resolveLocal(file, specifier);
+
+				if (local) stack.push(local);
+				else if (!specifier.startsWith('.') && !specifier.startsWith('@/')) packages.add(specifier);
+			}
 		}
-		expect(read('src/portfolio/links.ts')).not.toMatch(/from\s+'@\/constant\/resume'/);
+
+		return { files, packages };
+	};
+
+	const clientFiles = () =>
+		CLIENT_ROOTS.flatMap(walk).filter(file => readFileSync(file, 'utf8').trimStart().startsWith("'use client'"));
+
+	it('포트폴리오의 클라이언트 컴포넌트를 찾는다(검사가 빈 채로 통과하지 않는다)', () => {
+		const names = clientFiles().map(file => file.slice(SRC.length + 1));
+
+		expect(names).toEqual(expect.arrayContaining(['components/portfolio/PrintButton.tsx']));
+	});
+
+	it('클라이언트 컴포넌트의 import 사슬은 이력서 원문·사례 데이터·아이콘에 닿지 않는다', () => {
+		for (const file of clientFiles()) {
+			const { files, packages } = reach(file);
+			const relative = [...files].map(item =>
+				item
+					.slice(SRC.length + 1)
+					.replace(/\.tsx?$/, '')
+					.replace(/\/index$/, ''),
+			);
+
+			for (const forbidden of FORBIDDEN_FILES) expect(relative, `${file}: ${forbidden}`).not.toContain(forbidden);
+			for (const forbidden of FORBIDDEN_PACKAGES)
+				expect([...packages], `${file}: ${forbidden}`).not.toContain(forbidden);
+		}
+	});
+
+	it('사슬 추적이 실제로 동작한다: 서버 컴포넌트 ui.tsx 는 covers 와 lucide-react 에 닿는다', () => {
+		const { files, packages } = reach(join(SRC, 'components/portfolio/ui.tsx'));
+
+		expect([...files].some(file => file.endsWith('portfolio/covers.ts'))).toBe(true);
+		expect([...packages]).toContain('lucide-react');
+	});
+
+	it('links.ts 는 이력서 원문을 가져오지 않는다', () => {
+		expect(readFileSync(join(ROOT, 'src/portfolio/links.ts'), 'utf8')).not.toMatch(/from\s+'@\/constant\/resume'/);
 	});
 });

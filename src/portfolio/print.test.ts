@@ -191,5 +191,7 @@ describe('기술 자료 링크', () => {
 		expect(blog.url).toBe(REVERSE_INFINITE_SCROLL_POST_URL);
 		expect(pr.url).toBe(ARGO_WORKFLOWS_PR_URL);
 		expect(pr.point).toContain('PR');
+		expect(blog.pointLabel).toBe('이 글에서 확인할 판단');
+		expect(pr.pointLabel).toBe('기여 내용');
 	});
 });

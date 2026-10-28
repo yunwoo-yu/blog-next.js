@@ -723,19 +723,19 @@ export const STORIES: CaseStory[] = [
 			'2인 팀에서 백엔드와 협업하며 정한 규칙(API 스펙, 에러 규약 등)이 있나요?',
 			'본문의 "프론트엔드 단독 개발"은 README의 기여자 표기만으로는 확정할 수 없습니다. 맞는 표현인가요?',
 			'첨부파일 수정 버그를 어떻게 재현하고 고친 뒤 확인했나요?',
-			'Unity 자산을 환경별 S3 경로에서 받는 부분은 코드로 확인하지 못했습니다. 직접 한 작업이 맞나요?',
+			'Unity 빌드를 S3에서 받는 부분은 startup-wing-front/down.sh 로 확인했습니다(버킷은 dev 하나). 이 스크립트와 빌드 포함 설정을 직접 작성했나요?',
 		],
 	},
 	{
 		slug: 'avatar-studio-performance',
 		decisions: [
 			{
-				question: '첫 화면을 막는 비용을 어떻게 줄일 것인가',
+				question: '첫 콘텐츠 표시(FCP)를 막는 비용을 어떻게 줄일 것인가',
 				options: [
 					{
-						name: '진입점을 lazy loading·Suspense로 분리',
+						name: '3D 뷰를 Suspense 경계로 분리',
 						verdict: 'chosen',
-						reason: '3D 렌더링이 첫 화면 표시를 막지 않고, 필요한 시점에 불러옵니다.',
+						reason: '3D 렌더링이 끝나기를 기다리지 않고 나머지 화면이 먼저 그려지도록 경계를 나눕니다.',
 						basis: 'resume',
 					},
 					{
@@ -762,16 +762,16 @@ export const STORIES: CaseStory[] = [
 			{
 				problem:
 					'3D 렌더링과 대용량 정적 자산이 초기 진입을 막아 3초 이상 빈 화면이 노출됐고, 3D·편집 로직이 큰 컴포넌트에 섞여 작은 기능 변경도 기존 동작에 영향을 주기 쉬웠습니다.',
-				fix: '진입점 분리, 자산 CDN 이전, 역할별 컴포넌트 분리를 함께 적용해 Lighthouse FCP 기준 400~600ms로 줄였습니다.',
+				fix: '3D 뷰의 Suspense 경계 분리, 자산 CDN 이전, 역할별 컴포넌트 분리를 함께 적용해 Lighthouse 기준 FCP(첫 콘텐츠 표시)를 400~600ms로 줄였습니다.',
 				basis: 'resume',
 				diagram: {
-					actors: ['사용자', '앱 진입점', '정적 자산 CDN'],
+					actors: ['사용자', '앱', '정적 자산 CDN'],
 					steps: [
 						{ from: 0, to: 1, label: '앱 접속' },
-						{ from: 1, to: 2, label: '3D 렌더링과 대용량 자산을 모두 받은 뒤에야 표시', tone: 'problem' },
+						{ from: 1, to: 2, label: '3D 렌더링과 대용량 자산을 받을 때까지 화면이 비어 있음', tone: 'problem' },
 						{ from: 1, to: 0, label: '3초 이상 빈 화면', tone: 'problem' },
-						{ from: 1, to: 0, label: '핵심 UI를 먼저 표시', tone: 'fix' },
-						{ from: 1, to: 2, label: '3D 뷰와 자산은 필요한 시점에 지연 로드', tone: 'fix' },
+						{ from: 1, to: 0, label: '3D 뷰를 Suspense 경계로 분리', tone: 'fix' },
+						{ from: 1, to: 2, label: '자산은 CDN에서 받음', tone: 'fix' },
 					],
 				},
 			},
@@ -800,7 +800,7 @@ export const STORIES: CaseStory[] = [
 		checks: [
 			'병목을 찾을 때 쓴 도구와 과정(번들 분석, Network 탭 등)은? 개선 전후 Lighthouse 캡처가 남아 있나요? (3초 이상과 400~600ms의 측정 원자료를 찾지 못했습니다)',
 			'외주사에서 인수한 코드에서 가장 위험했던 지점은 무엇이었나요?',
-			'git 이력상 lazy App 진입점과 JSON 원격 조회는 선행 작성자의 초기 커밋에 이미 있었습니다. 본인이 추가하거나 바꾼 경계는 어디까지인가요?',
+			'lazy App 진입점·JSON 원격 조회는 선행 작성자의 초기 커밋, Suspense 경계는 본인 커밋(6a362fb)으로 확인됐습니다. 본인이 추가하거나 바꾼 경계는 이 밖에 어디까지인가요?',
 			'S3·CDN 이전은 경로 상수화, 자산 업로드, 배포 구조 변경 중 어디까지 직접 했나요?',
 		],
 	},

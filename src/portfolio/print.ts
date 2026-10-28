@@ -1,6 +1,5 @@
 import {
 	ARGO_WORKFLOWS_PR_URL,
-	BASE_URL,
 	CONTACT_EMAIL,
 	GITHUB_URL,
 	META_AUTHOR_NAME,
@@ -82,10 +81,11 @@ export const PRINT_FEATURED: readonly PrintFeatured[] = [
 	},
 	{
 		slug: 'avatar-studio-performance',
-		oneLine: '진입점의 지연 로딩과 정적 자산의 S3·CDN 이전을 적용하고, 편집 상태와 3D 표시의 책임을 분리했습니다.',
-		evidence: { tag: '측정', text: '첫 화면 표시(FCP) 3초 이상 → 400~600ms · Lighthouse' },
-		limit: 'FCP는 첫 화면 표시 시간이며, 3D 편집 화면이 조작 가능해지는 시점과는 구분됩니다.',
-		tocPhrase: '첫 화면 표시 시간 개선',
+		oneLine:
+			'3D 뷰를 Suspense 경계로 분리하고 정적 자산을 S3·CDN으로 이전했으며, 편집 상태와 3D 표시의 책임을 분리했습니다.',
+		evidence: { tag: '측정', text: 'FCP(첫 콘텐츠 표시) 3초 이상 → 400~600ms · Lighthouse' },
+		limit: 'FCP는 첫 콘텐츠가 그려진 시점이며, 3D 편집 화면이 조작 가능해지는 시점과는 구분됩니다.',
+		tocPhrase: '첫 콘텐츠 표시(FCP) 개선',
 	},
 ];
 
@@ -128,7 +128,7 @@ export const PRINT_MAX_RESULT_SENTENCES = 2;
 export const PRINT_SKILL_COUNT = 10;
 
 /** 웹 포트폴리오 전체 주소. */
-export const PRINT_PORTFOLIO_URL = `${BASE_URL}${PORTFOLIO_PATH}`;
+export const PRINT_PORTFOLIO_URL = `${WWW_BASE_URL}${PORTFOLIO_PATH}`;
 
 const findCase = (slug: string): PortfolioCase => {
 	const found = PORTFOLIO_CASES.find(item => item.slug === slug);
@@ -226,7 +226,7 @@ export const getPrintContacts = () => [
 	{ label: '이메일', value: CONTACT_EMAIL, href: `mailto:${CONTACT_EMAIL}` },
 	{ label: 'GitHub', value: GITHUB_URL, href: GITHUB_URL },
 	{ label: '블로그', value: WWW_BASE_URL, href: WWW_BASE_URL },
-	{ label: '이력서', value: `${BASE_URL}${RESUME_PATH}`, href: `${BASE_URL}${RESUME_PATH}` },
+	{ label: '이력서', value: `${WWW_BASE_URL}${RESUME_PATH}`, href: `${WWW_BASE_URL}${RESUME_PATH}` },
 ];
 
 /** 표지의 경력 줄(회사·기간). */
@@ -245,11 +245,14 @@ export const getPrintReferences = () => {
 		{
 			label: '블로그',
 			url: REVERSE_INFINITE_SCROLL_POST_URL,
+			/** point 앞에 붙는 라벨. 항목 종류마다 다르다. */
+			pointLabel: '이 글에서 확인할 판단',
 			point: '스크롤 위치 보정 방식 두 가지 비교',
 		},
 		{
 			label: '오픈소스',
 			url: ARGO_WORKFLOWS_PR_URL,
+			pointLabel: '기여 내용',
 			point: typeof prText === 'string' || !prText ? 'Argo Workflows UI 기여 PR 머지' : prText.text,
 		},
 	];

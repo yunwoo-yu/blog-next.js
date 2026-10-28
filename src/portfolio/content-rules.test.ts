@@ -32,8 +32,6 @@ const publicTexts = () => [
 		exhibit.shortTitle,
 		...exhibit.ownedParts,
 		...Object.values(exhibit.callouts),
-		...Object.values(exhibit.phases).flatMap(phases => phases.flatMap(phase => [phase.title, phase.caption])),
-		...exhibit.nodes.flatMap(node => [node.label, node.labelBefore ?? '']),
 	]),
 ];
 
