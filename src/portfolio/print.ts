@@ -3,14 +3,13 @@ import {
 	CONTACT_EMAIL,
 	GITHUB_URL,
 	META_AUTHOR_NAME,
+	PORTFOLIO_PATH,
 	RESUME_PATH,
 	REVERSE_INFINITE_SCROLL_POST_URL,
 	WWW_BASE_URL,
 } from '@/constant';
 import RESUME, { formatMonths, getCareerMonths, getSkills } from '@/constant/resume';
-
 import { PORTFOLIO_CASES, type PortfolioCase } from './cases';
-import { PORTFOLIO_PATH } from './links';
 import { getPortfolioExperience } from './overview';
 import { getStory, getVisibleStory, type SequenceDiagram } from './stories';
 
@@ -22,8 +21,8 @@ export const PRINT_ROLE = '프론트엔드 개발자';
 /** 표지 소개글의 둘째 문장. */
 export const PRINT_IDENTITY_CLAIM = '결제·검색·인증에서 상태 불일치를 줄이는 프론트엔드 흐름을 구현했습니다.';
 
-/** 수치의 출처 구분. 측정: 도구로 잰 값, 관측: 운영 중 직접 본 값, 전언: 다른 사람이 전한 값. */
-export const EVIDENCE_TAGS = ['측정', '관측', '전언'] as const;
+/** 수치의 출처 구분. 측정: 도구로 잰 값, 관측: 운영 중 직접 본 값, 전언: 다른 사람이 전한 값, 기재: 이력서에 적힌 값. */
+export const EVIDENCE_TAGS = ['측정', '관측', '전언', '기재'] as const;
 export type EvidenceTag = (typeof EVIDENCE_TAGS)[number];
 
 export interface PrintFeatured {
@@ -82,8 +81,8 @@ export const PRINT_FEATURED: readonly PrintFeatured[] = [
 	{
 		slug: 'avatar-studio-performance',
 		oneLine:
-			'3D 뷰를 Suspense 경계로 분리하고 정적 자산을 S3·CDN으로 이전했으며, 편집 상태와 3D 표시의 책임을 분리했습니다.',
-		evidence: { tag: '측정', text: 'FCP(첫 콘텐츠 표시) 3초 이상 → 400~600ms · Lighthouse' },
+			'3D 뷰를 Suspense 경계로 분리하고 CDN 자산 경로를 환경 변수 상수로 정리했으며, 편집 상태와 3D 표시의 책임을 분리했습니다.',
+		evidence: { tag: '기재', text: 'FCP(첫 콘텐츠 표시) 3초 이상 → 400~600ms · 이력서 기재' },
 		limit: 'FCP는 첫 콘텐츠가 그려진 시점이며, 3D 편집 화면이 조작 가능해지는 시점과는 구분됩니다.',
 		tocPhrase: '첫 콘텐츠 표시(FCP) 개선',
 	},
@@ -105,7 +104,7 @@ export const PRINT_OTHERS: readonly PrintOther[] = [
 	},
 	{
 		slug: 'swing-frontend',
-		line: '서비스 웹과 관리자 CMS를 단독 개발하고, 계약 첨부파일 유지와 웹 인증의 Unity WebGL 진입 연동을 구현했습니다.',
+		line: '서비스 웹을 단독 개발하고 관리자 CMS 프론트엔드를 개발했으며, 계약 첨부파일 유지와 웹 인증의 Unity WebGL 진입 연동을 구현했습니다.',
 	},
 	{
 		slug: 'mydata-integration',

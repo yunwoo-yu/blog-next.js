@@ -1,10 +1,9 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
-
 import JsonLd from '@/components/common/JsonLd';
 import CaseStudy from '@/components/portfolio/CaseStudy';
+import { PORTFOLIO_PATH } from '@/constant';
 import { buildCasePath, type PortfolioCase } from '@/portfolio/cases';
-import { PORTFOLIO_PATH } from '@/portfolio/overview';
 import { buildAlternates, buildBreadcrumbJsonLd, buildCaseStudyJsonLd } from '@/utils/seo';
 
 /** 사례 상세 route 들이 공유하는 메타데이터. */

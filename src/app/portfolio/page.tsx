@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 
 import JsonLd from '@/components/common/JsonLd';
 import PortfolioOverview from '@/components/portfolio/PortfolioOverview';
-import { GITHUB_URL, LINKEDIN_URL } from '@/constant';
-import { PORTFOLIO_DESCRIPTION, PORTFOLIO_PATH, PORTFOLIO_TITLE } from '@/portfolio/overview';
+import { GITHUB_URL, LINKEDIN_URL, PORTFOLIO_PATH } from '@/constant';
+import { PORTFOLIO_DESCRIPTION, PORTFOLIO_TITLE } from '@/portfolio/overview';
 import { buildAlternates, buildBreadcrumbJsonLd, buildPortfolioJsonLd } from '@/utils/seo';
 
 export const metadata: Metadata = {

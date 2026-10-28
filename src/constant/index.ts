@@ -88,10 +88,10 @@ export const WEB_PATH = {
 	},
 	PORTFOLIO: {
 		path: () => PORTFOLIO_PATH,
-		label: '포트폴리오',
+		label: 'Portfolio',
 	},
 	RESUME: {
 		path: () => RESUME_PATH,
-		label: '이력서',
+		label: 'Resume',
 	},
 };

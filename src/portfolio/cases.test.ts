@@ -165,7 +165,8 @@ describe('블로그·루트 번들과의 분리', () => {
 describe('클라이언트 번들과 이력서 원문의 분리', () => {
 	const ROOT = process.cwd();
 	const SRC = join(ROOT, 'src');
-	const CLIENT_ROOTS = ['components/portfolio', 'app/portfolio'].map(path => join(SRC, path));
+	/** 포트폴리오 전용 클라이언트 컴포넌트 위치. 아이콘 패키지 금지는 여기에만 적용한다. */
+	const PORTFOLIO_ROOTS = ['components/portfolio', 'app/portfolio'].map(path => join(SRC, path));
 	/** 클라이언트 번들에 실리면 안 되는 서버 전용 데이터·아이콘 모듈. */
 	const FORBIDDEN_FILES = [
 		'constant/resume',
@@ -184,6 +185,11 @@ describe('클라이언트 번들과 이력서 원문의 분리', () => {
 		});
 
 	const IMPORT_PATTERN = /(?:^|\n)\s*(?:import|export)\s+(?!type\s)(?:[^'";]*?\sfrom\s+)?['"]([^'"]+)['"]/g;
+	const DYNAMIC_IMPORT_PATTERN = /\bimport\(\s*['"]([^'"]+)['"]\s*\)/g;
+
+	/** 정적 import·export-from 과 동적 import() 의 모듈 지정자를 모두 모은다. */
+	const collectSpecifiers = (source: string) =>
+		[...source.matchAll(IMPORT_PATTERN), ...source.matchAll(DYNAMIC_IMPORT_PATTERN)].map(match => match[1]);
 
 	/** 모듈 지정자를 src 안의 실제 파일로 푼다. 패키지(외부)는 undefined. */
 	const resolveLocal = (from: string, specifier: string) => {
@@ -211,7 +217,7 @@ describe('클라이언트 번들과 이력서 원문의 분리', () => {
 
 			if (files.has(file)) continue;
 			files.add(file);
-			for (const [, specifier] of readFileSync(file, 'utf8').matchAll(IMPORT_PATTERN)) {
+			for (const specifier of collectSpecifiers(readFileSync(file, 'utf8'))) {
 				const local = resolveLocal(file, specifier);
 
 				if (local) stack.push(local);
@@ -222,13 +228,25 @@ describe('클라이언트 번들과 이력서 원문의 분리', () => {
 		return { files, packages };
 	};
 
-	const clientFiles = () =>
-		CLIENT_ROOTS.flatMap(walk).filter(file => readFileSync(file, 'utf8').trimStart().startsWith("'use client'"));
+	const isClientFile = (file: string) => /^\s*['"]use client['"]/.test(readFileSync(file, 'utf8'));
 
-	it('포트폴리오의 클라이언트 컴포넌트를 찾는다(검사가 빈 채로 통과하지 않는다)', () => {
+	/** src 전체의 클라이언트 컴포넌트. Header 같은 공용 컴포넌트가 포트폴리오 데이터에 닿는 경우도 잡는다. */
+	const clientFiles = () => walk(SRC).filter(isClientFile);
+	const isPortfolioFile = (file: string) => PORTFOLIO_ROOTS.some(root => file.startsWith(root));
+
+	it('src 전체에서 클라이언트 컴포넌트를 찾는다(검사가 빈 채로 통과하지 않는다)', () => {
 		const names = clientFiles().map(file => file.slice(SRC.length + 1));
 
-		expect(names).toEqual(expect.arrayContaining(['components/portfolio/PrintButton.tsx']));
+		expect(names).toEqual(
+			expect.arrayContaining(['components/portfolio/PrintButton.tsx', 'components/common/Header.tsx']),
+		);
+	});
+
+	it('동적 import() 도 사슬로 인식한다', () => {
+		expect(collectSpecifiers("const load = () => import('@/constant/resume');\nimport a from './a';")).toEqual([
+			'./a',
+			'@/constant/resume',
+		]);
 	});
 
 	it('클라이언트 컴포넌트의 import 사슬은 이력서 원문·사례 데이터·아이콘에 닿지 않는다', () => {
@@ -242,8 +260,10 @@ describe('클라이언트 번들과 이력서 원문의 분리', () => {
 			);
 
 			for (const forbidden of FORBIDDEN_FILES) expect(relative, `${file}: ${forbidden}`).not.toContain(forbidden);
-			for (const forbidden of FORBIDDEN_PACKAGES)
-				expect([...packages], `${file}: ${forbidden}`).not.toContain(forbidden);
+			if (isPortfolioFile(file)) {
+				for (const forbidden of FORBIDDEN_PACKAGES)
+					expect([...packages], `${file}: ${forbidden}`).not.toContain(forbidden);
+			}
 		}
 	});
 

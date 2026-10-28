@@ -20,7 +20,7 @@ describe('Header', () => {
 		for (const item of Object.values(WEB_PATH)) {
 			expect(screen.getByRole('link', { name: item.label })).toHaveAttribute('href', item.path());
 		}
-		expect(Object.values(WEB_PATH).map(item => item.label)).toEqual(['Posts', '포트폴리오', '이력서']);
+		expect(Object.values(WEB_PATH).map(item => item.label)).toEqual(['Posts', 'Portfolio', 'Resume']);
 	});
 
 	it('현재 경로의 메뉴만 현재 페이지로 표시한다', () => {
@@ -29,8 +29,8 @@ describe('Header', () => {
 
 		const nav = screen.getAllByRole('navigation')[0];
 
-		expect(within(nav).getByRole('link', { name: '이력서' })).toHaveAttribute('aria-current', 'page');
+		expect(within(nav).getByRole('link', { name: 'Resume' })).toHaveAttribute('aria-current', 'page');
 		expect(within(nav).getByRole('link', { name: 'Posts' })).not.toHaveAttribute('aria-current');
-		expect(within(nav).getByRole('link', { name: '포트폴리오' })).not.toHaveAttribute('aria-current');
+		expect(within(nav).getByRole('link', { name: 'Portfolio' })).not.toHaveAttribute('aria-current');
 	});
 });

@@ -1,12 +1,11 @@
 import { ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
-
 import { renderRichText } from '@/components/resume/highlight';
+import { PORTFOLIO_PATH } from '@/constant';
 import { getAdjacentCases, type PortfolioCase } from '@/portfolio/cases';
 import { getCaseCover } from '@/portfolio/covers';
 import { getExhibit } from '@/portfolio/exhibits';
-import { PORTFOLIO_PATH } from '@/portfolio/links';
 import { PORTFOLIO_KEY_RESULTS } from '@/portfolio/overview';
 import { getStory } from '@/portfolio/stories';
 import { cn } from '@/utils/utils';

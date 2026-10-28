@@ -94,10 +94,11 @@ describe('sitemap / robots', () => {
 		expect(urls.some(url => url.includes('/resume'))).toBe(false);
 	});
 
-	it('robots 는 /resume 을 막고 /portfolio 는 막지 않는다', () => {
+	it('robots 는 /resume 과 /portfolio 를 막지 않아 크롤러가 /resume 의 noindex 를 읽게 한다', () => {
 		const rules = robots().rules as { disallow: string[] };
 
-		expect(rules.disallow).toContain('/resume');
+		expect(rules.disallow).not.toContain('/resume');
+		expect(rules.disallow.some(path => '/resume'.startsWith(path))).toBe(false);
 		expect(rules.disallow.some(path => '/portfolio'.startsWith(path))).toBe(false);
 	});
 });

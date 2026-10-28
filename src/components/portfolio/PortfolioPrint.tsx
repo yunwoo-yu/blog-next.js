@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-import { PORTFOLIO_PATH } from '@/portfolio/links';
+import { PORTFOLIO_PATH } from '@/constant';
 import { getPrintFeatured } from '@/portfolio/print';
 import { cn } from '@/utils/utils';
 

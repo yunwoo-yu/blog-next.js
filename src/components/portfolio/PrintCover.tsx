@@ -134,8 +134,8 @@ const PrintCover = () => {
 			</section>
 
 			<p className="mt-auto text-[8.5pt] text-print-ink-3">
-				수치는 측정·관측·전언으로 출처를 구분해 표기했습니다. 사례 {featured.length + getPrintOthers().length}개 전문:{' '}
-				<a href={PRINT_PORTFOLIO_URL}>{PRINT_PORTFOLIO_URL}</a>
+				수치는 측정·관측·전언·기재로 출처를 구분해 표기했습니다. 사례 {featured.length + getPrintOthers().length}개
+				전문: <a href={PRINT_PORTFOLIO_URL}>{PRINT_PORTFOLIO_URL}</a>
 			</p>
 		</PrintSheet>
 	);

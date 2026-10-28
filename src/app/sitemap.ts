@@ -1,8 +1,7 @@
 import type { MetadataRoute } from 'next';
 
-import { BASE_URL, BLOG_POSTS_PATH } from '@/constant';
+import { BASE_URL, BLOG_POSTS_PATH, PORTFOLIO_PATH } from '@/constant';
 import { buildCasePath, PORTFOLIO_CASES } from '@/portfolio/cases';
-import { PORTFOLIO_PATH } from '@/portfolio/overview';
 import { countTags, getAllPosts, getAllPostsPath, getCategoryList } from '@/utils/post-utils';
 
 const sitemap = async (): Promise<MetadataRoute.Sitemap> => {

@@ -5,6 +5,11 @@ import { act, render, screen } from '@testing-library/react';
 import CountUp, { scaleNumbers } from './CountUp';
 import Reveal from './Reveal';
 
+afterEach(() => {
+	// 단언이 실패해도 spy 가 다음 테스트로 새지 않게 한다.
+	vi.restoreAllMocks();
+});
+
 type Callback = (entries: { isIntersecting: boolean }[]) => void;
 
 let callbacks: Callback[] = [];
@@ -63,7 +68,6 @@ describe('CountUp', () => {
 
 		expect(screen.getByTestId('count-up').textContent).toBe('70%');
 		expect(callbacks).toHaveLength(0);
-		vi.restoreAllMocks();
 	});
 
 	it('뷰포트 아래쪽에 있으면 0에서 시작해 보이는 순간 최종값까지 올라간다', () => {
@@ -82,7 +86,6 @@ describe('CountUp', () => {
 		now = 5000;
 		act(() => frames.shift()!(now));
 		expect(screen.getByTestId('count-up').textContent).toBe('70%');
-		vi.restoreAllMocks();
 	});
 
 	it('보조기기용 최종값을 따로 둔다', () => {
@@ -114,6 +117,5 @@ describe('Reveal', () => {
 		expect(container.firstElementChild).toHaveAttribute('data-revealed', 'false');
 		act(() => callbacks[0]([{ isIntersecting: true }]));
 		expect(container.firstElementChild).toHaveAttribute('data-revealed', 'true');
-		vi.restoreAllMocks();
 	});
 });

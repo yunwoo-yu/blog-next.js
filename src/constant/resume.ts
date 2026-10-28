@@ -2,6 +2,9 @@ import type { ResumeLinkProps } from '@/components/resume/ResumeLink';
 import { ARGO_WORKFLOWS_PR_URL, REVERSE_INFINITE_SCROLL_POST_URL } from '@/constant';
 import { ORGANIZATIONS } from '@/constant/organizations';
 
+/** Swing 프로젝트 제목. 이력서·포트폴리오 상세·사례 카드·테스트가 같은 값을 쓴다. 서비스 웹만 단독, CMS 는 다른 개발자 기여가 있다. */
+export const SWING_PROJECT_TITLE = '서비스 웹 단독 개발과 관리자 CMS 프론트엔드 개발';
+
 export type Careers = {
 	organization: string;
 	position: string;
@@ -380,18 +383,15 @@ const PROJECTS: ServiceProject[] = [
 		organization: ORGANIZATIONS.SALIN,
 		service: 'Swing',
 		serviceDescription: 'WebGL 가상 오피스 기반 스타트업 업무 지원 플랫폼',
-		role: [
-			'서비스 웹·관리자 CMS 프론트엔드 단독 개발(백엔드 1명과 2인 팀)',
-			'공통 보일러플레이트와 CMS UI 패키지 구축',
-		],
+		role: ['서비스 웹 프론트엔드 단독 개발과 관리자 CMS 프론트엔드 개발', '공통 보일러플레이트와 CMS UI 패키지 구축'],
 		techStack: ['React', 'TypeScript', 'Webpack 5', 'Vite', 'AWS S3'],
 		items: [
 			{
-				title: '서비스 웹 + 관리자 CMS 프론트엔드 단독 개발',
+				title: SWING_PROJECT_TITLE,
 				caseSlug: 'swing-frontend',
 				date: '2024.01 ~ 2024.07',
 				summary:
-					'백엔드 1명과 2인 팀에서 Swing 서비스 웹(Webpack 5)·관리자 CMS(Vite) 프론트엔드를 단독 개발하고, 웹 로그인 토큰을 쿠키로 공유해 Unity WebGL 가상 오피스가 인증하도록 연동(Unity 개발은 담당하지 않음)',
+					'Swing 서비스 웹(Webpack 5) 프론트엔드를 단독 개발하고 관리자 CMS(Vite) 프론트엔드를 개발, 웹 로그인 토큰을 쿠키로 공유해 Unity WebGL 가상 오피스가 인증하도록 연동(Unity 개발은 담당하지 않음)',
 				highlights: ['프론트엔드를 단독 개발'],
 			},
 		],
@@ -401,14 +401,14 @@ const PROJECTS: ServiceProject[] = [
 		service: 'Localo',
 		serviceDescription: 'WebGL 아바타 서비스',
 		role: ['인수한 WebGL 서비스의 초기 로딩 성능 개선', '3D 뷰와 편집 상태를 역할별 컴포넌트·훅으로 분리'],
-		techStack: ['React', 'WebGL', 'Suspense', 'S3·CDN', 'Lighthouse'],
+		techStack: ['React', 'WebGL', 'Suspense', 'CDN', 'Lighthouse'],
 		items: [
 			{
 				title: '아바타 스튜디오 성능 개선',
 				caseSlug: 'avatar-studio-performance',
 				date: '2023.10 ~ 2023.12',
 				summary:
-					'외주사에서 인수받은 WebGL 아바타 서비스의 3D 렌더링·대용량 정적 자산 문제를 3D 뷰의 Suspense 경계 분리와 S3·CDN 이전으로 개선해 첫 콘텐츠 표시(FCP) 3초 이상에서 400~600ms로 단축',
+					'외주사에서 인수받은 WebGL 아바타 서비스의 3D 렌더링·대용량 정적 자산 문제를 3D 뷰의 Suspense 경계 분리와 CDN 자산 경로의 환경 변수 상수화로 개선해 첫 콘텐츠 표시(FCP) 3초 이상에서 400~600ms로 단축',
 				highlights: ['400~600ms로 단축'],
 			},
 		],

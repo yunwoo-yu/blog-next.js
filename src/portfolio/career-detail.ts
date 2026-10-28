@@ -1,6 +1,6 @@
 import { REVERSE_INFINITE_SCROLL_POST_URL } from '@/constant';
 import { ORGANIZATIONS } from '@/constant/organizations';
-import { type Careers, compareRecent, getProjectRange, type ProjectItem } from '@/constant/resume';
+import { type Careers, compareRecent, getProjectRange, type ProjectItem, SWING_PROJECT_TITLE } from '@/constant/resume';
 
 export type Project = {
 	title: string;
@@ -284,13 +284,13 @@ export const CAREER_DETAIL: DetailCareer[] = [
 				serviceDescription: 'WebGL 가상 오피스 기반 스타트업 업무 지원 플랫폼',
 				projects: [
 					{
-						title: '서비스 웹 + 관리자 CMS 프론트엔드 단독 개발',
+						title: SWING_PROJECT_TITLE,
 						date: '2024.01 ~ 2024.07',
 						details: [
 							{
 								title:
-									'Swing은 업무 지원 기능과 Unity WebGL 가상 오피스를 함께 제공하는 신규 서비스였습니다. 백엔드 개발자 1명과 2인 팀에서 사용자 웹과 관리자 CMS 프론트엔드를 구축하고, 웹 인증을 가상 오피스 진입에 연결해야 했습니다. 계약서를 다루는 화면에서는 수정할 때 기존 첨부파일이 사라지는 문제도 풀어야 했고, Unity WebGL 개발은 담당하지 않았습니다.',
-								highlights: ['백엔드 개발자 1명과 2인 팀', '사용자 웹과 관리자 CMS 프론트엔드를 구축'],
+									'Swing은 업무 지원 기능과 Unity WebGL 가상 오피스를 함께 제공하는 신규 서비스였습니다. 사용자 웹 프론트엔드를 단독으로 구축하고 관리자 CMS 프론트엔드도 개발하며, 웹 인증을 가상 오피스 진입에 연결해야 했습니다. 계약서를 다루는 화면에서는 수정할 때 기존 첨부파일이 사라지는 문제도 풀어야 했고, Unity WebGL 개발은 담당하지 않았습니다.',
+								highlights: ['사용자 웹 프론트엔드를 단독으로 구축', '관리자 CMS 프론트엔드도 개발'],
 							},
 							{
 								title:
@@ -324,8 +324,8 @@ export const CAREER_DETAIL: DetailCareer[] = [
 							},
 							{
 								title:
-									'3D 뷰를 Suspense 경계로 분리하고, 아바타 파츠·JSON 자산은 S3·CDN 경로에서 불러오도록 이전했습니다.\n\n3D 뷰와 편집 상태는 역할별 컴포넌트·훅으로 나눠, 편집 화면은 보여 줄 대상을 계산하고 3D 뷰는 받은 값을 적용하기만 하게 했습니다. 저장 화면은 별도 썸네일 뷰로 제출 가능 상태를 정하고, 업로드 이미지는 16MB와 정사각형 비율을 검사합니다.',
-								highlights: ['3D 뷰를 Suspense 경계로 분리', 'S3·CDN 경로에서 불러오도록 이전'],
+									'3D 뷰를 Suspense 경계로 분리하고, CDN 자산 경로는 환경 변수 상수로 정리했습니다.\n\n3D 뷰와 편집 상태는 역할별 컴포넌트·훅으로 나눠, 편집 화면은 보여 줄 대상을 계산하고 3D 뷰는 받은 값을 적용하기만 하게 했습니다. 저장 화면은 별도 썸네일 뷰로 제출 가능 상태를 정하고, 업로드 이미지는 16MB와 정사각형 비율을 검사합니다.',
+								highlights: ['3D 뷰를 Suspense 경계로 분리', 'CDN 자산 경로는 환경 변수 상수로 정리'],
 							},
 							{
 								title:

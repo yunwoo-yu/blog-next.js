@@ -1,5 +1,6 @@
 import type { ResumeLinkProps } from '@/components/resume/ResumeLink';
 import { ORGANIZATIONS } from '@/constant/organizations';
+import { SWING_PROJECT_TITLE } from '@/constant/resume';
 import { CAREER_DETAIL, getCareerProjects, type Project } from './career-detail';
 import { buildCasePath } from './links';
 
@@ -140,22 +141,22 @@ const CASE_SOURCES: PortfolioCaseSource[] = [
 	},
 	{
 		slug: 'swing-frontend',
-		title: 'Swing 서비스 웹 + 관리자 CMS 프론트엔드 단독 개발',
+		title: `Swing ${SWING_PROJECT_TITLE}`,
 		summary:
-			'백엔드 개발자 1명과 2인 팀에서 Webpack 사용자 웹과 Vite 관리자 CMS 프론트엔드를 단독 개발했습니다. 계약 수정 때 첨부파일이 사라지던 문제를 고치고, 웹 인증을 Unity WebGL 가상 오피스 진입에 연결했습니다. Unity 개발은 담당하지 않았습니다.',
+			'Webpack 사용자 웹 프론트엔드를 단독 개발하고 Vite 관리자 CMS 프론트엔드를 개발했습니다. 계약 수정 때 첨부파일이 사라지던 문제를 고치고, 웹 인증을 Unity WebGL 가상 오피스 진입에 연결했습니다. Unity 개발은 담당하지 않았습니다.',
 		keywords: ['Webpack 5', 'Vite', 'S3'],
 		resumeRef: {
 			organization: ORGANIZATIONS.SALIN,
 			service: 'Swing',
-			project: '서비스 웹 + 관리자 CMS 프론트엔드 단독 개발',
+			project: SWING_PROJECT_TITLE,
 		},
 	},
 	{
 		slug: 'avatar-studio-performance',
 		title: '아바타 스튜디오 성능 개선',
 		summary:
-			'3초 이상 빈 화면이 노출되던 WebGL 아바타 서비스의 3D 뷰를 Suspense 경계로 분리하고 정적 자산을 S3·CDN으로 이전해, Lighthouse 기준 FCP(첫 콘텐츠 표시)를 400~600ms로 단축했습니다.',
-		keywords: ['WebGL', 'Suspense', 'S3·CDN', 'Lighthouse', 'FCP'],
+			'3초 이상 빈 화면이 노출되던 WebGL 아바타 서비스의 3D 뷰를 Suspense 경계로 분리하고 CDN 자산 경로를 환경 변수 상수로 정리해, Lighthouse 기준 FCP(첫 콘텐츠 표시)를 400~600ms로 단축했습니다.',
+		keywords: ['WebGL', 'Suspense', 'CDN', 'Lighthouse', 'FCP'],
 		resumeRef: { organization: ORGANIZATIONS.SALIN, service: 'Localo', project: '아바타 스튜디오 성능 개선' },
 	},
 ];

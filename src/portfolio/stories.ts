@@ -666,7 +666,7 @@ export const STORIES: CaseStory[] = [
 		slug: 'swing-frontend',
 		decisions: [
 			{
-				question: '2인 팀에서 개발 속도를 어떻게 확보할 것인가',
+				question: '혼자 맡은 서비스 웹의 개발 속도를 어떻게 확보할 것인가',
 				options: [
 					{
 						name: '서비스 개발 전에 공통 기반(보일러플레이트·CMS UI 패키지)부터 구축',
@@ -720,8 +720,8 @@ export const STORIES: CaseStory[] = [
 		],
 		checks: [
 			'보일러플레이트에 담은 것(린트, 테스트, 배포 설정 등)과 직접 만든 CMS UI 컴포넌트 수는? CMS UI 저장소가 이 환경에 없어 확인하지 못했습니다.',
-			'2인 팀에서 백엔드와 협업하며 정한 규칙(API 스펙, 에러 규약 등)이 있나요?',
-			'본문의 "프론트엔드 단독 개발"은 README의 기여자 표기만으로는 확정할 수 없습니다. 맞는 표현인가요?',
+			'백엔드 개발자들과 협업하며 정한 규칙(API 스펙, 에러 규약 등)이 있나요?',
+			'서비스 웹은 단독 개발, 관리자 CMS는 다른 개발자의 기여(공지 페이지 등)가 있어 본문을 이렇게 구분했습니다. CMS에서 본인 몫은 어디까지인가요?',
 			'첨부파일 수정 버그를 어떻게 재현하고 고친 뒤 확인했나요?',
 			'Unity 빌드를 S3에서 받는 부분은 startup-wing-front/down.sh 로 확인했습니다(버킷은 dev 하나). 이 스크립트와 빌드 포함 설정을 직접 작성했나요?',
 		],
@@ -739,10 +739,11 @@ export const STORIES: CaseStory[] = [
 						basis: 'resume',
 					},
 					{
-						name: '아바타 파츠·JSON 자산을 S3·CDN으로 이전',
+						name: 'CDN 자산 경로를 환경 변수 상수로 정리',
 						verdict: 'chosen',
-						reason: '대용량 정적 자산을 앱 번들에서 떼어 내 CDN 경로에서 받습니다.',
-						basis: 'resume',
+						reason:
+							'[확인 필요] 하드코딩된 CDN 주소를 환경 변수 상수로 옮긴 것이 첫 콘텐츠 표시 개선에 어떻게 기여했는지 작성자 확인 전 초안입니다.',
+						basis: 'draft',
 					},
 				],
 			},
@@ -762,7 +763,7 @@ export const STORIES: CaseStory[] = [
 			{
 				problem:
 					'3D 렌더링과 대용량 정적 자산이 초기 진입을 막아 3초 이상 빈 화면이 노출됐고, 3D·편집 로직이 큰 컴포넌트에 섞여 작은 기능 변경도 기존 동작에 영향을 주기 쉬웠습니다.',
-				fix: '3D 뷰의 Suspense 경계 분리, 자산 CDN 이전, 역할별 컴포넌트 분리를 함께 적용해 Lighthouse 기준 FCP(첫 콘텐츠 표시)를 400~600ms로 줄였습니다.',
+				fix: '3D 뷰의 Suspense 경계 분리, CDN 자산 경로의 환경 변수 상수화, 역할별 컴포넌트 분리를 함께 적용해 Lighthouse 기준 FCP(첫 콘텐츠 표시)를 400~600ms로 줄였습니다.',
 				basis: 'resume',
 				diagram: {
 					actors: ['사용자', '앱', '정적 자산 CDN'],
@@ -771,7 +772,7 @@ export const STORIES: CaseStory[] = [
 						{ from: 1, to: 2, label: '3D 렌더링과 대용량 자산을 받을 때까지 화면이 비어 있음', tone: 'problem' },
 						{ from: 1, to: 0, label: '3초 이상 빈 화면', tone: 'problem' },
 						{ from: 1, to: 0, label: '3D 뷰를 Suspense 경계로 분리', tone: 'fix' },
-						{ from: 1, to: 2, label: '자산은 CDN에서 받음', tone: 'fix' },
+						{ from: 1, to: 2, label: 'CDN 자산 경로를 환경 변수 상수로 정리', tone: 'fix' },
 					],
 				},
 			},
@@ -800,8 +801,8 @@ export const STORIES: CaseStory[] = [
 		checks: [
 			'병목을 찾을 때 쓴 도구와 과정(번들 분석, Network 탭 등)은? 개선 전후 Lighthouse 캡처가 남아 있나요? (3초 이상과 400~600ms의 측정 원자료를 찾지 못했습니다)',
 			'외주사에서 인수한 코드에서 가장 위험했던 지점은 무엇이었나요?',
-			'lazy App 진입점·JSON 원격 조회는 선행 작성자의 초기 커밋, Suspense 경계는 본인 커밋(6a362fb)으로 확인됐습니다. 본인이 추가하거나 바꾼 경계는 이 밖에 어디까지인가요?',
-			'S3·CDN 이전은 경로 상수화, 자산 업로드, 배포 구조 변경 중 어디까지 직접 했나요?',
+			'lazy App 진입점·JSON 원격 조회는 선행 작성자의 초기 커밋, Suspense 경계는 View3D 의 본인 작업으로 확인됐습니다. 본인이 추가하거나 바꾼 경계는 이 밖에 어디까지인가요?',
+			'CDN 호스트 하드코딩과 서버의 CDN URL 전환은 선행 작성자 작업으로 확인했습니다. 본인 몫을 환경 변수 상수화로 한정한 것이 맞나요?',
 		],
 	},
 ];
