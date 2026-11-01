@@ -5,6 +5,7 @@ import { render, screen, within } from '@testing-library/react';
 import { GITHUB_URL } from '@/constant';
 import RESUME from '@/constant/resume';
 import { buildCasePath, PORTFOLIO_CASES } from '@/portfolio/cases';
+import { EXAMPLE_NOTICE, getExampleScreen } from '@/portfolio/examples';
 import { getExhibit } from '@/portfolio/exhibits';
 import { PORTFOLIO_KEY_RESULTS } from '@/portfolio/overview';
 import { STORIES } from '@/portfolio/stories';
@@ -235,6 +236,28 @@ describe('CaseStudy', () => {
 			const bodyImages = [...container.querySelectorAll('img')].filter(img => !img.closest('nav'));
 
 			expect(bodyImages, each.slug).toHaveLength(0);
+			unmount();
+		}
+	});
+
+	it('해결 본문 바로 아래(어떻게 정했나 앞)에 가상의 예시 화면 figure 가 하나 있다', () => {
+		for (const each of PORTFOLIO_CASES) {
+			const example = getExampleScreen(each.slug)!;
+			const { container, unmount } = render(<CaseStudy item={each} />);
+			const figures = container.querySelectorAll('figure[data-example-screen]');
+			const contribution = container.querySelector('#contribution')!;
+			const picture = within(contribution as HTMLElement).getByRole('img', { name: example.alt });
+			const figure = picture.closest('figure')!;
+			const decisions = container.querySelector('#decisions');
+
+			expect(figures, each.slug).toHaveLength(1);
+			expect(figure.parentElement, each.slug).toBe(contribution);
+			expect(figure.querySelector('figcaption')?.textContent, each.slug).toContain(EXAMPLE_NOTICE);
+			// 해결 본문 문단 뒤, 판단(어떻게 정했나) 앞.
+			const body = contribution.querySelector(':scope > div')!;
+			expect(body.compareDocumentPosition(figure) & Node.DOCUMENT_POSITION_FOLLOWING, each.slug).toBeTruthy();
+			if (decisions)
+				expect(figure.compareDocumentPosition(decisions) & Node.DOCUMENT_POSITION_FOLLOWING, each.slug).toBeTruthy();
 			unmount();
 		}
 	});

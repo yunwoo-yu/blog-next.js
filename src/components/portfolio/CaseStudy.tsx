@@ -5,6 +5,7 @@ import { renderRichText } from '@/components/resume/highlight';
 import { PORTFOLIO_PATH } from '@/constant';
 import { getAdjacentCases, type PortfolioCase } from '@/portfolio/cases';
 import { getCaseCover } from '@/portfolio/covers';
+import { getExampleScreen } from '@/portfolio/examples';
 import { getExhibit } from '@/portfolio/exhibits';
 import { PORTFOLIO_KEY_RESULTS } from '@/portfolio/overview';
 import { getStory } from '@/portfolio/stories';
@@ -14,6 +15,7 @@ import CaseCover from './CaseCover';
 import CaseGlance from './CaseGlance';
 import CaseRow from './CaseRow';
 import CaseStory from './CaseStory';
+import ExampleScreen from './ExampleScreen';
 import Paragraphs from './Paragraphs';
 import { FOCUS_RING, TEXT_LINK_CLASS } from './styles';
 import { Column, SectionTitle } from './ui';
@@ -35,6 +37,7 @@ const CaseStudy = ({ item, children }: CaseStudyProps) => {
 	const { prev, next } = getAdjacentCases(item.slug);
 	const exhibit = getExhibit(item.slug);
 	const story = getStory(item.slug);
+	const example = getExampleScreen(item.slug);
 	const resultStage = item.stages.find(stage => stage.id === 'result');
 	const outcome = exhibit?.callouts.outcome.trim();
 	// 결과 섹션 본문에 callouts.outcome 문장이 이미 들어 있으면 한 번만 보여 주고, 아니면 결과 요약으로 본문 위에 덧붙인다.
@@ -84,6 +87,8 @@ const CaseStudy = ({ item, children }: CaseStudyProps) => {
 								render={paragraph => renderRichText(paragraph, stage.highlights, stage.links, TEXT_LINK_CLASS)}
 							/>
 						</div>
+						{/* 해결 본문 바로 아래, "어떻게 정했나" 앞에 가상의 예시 화면을 둔다. */}
+						{stage.id === 'contribution' && example && <ExampleScreen example={example} className="mt-8" />}
 						{stage.id === 'contribution' && <CaseStory story={story} />}
 					</section>
 				))}

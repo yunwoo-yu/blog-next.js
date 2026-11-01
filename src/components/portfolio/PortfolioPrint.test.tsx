@@ -7,6 +7,7 @@ import robots from '@/app/robots';
 import sitemap from '@/app/sitemap';
 import { META_AUTHOR_NAME } from '@/constant';
 import RESUME from '@/constant/resume';
+import { EXAMPLE_NOTICE, getExampleScreen } from '@/portfolio/examples';
 import { getPortfolioExperience, PORTFOLIO_KEY_RESULTS } from '@/portfolio/overview';
 import {
 	EVIDENCE_TAGS,
@@ -214,6 +215,27 @@ describe('/portfolio/print', () => {
 					diagram.querySelectorAll('[data-testid="sequence-step"]').length,
 				);
 			}
+		});
+
+		it('대표 사례마다 B쪽의 풀었던 문제(도식) 아래·결과 위에 가상의 예시 화면이 하나 있고, A쪽·그 밖의 작업에는 없다', () => {
+			const { container } = render(<PortfolioPrintPage />);
+
+			expect(container.querySelectorAll('figure[data-example-screen]')).toHaveLength(getPrintFeatured().length);
+			for (const entry of getPrintFeatured()) {
+				const pageB = pageOf(container, 'case-b', entry.slug);
+				const example = getExampleScreen(entry.slug)!;
+				const figure = within(pageB).getByRole('img', { name: example.alt }).closest('figure')!;
+				const troubles = within(pageB).getByRole('heading', { level: 3, name: '구현 중 풀었던 문제' });
+				const result = within(pageB).getByRole('heading', { level: 3, name: '확인 범위와 한계' });
+
+				expect(figure.dataset.exampleScreen).toBe(entry.slug);
+				expect(figure.className, entry.slug).toContain('break-inside-avoid');
+				expect(figure.querySelector('figcaption')?.textContent, entry.slug).toContain(EXAMPLE_NOTICE);
+				expect(troubles.compareDocumentPosition(figure) & Node.DOCUMENT_POSITION_FOLLOWING, entry.slug).toBeTruthy();
+				expect(figure.compareDocumentPosition(result) & Node.DOCUMENT_POSITION_FOLLOWING, entry.slug).toBeTruthy();
+				expect(pageOf(container, 'case-a', entry.slug).querySelector('figure[data-example-screen]')).toBeNull();
+			}
+			expect(pageOf(container, 'others').querySelector('figure[data-example-screen]')).toBeNull();
 		});
 
 		it('"담당:"·"내가 맡은 것" 문구가 문서 어디에도 없다', () => {

@@ -1,8 +1,10 @@
 import { renderRichText } from '@/components/resume/highlight';
 import type { PortfolioCase } from '@/portfolio/cases';
+import { getExampleScreen } from '@/portfolio/examples';
 import { getPrintDecisionRows, getPrintResultSentences, getPrintTroubles, type PrintFeatured } from '@/portfolio/print';
 import { cn } from '@/utils/utils';
 
+import ExampleScreen from './ExampleScreen';
 import { splitParagraphs } from './Paragraphs';
 import PrintDiagram from './PrintDiagram';
 import { PrintBlock, PrintSheet } from './PrintParts';
@@ -31,7 +33,7 @@ const REASON_HEAD_CLASS = cn(
 
 const circled = (index: number) => String.fromCodePoint(0x2460 + index);
 
-/** 사례 한 건 = 정확히 2쪽. A쪽: 머리·한 줄 성과·문제·해결·방식과 이유, B쪽: 구현 중 풀었던 문제·도식·결과·확인 범위. */
+/** 사례 한 건 = 정확히 2쪽. A쪽: 머리·한 줄 성과·문제·해결·방식과 이유, B쪽: 구현 중 풀었던 문제·도식·예시 화면·결과·확인 범위. */
 const PrintCase = ({ item, entry, index }: PrintCaseProps) => {
 	const number = String(index + 1).padStart(2, '0');
 	const problem = item.stages.find(stage => stage.id === 'problem');
@@ -41,6 +43,7 @@ const PrintCase = ({ item, entry, index }: PrintCaseProps) => {
 	const troubles = getPrintTroubles(item.slug);
 	const resultSentences = result ? getPrintResultSentences(result.text, entry.evidence) : [];
 	const titleId = `print-case-${item.slug}`;
+	const example = getExampleScreen(item.slug);
 
 	return (
 		<article data-print-case={item.slug} aria-labelledby={titleId}>
@@ -160,6 +163,9 @@ const PrintCase = ({ item, entry, index }: PrintCaseProps) => {
 						</ol>
 					</PrintBlock>
 				)}
+
+				{/* 도식 아래 여백에 가상의 예시 화면. 설명줄을 옆에 두고 글자를 줄여 높이 약 40mm 안에 둔다(12쪽 유지). */}
+				{example && <ExampleScreen example={example} variant="print" className="mt-[7mm] break-inside-avoid" />}
 
 				<div className="mt-[11mm] break-inside-avoid">
 					{resultSentences.length > 0 && (
