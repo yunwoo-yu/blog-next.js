@@ -23,6 +23,16 @@ describe('Header', () => {
 		expect(Object.values(WEB_PATH).map(item => item.label)).toEqual(['Posts', 'Portfolio', 'Resume']);
 	});
 
+	it('360px 미만에서 GitHub 아이콘을 숨겨 메뉴와 테마 버튼의 폭을 확보한다', () => {
+		render(<Header />);
+
+		expect(screen.getByRole('link', { name: 'GitHub 프로필 열기' }).closest('li')).toHaveClass(
+			'hidden',
+			'min-[360px]:block',
+		);
+		expect(screen.getByRole('link', { name: 'LinkedIn 프로필 열기' }).closest('li')).toHaveClass('hidden', 'sm:block');
+	});
+
 	it('현재 경로의 메뉴만 현재 페이지로 표시한다', () => {
 		pathname.current = '/resume';
 		render(<Header />);

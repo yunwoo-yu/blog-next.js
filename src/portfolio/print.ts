@@ -81,7 +81,7 @@ export const PRINT_FEATURED: readonly PrintFeatured[] = [
 	{
 		slug: 'avatar-studio-performance',
 		oneLine:
-			'3D 화면의 로딩 경계를 나누고, 편집 상태와 3D 표시의 역할을 분리했습니다. 파일 경로도 별도로 한 곳에 모아 관리했습니다.',
+			'3D 뷰에 Suspense 경계를 두고 편집 상태와 3D 표시를 분리했습니다. CDN 자산 경로는 환경 변수 상수로 정리했습니다.',
 		evidence: { tag: '기재', text: 'FCP 3초 이상 → 400~600ms · 이력서 기재' },
 		limit: 'FCP는 첫 콘텐츠가 그려진 시점이며, 3D 편집 화면이 조작 가능해지는 시점과는 구분됩니다.',
 		tocPhrase: '첫 콘텐츠 표시(FCP) 개선',

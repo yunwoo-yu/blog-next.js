@@ -155,7 +155,7 @@ const CASE_SOURCES: PortfolioCaseSource[] = [
 		slug: 'avatar-studio-performance',
 		title: '아바타 스튜디오 성능 개선',
 		summary:
-			'3초 이상 빈 화면이 보이던 3D 아바타 서비스에서 화면의 로딩 경계를 나누고 편집 기능과 3D 표시를 분리했습니다. 첫 콘텐츠 표시 시간은 400~600ms로 줄었고, 파일 경로를 한 곳에 모으는 정리도 함께 했습니다.',
+			'3D 아바타 서비스의 3D 뷰에 Suspense 경계를 두고 편집 기능과 3D 표시를 분리했습니다. CDN 자산 경로는 환경 변수 상수로 정리했습니다. 첫 콘텐츠 표시(FCP)는 3초 이상에서 400~600ms로 줄었습니다(이력서 기재).',
 		keywords: ['WebGL', 'Suspense', 'CDN', 'Lighthouse', 'FCP'],
 		resumeRef: { organization: ORGANIZATIONS.SALIN, service: 'Localo', project: '아바타 스튜디오 성능 개선' },
 	},

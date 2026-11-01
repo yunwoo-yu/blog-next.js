@@ -53,6 +53,14 @@ describe('사례 스토리 데이터', () => {
 		}
 	});
 
+	it('개발 중 비교와 대안을 배포된 기존 방식으로 표시하지 않는다', () => {
+		const labels = (slug: string) => getStory(slug)!.decisions[0].options.map(({ label }) => label);
+
+		expect(labels('wellomarket-checkout')).toEqual(['지금 접근', '처음 접근']);
+		expect(labels('ai-chatbot-ssr')).toEqual(['이 방법', '다른 방법']);
+		expect(labels('wellobiz-chakra-zod').slice(0, 2)).toEqual(['바꾼 방식', '기존 방식']);
+	});
+
 	it('없는 slug 는 undefined 를 돌려준다', () => {
 		expect(getStory('nope')).toBeUndefined();
 		expect(getStory('wellomarket-checkout')?.slug).toBe('wellomarket-checkout');

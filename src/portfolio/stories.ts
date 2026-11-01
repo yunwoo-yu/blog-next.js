@@ -62,7 +62,7 @@ export const STORIES: CaseStory[] = [
 				question: '최종 결제 금액은 누가 확정해야 하는가',
 				options: [
 					{
-						label: '바꾼 방식',
+						label: '지금 접근',
 						name: '서버(체크아웃 API)가 확정',
 						verdict: 'chosen',
 						reason:
@@ -70,7 +70,7 @@ export const STORIES: CaseStory[] = [
 						basis: 'code',
 					},
 					{
-						label: '기존 방식',
+						label: '처음 접근',
 						name: '화면이 계산하고 서버는 검증만',
 						verdict: 'rejected',
 						reason:
@@ -630,7 +630,7 @@ export const STORIES: CaseStory[] = [
 				question: '고객사별 정보를 검색 엔진과 링크 미리보기에 어떻게 전달할 것인가',
 				options: [
 					{
-						label: '바꾼 방식',
+						label: '이 방법',
 						name: '고객사 코드로 조회한 설정을 서버에서 메타데이터·Open Graph로 생성',
 						verdict: 'chosen',
 						reason:
@@ -638,7 +638,7 @@ export const STORIES: CaseStory[] = [
 						basis: 'code',
 					},
 					{
-						label: '기존 방식',
+						label: '다른 방법',
 						name: '고객사별 페이지 정보를 코드에 직접 작성',
 						verdict: 'rejected',
 						reason: '신규 고객사가 추가될 때마다 메타데이터를 코드에 직접 반영해야 해 고객사가 늘수록 부담이었습니다.',
@@ -774,22 +774,21 @@ export const STORIES: CaseStory[] = [
 		slug: 'avatar-studio-performance',
 		decisions: [
 			{
-				question: '첫 콘텐츠 표시 시간을 어떻게 줄일 것인가',
+				question: '3D 뷰와 자산 경로에 어떤 작업을 했는가',
 				options: [
 					{
 						label: '적용한 방식',
-						name: '3D 뷰를 Suspense 경계로 분리',
+						name: '3D 뷰에 Suspense 경계를 둠',
 						verdict: 'chosen',
-						reason:
-							'3D 뷰의 로딩을 별도 경계에서 다루도록 나눴으며, 경계 밖에 둔 화면의 구성과 각 조치의 개별 효과는 확인하지 못했습니다.',
+						reason: '3D 뷰에 Suspense 경계를 두었으며, 이 경계와 FCP 개선의 인과는 확인하지 못했습니다.',
 						basis: 'resume',
 					},
 					{
-						label: '기여 확인 전',
+						label: '범위 확인 전',
 						name: 'CDN 자산 경로를 환경 변수 상수로 정리',
 						verdict: 'chosen',
 						reason:
-							'[확인 필요] 하드코딩된 CDN 주소를 환경 변수 상수로 옮긴 것이 첫 콘텐츠 표시 개선에 어떻게 기여했는지 작성자 확인 전 초안입니다.',
+							'[확인 필요] CDN 자산 경로를 환경 변수 상수로 모은 작업 범위는 작성자 확인 전 초안이며, FCP 개선과의 인과는 확인하지 못했습니다.',
 						basis: 'draft',
 					},
 				],
@@ -812,7 +811,7 @@ export const STORIES: CaseStory[] = [
 			{
 				problem:
 					'3D 렌더링과 대용량 정적 자산이 초기 진입을 막아 3초 이상 빈 화면이 노출됐고, 3D·편집 로직이 큰 컴포넌트에 섞여 작은 기능 변경도 기존 동작에 영향을 주기 쉬웠습니다.',
-				fix: '3D 뷰의 로딩 경계와 역할별 컴포넌트를 나눴고, FCP는 400~600ms로 측정됐습니다. CDN 경로 상수화는 파일 주소를 한 곳에서 관리하는 별도 정리이며, 속도 개선에 얼마나 기여했는지는 확인하지 못했습니다.',
+				fix: '3D 뷰에 Suspense 경계를 두고 역할별 컴포넌트를 나눴으며, CDN 자산 경로는 환경 변수 상수로 정리했습니다. 첫 콘텐츠 표시(FCP)는 3초 이상에서 400~600ms로 줄었습니다(이력서 기재).',
 				basis: 'resume',
 				diagram: {
 					actors: ['사용자', '앱', '정적 자산 CDN'],
@@ -820,7 +819,7 @@ export const STORIES: CaseStory[] = [
 						{ from: 0, to: 1, label: '앱 접속' },
 						{ from: 1, to: 2, label: '3D 렌더링과 대용량 자산을 받을 때까지 화면이 비어 있음', tone: 'problem' },
 						{ from: 1, to: 0, label: '3초 이상 빈 화면', tone: 'problem' },
-						{ from: 1, to: 0, label: '3D 뷰를 Suspense 경계로 분리', tone: 'fix' },
+						{ from: 1, to: 0, label: '3D 뷰에 Suspense 경계를 둠(효과 미확인)' },
 						{ from: 1, to: 0, label: '측정된 FCP 400~600ms(조작 가능 시점과는 다름)', tone: 'fix' },
 					],
 				},

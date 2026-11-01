@@ -3,6 +3,8 @@ import RESUME from '@/constant/resume';
 import { CAREER_DETAIL } from './career-detail';
 import { PORTFOLIO_CASES } from './cases';
 import { EXHIBITS } from './exhibits';
+import { PORTFOLIO_KEY_RESULTS } from './overview';
+import { PRINT_FEATURED, PRINT_GLOSSARY } from './print';
 import { STORIES } from './stories';
 
 /** 화면에 나가는 문장만 모은다(stories 의 checks 는 화면에 나오지 않는 질문이라 제외). */
@@ -13,6 +15,9 @@ const publicTexts = () => [
 			group.projects.flatMap(project => [project.title, ...project.details.map(detail => detail.title)]),
 		),
 	),
+	...PRINT_FEATURED.flatMap(entry => [entry.oneLine, entry.limit]),
+	...PRINT_GLOSSARY.map(entry => entry.description),
+	...PORTFOLIO_KEY_RESULTS.map(entry => entry.label),
 	...PORTFOLIO_CASES.flatMap(item => [item.title, item.summary, ...item.keywords]),
 	...STORIES.flatMap(story => [
 		...story.decisions.flatMap(decision => [
@@ -73,6 +78,34 @@ describe('포트폴리오 본문 규칙', () => {
 		for (const text of publicTexts()) {
 			for (const pattern of banned) expect(text, `${pattern}`).not.toMatch(pattern);
 		}
+	});
+
+	it('Suspense 는 경계를 둔 사실로만 서술하고 FCP 수치와 인과를 붙이지 않는다', () => {
+		const avatar = RESUME.projects
+			.flatMap(project => project.items)
+			.find(item => item.caseSlug === 'avatar-studio-performance')!;
+
+		expect(avatar.summary).toBe(
+			'인수한 WebGL 아바타 서비스의 3D 뷰에 Suspense 경계를 두고 CDN 자산 경로를 환경 변수 상수로 정리했습니다. 첫 콘텐츠 표시(FCP)는 3초 이상에서 400~600ms로 줄었습니다(이력서 기재).',
+		);
+		expect(avatar.summary.length).toBeLessThanOrEqual(130);
+		expect(PRINT_GLOSSARY.find(entry => entry.term === 'Suspense')?.description).toBe(
+			'화면 일부의 로딩을 나눠 다루는 React 기능',
+		);
+		for (const text of publicTexts()) {
+			expect(text, text).not.toMatch(/로딩 경계|3D 뷰의 로딩을|Suspense[^.]*로 (개선|단축)/);
+		}
+	});
+
+	it('Swing 결과에서 사용자 웹 단독 개발과 CMS 프론트엔드 개발을 구분한다', () => {
+		const result = PORTFOLIO_CASES.find(item => item.slug === 'swing-frontend')!.stages.find(
+			stage => stage.id === 'result',
+		)!;
+
+		expect(result.text).toContain(
+			'사용자 웹은 단독 개발하고 관리자 CMS 프론트엔드도 개발해, 인증부터 가상 오피스 진입까지 연결했습니다.',
+		);
+		for (const text of publicTexts()) expect(text, text).not.toMatch(/한 명|CMS[^.]*단독/);
 	});
 
 	it('과장하는 수식어를 쓰지 않는다', () => {

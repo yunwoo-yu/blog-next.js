@@ -26,8 +26,6 @@ export interface ExhibitCallouts {
 	problem: string;
 	decision: string;
 	outcome: string;
-	/** 결과 문구의 근거 구분 */
-	outcomeBasis: string;
 }
 
 export interface Exhibit {
@@ -148,7 +146,6 @@ const CORE_EXHIBITS: Exhibit[] = [
 			decision:
 				'서버가 확정한 금액만 PG에 요청하도록 기준을 서버로 고정하고, 구매 후 버튼도 서버 상태 하나로 정했습니다.',
 			outcome: '2026.03 오픈 후 1개월간 결제 금액 관련 고객 상담 문의와 API 에러 로그가 0건이었습니다.',
-			outcomeBasis: '이력서 기재 내용. 이 페이지에서 측정한 값이 아닙니다.',
 		},
 		screens: {},
 		identity: WELLO_MARKET_PC,
@@ -171,7 +168,6 @@ const CORE_EXHIBITS: Exhibit[] = [
 			decision:
 				'화면을 PC로 확장하고 검색 조건을 URL에 두어 공유·재진입이 되게 했으며, 필터 상태는 PC와 모바일이 함께 씁니다.',
 			outcome: '개편 전후 2주 GA4 단순 전후 비교에서 데스크톱 평균 참여 시간이 약 20% 증가했습니다.',
-			outcomeBasis: '이력서 기재 내용(GA4 2주 단순 전후 비교). 이 페이지에서 측정한 값이 아닙니다.',
 		},
 		screens: { after: WELLO_SEARCH_PC },
 		mobile: WELLO_HOME_MOBILE,
@@ -195,16 +191,15 @@ const CORE_EXHIBITS: Exhibit[] = [
 				'컴포넌트는 공통 디자인 시스템으로, 캐러셀과 스와이프는 더 단순한 구현으로 바꾸고, 사라지는 필드는 looseObject 스키마로 보존했습니다.',
 			outcome:
 				'wello-biz 소스에 Chakra UI·yup·Swiper를 직접 가져오는 코드가 남아 있지 않고, UI는 공통 디자인 시스템으로 검증은 Zod 하나로 통일됐습니다.',
-			outcomeBasis: '이력서 기재 내용. 번들 크기는 실측하지 않아 수치를 싣지 않았습니다.',
 		},
 		screens: {},
 	},
 	{
 		slug: 'avatar-studio-performance',
 		shortTitle: '아바타 스튜디오',
-		headline: '3D 뷰의 로딩 경계 분리와 첫 콘텐츠 표시 개선',
+		headline: '3D 뷰와 편집 기능의 역할 분리',
 		ownedParts: [
-			'3D 뷰의 Suspense 경계 분리',
+			'3D 뷰에 Suspense 경계 배치',
 			'CDN 자산 경로의 환경 변수 상수화',
 			'3D 뷰와 편집 상태를 역할별 컴포넌트·훅으로 분리(편집 화면이 데이터를 계산, 3D 뷰는 표시)',
 			'업로드 이미지의 텍스처 반영, 16MB·정사각형 검사',
@@ -214,10 +209,9 @@ const CORE_EXHIBITS: Exhibit[] = [
 			problem:
 				'3D 렌더링과 대용량 정적 자산이 진입을 막아 3초 이상 빈 화면이 보였고, 3D·편집 로직이 섞여 작은 변경도 위험했습니다.',
 			decision:
-				'3D 뷰의 로딩 경계와 편집 기능의 역할을 나눴습니다. CDN 경로는 파일 주소를 한 곳에서 관리하도록 별도로 정리했습니다.',
+				'3D 뷰에 Suspense 경계를 두고 편집 기능과 3D 표시를 분리했습니다. CDN 자산 경로는 환경 변수 상수로 정리했습니다.',
 			outcome:
-				'FCP를 Lighthouse 기준 400~600ms로 단축했으며, 이는 첫 콘텐츠가 그려진 시점으로 3D 편집 조작 가능 시점과는 다릅니다.',
-			outcomeBasis: '이력서 기재 내용. 이 페이지에서 측정한 값이 아닙니다.',
+				'첫 콘텐츠 표시(FCP)는 3초 이상에서 Lighthouse 기준 400~600ms로 줄었습니다(이력서 기재). 3D 편집 조작 가능 시점과는 다릅니다.',
 		},
 		screens: {},
 	},

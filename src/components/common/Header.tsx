@@ -65,7 +65,8 @@ const Header = () => {
 					<li>
 						<ModeToggle />
 					</li>
-					<li>
+					{/* 360px 미만에서는 메뉴와 테마 버튼이 가용 폭을 넘지 않게 GitHub 아이콘을 숨긴다. */}
+					<li className="hidden min-[360px]:block">
 						<Link href={GITHUB_URL} target="_blank" aria-label="GitHub 프로필 열기" className={iconLinkStyle}>
 							<GitHubIcon width={16} height={16} />
 						</Link>

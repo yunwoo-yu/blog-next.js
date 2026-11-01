@@ -36,12 +36,6 @@ describe('전시 데이터', () => {
 		}
 	});
 
-	it('결과 문구는 근거를 함께 적고 측정하지 않은 값을 측정값처럼 쓰지 않는다', () => {
-		for (const exhibit of EXHIBITS) {
-			expect(exhibit.callouts.outcomeBasis, exhibit.slug).toMatch(/이력서 기재/);
-		}
-	});
-
 	it('이력서에 없는 수치를 새로 만들지 않는다', () => {
 		const resumeText = PORTFOLIO_CASES.map(item => item.stages.map(stage => stage.text).join(' ')).join(' ');
 

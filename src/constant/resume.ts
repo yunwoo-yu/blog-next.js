@@ -408,8 +408,8 @@ const PROJECTS: ServiceProject[] = [
 				caseSlug: 'avatar-studio-performance',
 				date: '2023.10 ~ 2023.12',
 				summary:
-					'외주사에서 인수받은 WebGL 아바타 서비스의 3D 렌더링·대용량 정적 자산 문제를 3D 뷰의 Suspense 경계 분리와 CDN 자산 경로의 환경 변수 상수화로 개선해 첫 콘텐츠 표시(FCP) 3초 이상에서 400~600ms로 단축',
-				highlights: ['400~600ms로 단축'],
+					'인수한 WebGL 아바타 서비스의 3D 뷰에 Suspense 경계를 두고 CDN 자산 경로를 환경 변수 상수로 정리했습니다. 첫 콘텐츠 표시(FCP)는 3초 이상에서 400~600ms로 줄었습니다(이력서 기재).',
+				highlights: ['400~600ms로 줄었습니다'],
 			},
 		],
 	},

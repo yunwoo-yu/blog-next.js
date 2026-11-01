@@ -25,36 +25,11 @@
   --pf-bad-fg: #b91c1c;
   --pf-bad-bg: #fef2f2;
   --pf-line: rgba(0, 27, 55, 0.1);
-  color-scheme: light;
-  background: var(--pf-white);
-  color: var(--pf-gray-800);
-  font-size: 15px;
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-  /* 공통 헤더를 숨기므로 main 이 헤더 높이만큼 비워 둔 위쪽 여백을 되돌린다. */
-  margin-top: calc(var(--header-height) * -1);
-  min-height: 100vh;
-}
-
-/* 이력서 원문 강조(strong)는 사이트 다크 테마에서 밝은 글자로 바뀐다. 포트폴리오는 라이트 고정이므로 되돌린다. */
-.pf-root strong,
-.dark .pf-root strong {
-  color: var(--pf-gray-900);
-  font-weight: 700;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .pf-root *,
-  .pf-root *::before,
-  .pf-root *::after {
-    transition: none !important;
-  }
-  /* transform 은 지우지 않는다: 도식의 화살선·화살촉은 정적 translate 로 위치를 잡는다. 움직이는 transform(hover·active 모션)은 컴포넌트에서 motion-safe: 로 건다. */
 }
 
 /*
  * 인쇄(PDF) 전용. 문서의 모양은 src/components/portfolio/Print*.tsx 의 Tailwind 유틸리티가 맡고(색은 tailwind.config.ts 의 print-*),
- * 여기에는 클래스로 표현할 수 없는 쪽(@page) 규칙만 둔다. 이 파일은 포트폴리오 route 에서만 불러오므로 블로그·루트 번들에는 새지 않는다.
+ * 여기에는 요소 유틸리티로 표현할 수 없는 쪽(@page)·루트 문서 보정만 둔다. 이 파일은 포트폴리오 route 에서만 불러오므로 블로그·루트 번들에는 새지 않는다.
  */
 
 /* @page 와 쪽 여백 상자(@bottom-*)는 요소가 아니라 Tailwind 로 지정할 수 없다. 이름 붙은 쪽(pf-print)이라 다른 포트폴리오 화면의 인쇄 여백은 그대로다. */
@@ -84,17 +59,9 @@
 }
 
 @media print {
-  /* html·body 는 루트 레이아웃 소유라 이 route 의 클래스로 닿지 않는다. 시스템이 다크 모드여도 종이는 흰 바탕이다. */
+  /* html·body 는 루트 레이아웃 소유라 이 route 의 요소에 붙인 Tailwind 로 지정할 수 없다. 배경은 globals.css 의 인쇄 규칙을 따른다. */
   html,
   body {
-    background: #fff !important;
     color-scheme: light;
-  }
-
-  /* 위 .pf-root 규칙(같은 파일)의 화면용 값을 인쇄에서 되돌린다: 헤더 높이만큼 당긴 위쪽 여백, 화면 높이 채우기, 바탕. */
-  .pf-root {
-    margin-top: 0;
-    min-height: 0;
-    background: #fff;
   }
 }
