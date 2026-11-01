@@ -6,6 +6,7 @@ import { getCategoryList } from '@/utils/post-utils';
 
 import { CAREER_DETAIL, getCareerProjects } from './career-detail';
 import { buildCasePath, findResumeProject, getAdjacentCases, getPortfolioCase, PORTFOLIO_CASES } from './cases';
+import { EXHIBITS } from './exhibits';
 import { getPortfolioExperience, PORTFOLIO_KEY_RESULTS } from './overview';
 
 /** 이력서에만 있어야 하는 퇴사 사유 전체. */
@@ -99,6 +100,17 @@ describe('포트폴리오 개요 데이터', () => {
 
 		expect(experience.map(career => career.organization)).toEqual(RESUME.careers.map(career => career.organization));
 		for (const reason of EXIT_REASONS) expect(JSON.stringify(experience)).not.toContain(reason);
+	});
+
+	it('전시 결과 문구의 수치는 사례 원문(career-detail.ts)에 있는 값만 쓴다', () => {
+		for (const exhibit of EXHIBITS) {
+			const text = projectText(exhibit.slug);
+			const numbers = exhibit.callouts.outcome.match(/\d[\d~.,]*/g) ?? [];
+
+			for (const number of numbers) {
+				expect(text.includes(number.replace(/[.,]$/, '')), `[${exhibit.slug}] 원문에 없는 수치: ${number}`).toBe(true);
+			}
+		}
 	});
 
 	it('핵심 숫자는 연결된 사례의 이력서 원문(career-detail.ts)에 그대로 나온다', () => {
