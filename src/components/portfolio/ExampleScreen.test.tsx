@@ -4,6 +4,7 @@ import { render, screen, within } from '@testing-library/react';
 
 import {
 	EXAMPLE_FORBIDDEN_TERMS,
+	EXAMPLE_LABEL,
 	EXAMPLE_NOTICE,
 	EXAMPLE_SCREENS,
 	type ExampleScreen as ExampleScreenData,
@@ -40,8 +41,14 @@ describe('ExampleScreen', () => {
 				expect(picture.firstElementChild?.getAttribute('aria-hidden'), example.slug).toBe('true');
 				// 표기·caption 은 role="img" 밖의 figcaption 에 있어 보조기기도 읽는다.
 				expect(picture.contains(caption)).toBe(false);
-				expect(caption.textContent, example.slug).toContain(EXAMPLE_NOTICE);
-				expect(caption.textContent, example.slug).toContain(example.caption);
+				// 설명줄은 표기 한 줄 + caption 한 줄이다.
+				expect(caption.firstElementChild?.textContent, example.slug).toBe(EXAMPLE_NOTICE);
+				expect(caption.textContent, example.slug).toBe(`${EXAMPLE_NOTICE}${example.caption}`);
+				// "예시" 배지는 브라우저 틀 윗줄 끝에 있고 설명줄에 되풀이하지 않는다.
+				expect(picture.firstElementChild?.firstElementChild?.lastElementChild?.textContent, example.slug).toBe(
+					EXAMPLE_LABEL,
+				);
+				expect(caption.textContent, example.slug).not.toContain(EXAMPLE_LABEL);
 				// 가짜 주소와 화면 이름이 그림 안에 보인다.
 				expect(picture.textContent, example.slug).toContain(example.data.address);
 				expect(picture.textContent, example.slug).toContain(example.title);

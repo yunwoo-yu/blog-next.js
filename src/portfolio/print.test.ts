@@ -3,29 +3,22 @@ import RESUME, { formatMonths, getCareerMonths } from '@/constant/resume';
 
 import { PORTFOLIO_CASES } from './cases';
 import {
-	EVIDENCE_TAGS,
 	getPrintContacts,
-	getPrintDecisionRows,
 	getPrintFeatured,
 	getPrintOthers,
-	getPrintPages,
 	getPrintReferences,
-	getPrintResultSentences,
 	getPrintTroubles,
 	getTotalCareerDuration,
 	PRINT_FEATURED,
 	PRINT_FEATURED_SLUGS,
-	PRINT_GLOSSARY,
+	PRINT_IDENTITY_CLAIM,
 	PRINT_LIMITS,
-	PRINT_MAX_DECISIONS,
 	PRINT_MAX_DIAGRAM_STEPS,
 	PRINT_MAX_TROUBLES,
 	PRINT_OTHERS,
-	PRINT_PAGES_PER_CASE,
 	pickPrintTroubles,
 	splitSentences,
 } from './print';
-import { getStory, getVisibleStory } from './stories';
 
 describe('인쇄 문구 데이터', () => {
 	it('대표 사례는 5개이고 모두 실제 사례이며 그 밖의 작업과 겹치지 않는다', () => {
@@ -36,54 +29,6 @@ describe('인쇄 문구 데이터', () => {
 		expect(new Set([...PRINT_FEATURED_SLUGS, ...PRINT_OTHERS.map(entry => entry.slug)])).toEqual(new Set(slugs));
 		expect(getPrintFeatured().map(entry => entry.item.slug)).toEqual([...PRINT_FEATURED_SLUGS]);
 		expect(getPrintOthers().map(entry => entry.item.slug)).toEqual(PRINT_OTHERS.map(entry => entry.slug));
-	});
-
-	it('용어 풀이는 지정한 6개 이내이고 각 풀이가 짧은 한 줄이다', () => {
-		expect(PRINT_GLOSSARY.map(entry => entry.term)).toEqual(['PG', 'FCP', '웹뷰', '401·토큰·쿠키', 'CS', 'Suspense']);
-		expect(PRINT_GLOSSARY.length).toBeLessThanOrEqual(6);
-		for (const { term, description } of PRINT_GLOSSARY) {
-			expect(description.trim().length, term).toBeGreaterThan(0);
-			expect(description.length, term).toBeLessThanOrEqual(40);
-			expect(description, term).not.toMatch(/[\r\n]/);
-		}
-	});
-
-	it('인쇄 판단 행은 모든 옵션의 라벨을 보존하며 없는 대안을 만들지 않는다', () => {
-		for (const item of PORTFOLIO_CASES) {
-			const decisions = getVisibleStory(getStory(item.slug)).decisions;
-			const rows = getPrintDecisionRows(item.slug);
-
-			expect(rows.map(row => row.question)).toEqual(decisions.map(decision => decision.question));
-			decisions.forEach((decision, index) => {
-				expect(rows[index].chosen).toEqual(
-					decision.options
-						.filter(option => option.verdict === 'chosen')
-						.map(({ label, name, reason }) => ({ label, name, reason })),
-				);
-				expect(rows[index].alternatives).toEqual(
-					decision.options.filter(option => option.verdict === 'rejected').map(({ label, name }) => ({ label, name })),
-				);
-			});
-		}
-	});
-
-	it('운영 인쇄 행에서는 근거 미확인 초안을 제외한다', () => {
-		vi.stubEnv('NODE_ENV', 'production');
-		try {
-			for (const item of PORTFOLIO_CASES) {
-				const rows = getPrintDecisionRows(item.slug);
-				const drafts = getStory(item.slug)!.decisions.flatMap(decision =>
-					decision.options.filter(option => option.basis === 'draft'),
-				);
-
-				for (const draft of drafts)
-					expect(rows.flatMap(row => [...row.chosen, ...row.alternatives]).map(option => option.name)).not.toContain(
-						draft.name,
-					);
-			}
-		} finally {
-			vi.unstubAllEnvs();
-		}
 	});
 
 	it('대표 사례 순서: 결제와 중복 기부가 연달아 오지 않는다', () => {
@@ -101,12 +46,11 @@ describe('인쇄 문구 데이터', () => {
 		);
 	});
 
-	it('문구 상한: 한 줄 성과 80자, 한계 120자·2문장 이하, 그 밖의 작업 한 구절 90자·제목 45자', () => {
+	it('문구 상한: 한 줄 요약 80자·2문장 이하, 그 밖의 작업 한 구절 90자·제목 45자', () => {
 		for (const entry of PRINT_FEATURED) {
+			expect(entry.oneLine.trim().length, entry.slug).toBeGreaterThan(0);
 			expect(entry.oneLine.length, entry.slug).toBeLessThanOrEqual(PRINT_LIMITS.oneLine);
-			expect(entry.limit.length, entry.slug).toBeLessThanOrEqual(PRINT_LIMITS.limit);
-			expect(splitSentences(entry.limit).length, entry.slug).toBeLessThanOrEqual(2);
-			expect(entry.tocPhrase.trim().length, entry.slug).toBeGreaterThan(0);
+			expect(splitSentences(entry.oneLine).length, entry.slug).toBeLessThanOrEqual(2);
 		}
 		for (const { item, line } of getPrintOthers()) {
 			expect(line.length, item.slug).toBeLessThanOrEqual(PRINT_LIMITS.otherLine);
@@ -114,26 +58,31 @@ describe('인쇄 문구 데이터', () => {
 		}
 	});
 
-	it('숫자 출처 태그는 측정·관측·전언 중 하나이고, 전언은 전언이라고 적는다', () => {
-		for (const entry of PRINT_FEATURED) {
-			if (entry.evidence) expect(EVIDENCE_TAGS, entry.slug).toContain(entry.evidence.tag);
-		}
-		const donation = PRINT_FEATURED.find(entry => entry.slug === 'donation-duplicate-guard');
-		const donationCase = PORTFOLIO_CASES.find(item => item.slug === 'donation-duplicate-guard');
+	it('수치는 결과 문장 안의 짧은 괄호로 출처를 밝힌다(고정 규칙)', () => {
+		const resultOf = (slug: string) =>
+			PORTFOLIO_CASES.find(item => item.slug === slug)!.stages.find(stage => stage.id === 'result')!.text;
+		const donationCase = PORTFOLIO_CASES.find(item => item.slug === 'donation-duplicate-guard')!;
 
-		expect(donation?.evidence?.tag).toBe('전언');
-		expect(donation?.evidence?.text).toContain('전언');
-		expect(donationCase?.summary).toContain('약 70%');
-		expect(donationCase?.summary).toContain('CS 담당자');
-		expect(donation?.limit).toContain('사용자가 선택');
+		expect(resultOf('wellomarket-checkout')).toMatch(
+			/^오픈 후 1개월 동안 결제 금액 관련 CS 문의와 API 에러 로그는 0건이었습니다\./,
+		);
+		expect(resultOf('wello-responsive-search')).toMatch(
+			/^데스크톱 평균 참여 시간이 약 20% 증가했습니다\(GA4, 개편 전후 2주 단순 비교\)\./,
+		);
+		expect(resultOf('donation-duplicate-guard')).toMatch(
+			/^중복 기부 관련 CS 재문의가 약 70% 줄었습니다\(CS 담당자 전언\)\./,
+		);
+		expect(resultOf('avatar-studio-performance')).toMatch(
+			/^FCP가 3초 이상에서 400~600ms로 줄었습니다\(Lighthouse 측정\)\./,
+		);
+		expect(donationCase.summary).toContain('약 70%');
+		expect(donationCase.summary).toContain('(CS 담당자 전언)');
 	});
 
-	it('아바타 수치의 출처는 Lighthouse 측정이다', () => {
-		expect(PRINT_FEATURED.find(entry => entry.slug === 'avatar-studio-performance')?.evidence).toEqual({
-			tag: '측정',
-			text: 'FCP 3초 이상 → 400~600ms · Lighthouse',
-		});
-		expect(EVIDENCE_TAGS).toEqual(['측정', '관측', '전언']);
+	it('표지 정체성 문장은 정해진 한 문장이다', () => {
+		expect(PRINT_IDENTITY_CLAIM).toBe(
+			'결제 금액, 검색 조건, 로그인 토큰처럼 화면과 서버의 값이 어긋나기 쉬운 부분을 주로 맡았습니다.',
+		);
 	});
 
 	it('그 밖의 작업은 합친 챗봇부터 네 행이고 마이데이터는 구현만 기술한다', () => {
@@ -151,20 +100,9 @@ describe('인쇄 문구 데이터', () => {
 	});
 
 	it('사례 헤더용 문구에 담당·팀 구성 서술이 없다', () => {
-		const texts = [
-			...PRINT_FEATURED.flatMap(entry => [entry.oneLine, entry.limit, entry.tocPhrase, entry.evidence?.text ?? '']),
-			...PRINT_OTHERS.map(entry => entry.line),
-		];
+		const texts = [...PRINT_FEATURED.map(entry => entry.oneLine), ...PRINT_OTHERS.map(entry => entry.line)];
 
 		for (const text of texts) expect(text, text).not.toMatch(/담당:|내가 맡은 것|명이 /);
-	});
-
-	it('쪽 번호는 표지 1쪽, 사례 2쪽씩, 마지막이 그 밖의 작업이다', () => {
-		const pages = getPrintPages();
-
-		expect(pages.caseStarts).toEqual(PRINT_FEATURED.map((_, index) => 2 + index * PRINT_PAGES_PER_CASE));
-		expect(pages.others).toBe(1 + PRINT_FEATURED.length * PRINT_PAGES_PER_CASE + 1);
-		expect(pages.total).toBe(12);
 	});
 
 	it('경력 기간은 이력서 경력의 합이다', () => {
@@ -183,35 +121,16 @@ describe('인쇄 문구 데이터', () => {
 	});
 });
 
-describe('결과 문장 고르기', () => {
-	const evidence = { tag: EVIDENCE_TAGS[1], text: '오픈 후 1개월 · 결제 금액 관련 CS 문의·API 에러 로그 0건' };
-
-	it('수치가 이미 나온 문장과 해명 문장은 뺀다', () => {
-		const text =
-			'2026.03 오픈 후 1개월간 문의가 0건이었습니다. 쿠폰 조합이 늘어도 한 곳에서 정해집니다. 효과를 수치로 잰 값은 없습니다.';
-
-		expect(getPrintResultSentences(text, evidence)).toEqual(['쿠폰 조합이 늘어도 한 곳에서 정해집니다.']);
-	});
-
+describe('문장 나누기', () => {
 	it('문장 사이 숫자 속 점으로는 끊지 않는다', () => {
 		expect(splitSentences('2026.03 오픈했습니다. 다음 문장입니다.')).toEqual([
 			'2026.03 오픈했습니다.',
 			'다음 문장입니다.',
 		]);
 	});
-
-	it('대표 사례 5개 모두 남는 결과 문장이 있고 2문장 이하다', () => {
-		for (const { item, evidence: tag } of getPrintFeatured()) {
-			const result = item.stages.find(stage => stage.id === 'result');
-			const sentences = getPrintResultSentences(result?.text ?? '', tag);
-
-			expect(sentences.length, item.slug).toBeGreaterThan(0);
-			expect(sentences.length, item.slug).toBeLessThanOrEqual(2);
-		}
-	});
 });
 
-describe('인쇄용 문제·도식 고르기', () => {
+describe('인쇄용 구현 포인트·도식 고르기', () => {
 	const step = { from: 0, to: 1, label: 'x' };
 	const small = { actors: ['a', 'b'], steps: [step, step, step, step] };
 	const large = { actors: ['a', 'b'], steps: Array.from({ length: PRINT_MAX_DIAGRAM_STEPS + 1 }, () => step) };
@@ -234,7 +153,7 @@ describe('인쇄용 문제·도식 고르기', () => {
 		expect(picked[1].diagram).toBe(small);
 	});
 
-	it('대표 사례마다 풀었던 문제 2개 이하, 도식은 5단계 이하로 1개 이하, 판단 행은 2개 이하다', () => {
+	it('대표 사례마다 구현 포인트 2개 이하, 도식은 5단계 이하로 1개 이하다', () => {
 		for (const slug of PRINT_FEATURED_SLUGS) {
 			const troubles = getPrintTroubles(slug);
 			const diagrams = troubles.flatMap(trouble => (trouble.diagram ? [trouble.diagram] : []));
@@ -242,7 +161,6 @@ describe('인쇄용 문제·도식 고르기', () => {
 			expect(troubles.length, slug).toBeLessThanOrEqual(PRINT_MAX_TROUBLES);
 			expect(diagrams.length, slug).toBeLessThanOrEqual(1);
 			for (const diagram of diagrams) expect(diagram.steps.length, slug).toBeLessThanOrEqual(PRINT_MAX_DIAGRAM_STEPS);
-			expect(getPrintDecisionRows(slug).length, slug).toBeLessThanOrEqual(PRINT_MAX_DECISIONS);
 		}
 	});
 });
@@ -262,8 +180,8 @@ describe('기술 자료 링크', () => {
 
 		expect(blog.url).toBe(REVERSE_INFINITE_SCROLL_POST_URL);
 		expect(pr.url).toBe(ARGO_WORKFLOWS_PR_URL);
-		expect(pr.point).toContain('PR');
-		expect(blog.pointLabel).toBe('이 글에서 확인할 판단');
-		expect(pr.pointLabel).toBe('기여 내용');
+		expect(blog.point).toBe('역방향 무한스크롤 구현 2가지 비교');
+		expect(pr.point).toBe('Argo Workflows UI 기여 PR 3건 머지(1건 공동 작성)');
+		expect(Object.keys(blog)).not.toContain('pointLabel');
 	});
 });

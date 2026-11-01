@@ -2,7 +2,7 @@ import type { SequenceDiagram as SequenceDiagramData } from '@/portfolio/stories
 import { cn } from '@/utils/utils';
 
 import DiagramReadout from './DiagramReadout';
-import { centerOf, getLabelSpan, getTone, TONE_LABEL, type Tone } from './diagram';
+import { centerOf, getLabelSpan, getLegend, getTone, type Tone } from './diagram';
 import Reveal from './Reveal';
 
 const TONE_TEXT: Record<Tone, string> = {
@@ -12,7 +12,8 @@ const TONE_TEXT: Record<Tone, string> = {
 };
 const TONE_LINE: Record<Tone, string> = {
 	normal: 'bg-pf-gray-400',
-	problem: 'bg-pf-bad',
+	// 문제 흐름은 점선이라 색을 못 구분해도 모양으로 구분된다.
+	problem: '[background:repeating-linear-gradient(90deg,var(--pf-bad)_0_6px,transparent_6px_10px)]',
 	fix: 'bg-pf-blue',
 };
 const HEAD_RIGHT: Record<Tone, string> = {
@@ -30,11 +31,6 @@ const LOOP: Record<Tone, string> = {
 	problem: 'border-pf-bad',
 	fix: 'border-pf-blue',
 };
-const TONE_PILL: Record<Tone, string> = {
-	normal: '',
-	problem: 'bg-pf-bad-bg text-pf-bad-fg',
-	fix: 'bg-pf-blue-50 text-pf-blue-700',
-};
 
 /**
  * 누가 누구에게 무엇을 보내는지 보여 주는 시퀀스 도식. 순수 CSS 라 서버에서 그린다.
@@ -44,6 +40,7 @@ const TONE_PILL: Record<Tone, string> = {
 const SequenceDiagram = ({ diagram }: { diagram: SequenceDiagramData }) => {
 	const { actors, steps, caption } = diagram;
 	const count = actors.length;
+	const legend = getLegend(diagram);
 	const center = (index: number) => centerOf(count, index);
 
 	return (
@@ -91,20 +88,19 @@ const SequenceDiagram = ({ diagram }: { diagram: SequenceDiagramData }) => {
 													rightward ? 'text-left' : 'text-right',
 												)}
 												style={{ gridColumn: `${start + 1} / ${end + 2}`, textAlign: self ? 'left' : undefined }}>
-												<span className="break-keep bg-white box-decoration-clone">
-													{TONE_LABEL[tone] && (
-														<span className={cn('mr-1.5 rounded px-1.5 py-0.5 text-[12px] font-bold', TONE_PILL[tone])}>
-															{TONE_LABEL[tone]}
-														</span>
-													)}
-													<span className={cn('font-medium', TONE_TEXT[tone])}>{step.label}</span>
+												<span className={cn('break-keep bg-white box-decoration-clone font-medium', TONE_TEXT[tone])}>
+													{step.label}
 												</span>
 											</p>
 										</div>
 										<div className="relative mt-1.5 h-3">
 											{self ? (
 												<span
-													className={cn('absolute top-0 h-3 w-5 rounded-r-lg border-2 border-l-0', LOOP[tone])}
+													className={cn(
+														'absolute top-0 h-3 w-5 rounded-r-lg border-2 border-l-0',
+														LOOP[tone],
+														tone === 'problem' && 'border-dashed',
+													)}
 													style={{ left: center(step.from) }}
 												/>
 											) : (
@@ -128,6 +124,11 @@ const SequenceDiagram = ({ diagram }: { diagram: SequenceDiagramData }) => {
 							})}
 						</ol>
 					</div>
+					{legend && (
+						<p aria-hidden="true" className="mt-3 break-keep px-1 text-[12px] text-pf-gray-700">
+							{legend}
+						</p>
+					)}
 				</div>
 			</Reveal>
 			<DiagramReadout diagram={diagram} />

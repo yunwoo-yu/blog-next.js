@@ -1,4 +1,4 @@
-import { EXAMPLE_DISCLAIMER, EXAMPLE_LABEL, type ExampleScreen as ExampleScreenData } from '@/portfolio/examples';
+import { EXAMPLE_LABEL, EXAMPLE_NOTICE, type ExampleScreen as ExampleScreenData } from '@/portfolio/examples';
 import { cn } from '@/utils/utils';
 
 import AdminRefresh from './ExampleScreens/AdminRefresh';
@@ -70,12 +70,12 @@ const BrowserBar = ({ t, address, marks }: { t: ExampleTheme; address: string; m
 				),
 			)}
 		</span>
-		<span className={cn('shrink-0 rounded-[0.3em] px-[0.4em] font-bold', t.badge)}>예시</span>
+		<span className={cn('shrink-0 rounded-[0.3em] px-[0.4em] font-bold', t.badge)}>{EXAMPLE_LABEL}</span>
 	</div>
 );
 
 /**
- * 사례의 동작을 가상의 화면으로 그린 예시. 실제 서비스 화면 캡처가 아니며, 아래 설명줄에 항상 그 사실을 적는다.
+ * 사례의 동작을 가상의 화면으로 그린 예시. 실제 서비스 화면 캡처가 아니며, 윗줄 배지와 아래 설명줄 첫 줄에 항상 그 사실을 적는다.
  * 그림 부분은 role="img" 와 alt 문장 하나로 읽히고 안쪽 장식은 숨긴다. 설명줄(figcaption)은 그대로 읽힌다.
  * 서버 컴포넌트이고 마우스 상호작용·애니메이션이 없다.
  */
@@ -94,13 +94,7 @@ const ExampleScreen = ({ example, variant = 'web', className }: ExampleScreenPro
 				</div>
 			</div>
 			<figcaption className={t.figcaption}>
-				<span className="block">
-					<span className={cn('mr-[0.4em] inline-block rounded-[0.3em] px-[0.4em] font-bold', t.badge)}>
-						{EXAMPLE_LABEL}
-					</span>
-					<span className="sr-only"> · </span>
-					{EXAMPLE_DISCLAIMER}
-				</span>
+				<span className="block font-semibold">{EXAMPLE_NOTICE}</span>
 				<span className="block">{example.caption}</span>
 			</figcaption>
 		</figure>

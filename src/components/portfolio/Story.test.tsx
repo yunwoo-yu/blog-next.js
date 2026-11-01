@@ -33,6 +33,11 @@ describe('SequenceDiagram', () => {
 		});
 		expect(readable[1].textContent).toContain('문제');
 		expect(readable[3].textContent).toContain('해결');
+		// 보이는 도식에는 문제·해결 칩 없이 선 모양과 범례 한 줄로 구분한다.
+		diagram.steps.forEach((step, index) => {
+			expect(visible[index].textContent).toBe(step.label);
+		});
+		expect(container.textContent).toContain('점선 빨강: 문제 흐름 · 실선 파랑: 해결 흐름');
 		expect(container.querySelector('[data-testid="sequence-diagram"]')).toHaveAttribute('aria-hidden', 'true');
 		expect(screen.getByText('이중 요청이 들어오는 순서')).toBeInTheDocument();
 	});

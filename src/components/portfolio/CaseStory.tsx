@@ -13,7 +13,7 @@ const DraftBadge = () => (
 
 const subTitle = 'text-[17px] font-bold text-pf-gray-900';
 
-/** 판단(고른 방법을 크게, 고르지 않은 방법을 회색으로)과 풀어야 했던 문제를 단순한 목록으로 보여 준다. */
+/** 대안이 실제로 있었던 판단(고른 방법을 크게, 고르지 않은 방법을 회색으로)과 구현 포인트를 단순한 목록으로 보여 준다. 판단이 없으면 그 섹션을 그리지 않는다. */
 const CaseStory = ({ story }: { story: CaseStoryData | undefined }) => {
 	const { decisions, troubles } = getVisibleStory(story);
 
@@ -67,7 +67,7 @@ const CaseStory = ({ story }: { story: CaseStoryData | undefined }) => {
 			{troubles.length > 0 && (
 				<section id="troubles" aria-labelledby="troubles-title" className="mt-10">
 					<h3 id="troubles-title" className={subTitle}>
-						구현 중 풀었던 문제
+						구현 포인트
 					</h3>
 					<ol className="mt-3 divide-y divide-pf-line">
 						{troubles.map(trouble => (

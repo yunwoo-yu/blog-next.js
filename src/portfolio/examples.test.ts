@@ -2,9 +2,10 @@ import { PORTFOLIO_CASES } from './cases';
 import {
 	EXAMPLE_DOMAIN,
 	EXAMPLE_FORBIDDEN_TERMS,
-	EXAMPLE_ILLUSTRATIVE_NOTE,
+	EXAMPLE_LABEL,
 	EXAMPLE_NOTICE,
 	EXAMPLE_SCREENS,
+	EXAMPLE_TEXT_LIMITS,
 	type ExampleScreen,
 	getExampleScreen,
 } from './examples';
@@ -38,22 +39,26 @@ describe('예시 화면 데이터', () => {
 		for (const slug of caseSlugs) expect(getExampleScreen(slug)?.slug, slug).toBe(slug);
 	});
 
-	it('표기 문구가 정해진 문장이고, 모든 예시에 제목·alt·한 줄 caption 이 있다', () => {
-		expect(EXAMPLE_NOTICE).toBe(
-			'예시 화면 · 개념을 보여 주기 위해 새로 만든 가상의 화면이며 실제 서비스 화면이 아닙니다',
-		);
+	it('표기 문구가 정해진 짧은 문장이고, 모든 예시에 제목·짧은 alt·한 문장 caption 이 있다', () => {
+		expect(EXAMPLE_LABEL).toBe('예시');
+		expect(EXAMPLE_NOTICE).toBe('가상 화면 · 실제 서비스 화면이 아닙니다');
 		for (const example of EXAMPLE_SCREENS) {
 			expect(example.title.trim(), example.slug).not.toBe('');
-			expect(example.alt.trim().length, example.slug).toBeGreaterThan(20);
+			expect(example.alt.trim().length, example.slug).toBeGreaterThan(15);
+			expect(example.alt.length, example.slug).toBeLessThanOrEqual(EXAMPLE_TEXT_LIMITS.alt);
+			expect(example.alt, example.slug).toMatch(/^가상 /);
 			expect(example.caption.trim(), example.slug).not.toBe('');
+			expect(example.caption.length, example.slug).toBeLessThanOrEqual(EXAMPLE_TEXT_LIMITS.caption);
 			expect(example.caption, example.slug).not.toContain('\n');
+			expect(example.caption.split(/(?<=[.!?])\s+/), example.slug).toHaveLength(1);
 		}
 	});
 
-	it('사례가 실제 화면에 있었다고 말하지 않는 설명용 요소를 그린 예시는 caption 에 그 사실을 적는다', () => {
-		expect(EXAMPLE_ILLUSTRATIVE_NOTE).toBe('강조 표시와 안내 문구는 설명을 위한 것입니다.');
-		for (const slug of ['admin-session-refresh', 'mydata-integration', 'ai-chatbot-cms'])
-			expect(getExampleScreen(slug)?.caption.endsWith(` ${EXAMPLE_ILLUSTRATIVE_NOTE}`), slug).toBe(true);
+	it('설명용 표시를 따로 해명하는 긴 문구를 caption 에 붙이지 않는다', () => {
+		for (const example of EXAMPLE_SCREENS) {
+			expect(example.caption, example.slug).not.toMatch(/설명을 위한 것|개념을 보여 주기 위해/);
+			expect(example.caption, example.slug).not.toContain(EXAMPLE_NOTICE);
+		}
 	});
 
 	it('특정 서비스 어투(~어요)를 흉내 내지 않고 "~입니다"·명사형으로 쓴다', () => {

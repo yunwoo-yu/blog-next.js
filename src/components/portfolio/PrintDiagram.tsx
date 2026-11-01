@@ -1,7 +1,7 @@
 import type { SequenceDiagram } from '@/portfolio/stories';
 import { cn } from '@/utils/utils';
 import DiagramReadout from './DiagramReadout';
-import { centerOf, getLabelSpan, getTone, TONE_LABEL, type Tone } from './diagram';
+import { centerOf, getLabelSpan, getLegend, getTone, type Tone } from './diagram';
 
 /**
  * 단계 종류별 선 색(--c)과 굵기(--w). 같은 값을 줄·화살촉·고리가 함께 쓰므로 li 에 변수로 둔다.
@@ -11,11 +11,6 @@ const TONE_VARS: Record<Tone, string> = {
 	normal: '[--c:theme(colors.print-arrow)] [--w:1.25pt]',
 	problem: '[--c:theme(colors.print-bad)] [--w:1.5pt]',
 	fix: '[--c:theme(colors.print-accent)] [--w:1.75pt]',
-};
-
-const CHIP_TONE: Partial<Record<Tone, string>> = {
-	problem: 'bg-white text-print-ink',
-	fix: 'border-print-ink-2 bg-print-ink-2 text-white',
 };
 
 /** 화살촉 공통: 0 크기 상자의 테두리로 삼각형을 그린다. 방향에 따라 변과 이동을 달리한다. */
@@ -43,10 +38,11 @@ const PrintDiagram = ({ diagram }: { diagram: SequenceDiagram }) => {
 	const { actors, steps } = diagram;
 	const count = actors.length;
 	const columns = { gridTemplateColumns: `repeat(${count}, minmax(0, 1fr))` };
+	const legend = getLegend(diagram);
 
 	return (
-		<figure className="mb-0 mt-[3mm] break-inside-avoid overflow-visible" data-testid="sequence-diagram">
-			<div aria-hidden="true" className="border-[0.75pt] border-print-rule bg-white px-[3mm] pb-[3mm] pt-[4mm]">
+		<figure className="mb-0 mt-[2mm] break-inside-avoid overflow-visible" data-testid="sequence-diagram">
+			<div aria-hidden="true" className="border-[0.75pt] border-print-rule bg-white px-[3mm] pb-[2mm] pt-[3mm]">
 				<div className="grid" style={columns}>
 					{actors.map(actor => (
 						<span
@@ -70,37 +66,25 @@ const PrintDiagram = ({ diagram }: { diagram: SequenceDiagram }) => {
 							const { start, end, rightward, self } = getLabelSpan(count, step);
 							const low = Math.min(step.from, step.to);
 							const high = Math.max(step.from, step.to);
-							const chip = TONE_LABEL[tone];
 							// 자기 자신에게 보내는 메시지의 고리는 왼쪽을 향해 되돌아온다.
 							const head = getHeadClass(tone, rightward && !self);
 
 							return (
 								<li
 									key={`${step.label}-${index}`}
-									className={cn('py-[1.5mm]', TONE_VARS[tone])}
+									className={cn('py-[0.6mm]', TONE_VARS[tone])}
 									data-testid="sequence-step">
 									<div className="grid" style={columns}>
 										<p
 											className={cn(
-												'relative z-[1] text-[8.5pt] text-print-ink-2',
+												'relative z-[1] text-[8.5pt] leading-[1.45] text-print-ink-2',
 												self || rightward ? 'text-left' : 'text-right',
 											)}
 											style={{ gridColumn: `${start + 1} / ${end + 2}` }}>
-											<span className="bg-white box-decoration-clone">
-												{chip && (
-													<span
-														className={cn(
-															'mr-[1.5mm] inline-block rounded-[1mm] border-[0.75pt] border-print-ink px-[1.5mm] text-[8pt] font-bold leading-[1.4]',
-															CHIP_TONE[tone],
-														)}>
-														{chip}
-													</span>
-												)}
-												{step.label}
-											</span>
+											<span className="bg-white box-decoration-clone">{step.label}</span>
 										</p>
 									</div>
-									<span className="relative mt-[0.5mm] block h-[4mm]">
+									<span className="relative block h-[2.6mm]">
 										{self ? (
 											<>
 												<span
@@ -138,6 +122,11 @@ const PrintDiagram = ({ diagram }: { diagram: SequenceDiagram }) => {
 						})}
 					</ol>
 				</div>
+				{legend && (
+					<p aria-hidden="true" className="mt-[1.5mm] text-[7.5pt] text-print-ink-3">
+						{legend}
+					</p>
+				)}
 			</div>
 			<DiagramReadout diagram={diagram} />
 		</figure>

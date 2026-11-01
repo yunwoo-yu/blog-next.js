@@ -145,7 +145,7 @@ const CORE_EXHIBITS: Exhibit[] = [
 				'화면과 서버의 금액 계산이 다르면 PG 승인 금액이 어긋나고, 재고 소진·주문 만료·인증 실패에서도 다음 행동이 보여야 했습니다.',
 			decision:
 				'서버가 확정한 금액만 PG에 요청하도록 기준을 서버로 고정하고, 구매 후 버튼도 서버 상태 하나로 정했습니다.',
-			outcome: '2026.03 오픈 후 1개월간 결제 금액 관련 고객 상담 문의와 API 에러 로그가 0건이었습니다.',
+			outcome: '오픈 후 1개월 동안 결제 금액 관련 CS 문의와 API 에러 로그는 0건이었습니다.',
 		},
 		screens: {},
 		identity: WELLO_MARKET_PC,
@@ -167,7 +167,7 @@ const CORE_EXHIBITS: Exhibit[] = [
 			problem: 'PC에서도 600px 고정폭 화면이 보였고, 정책·답례품·동네소식·기부사업은 메뉴마다 흩어져 있었습니다.',
 			decision:
 				'화면을 PC로 확장하고 검색 조건을 URL에 두어 공유·재진입이 되게 했으며, 필터 상태는 PC와 모바일이 함께 씁니다.',
-			outcome: '개편 전후 2주 GA4 단순 전후 비교에서 데스크톱 평균 참여 시간이 약 20% 증가했습니다.',
+			outcome: '데스크톱 평균 참여 시간이 약 20% 증가했습니다(GA4, 개편 전후 2주 단순 비교).',
 		},
 		screens: { after: WELLO_SEARCH_PC },
 		mobile: WELLO_HOME_MOBILE,
@@ -190,7 +190,7 @@ const CORE_EXHIBITS: Exhibit[] = [
 			decision:
 				'컴포넌트는 공통 디자인 시스템으로, 캐러셀과 스와이프는 더 단순한 구현으로 바꾸고, 사라지는 필드는 looseObject 스키마로 보존했습니다.',
 			outcome:
-				'wello-biz 소스에 Chakra UI·yup·Swiper를 직접 가져오는 코드가 남아 있지 않고, UI는 공통 디자인 시스템으로 검증은 Zod 하나로 통일됐습니다.',
+				'Wello-biz 소스에는 Chakra UI, yup, Swiper를 직접 가져오는 코드가 남아 있지 않고, UI는 공통 디자인 시스템과 Tailwind로, 검증은 Zod 하나로 맞춰졌습니다.',
 		},
 		screens: {},
 	},
@@ -210,8 +210,7 @@ const CORE_EXHIBITS: Exhibit[] = [
 				'3D 렌더링과 대용량 정적 자산이 진입을 막아 3초 이상 빈 화면이 보였고, 3D·편집 로직이 섞여 작은 변경도 위험했습니다.',
 			decision:
 				'3D 뷰에 Suspense 경계를 두고 편집 기능과 3D 표시를 분리했습니다. CDN 자산 경로는 환경 변수 상수로 정리했습니다.',
-			outcome:
-				'첫 콘텐츠 표시(FCP)는 3초 이상에서 Lighthouse 기준 400~600ms로 줄었습니다. 3D 편집 조작 가능 시점과는 다릅니다.',
+			outcome: 'FCP가 3초 이상에서 400~600ms로 줄었습니다(Lighthouse 측정).',
 		},
 		screens: {},
 	},

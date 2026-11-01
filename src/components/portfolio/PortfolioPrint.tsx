@@ -18,13 +18,13 @@ import { Column } from './ui';
  */
 const PRINT_ROOT_CLASS = cn(
 	'mx-auto max-w-[174mm] px-[4mm] pb-[12mm] print:max-w-none print:p-0',
-	'break-keep text-[10pt] leading-[1.6] text-print-ink-2 [page:pf-print] [print-color-adjust:exact]',
+	'break-keep text-[9.5pt] leading-[1.55] text-print-ink-2 [page:pf-print] [print-color-adjust:exact]',
 	'[&_:is(h1,h2,h3,h4)]:break-after-avoid',
 	'[&_a]:text-print-accent [&_a]:underline [&_a]:[overflow-wrap:anywhere]',
 	'[&_p]:[line-height:inherit] [&_p]:[orphans:3] [&_p]:[widows:3]',
 );
 
-/** 한 번에 PDF 로 저장하는 인쇄용 문서: 표지 → 대표 사례(각 2쪽) → 그 밖의 작업. */
+/** 한 번에 PDF 로 저장하는 인쇄용 문서: 표지 → 대표 사례(각각 새 쪽에서 시작) → 그 밖의 작업. */
 const PortfolioPrint = () => (
 	<div className={PRINT_ROOT_CLASS}>
 		<PrintPageStyle />

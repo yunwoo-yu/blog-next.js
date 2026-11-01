@@ -1,7 +1,7 @@
 import { renderRichText } from '@/components/resume/highlight';
 import type { PortfolioCase } from '@/portfolio/cases';
 import { getExampleScreen } from '@/portfolio/examples';
-import { getPrintDecisionRows, getPrintResultSentences, getPrintTroubles, type PrintFeatured } from '@/portfolio/print';
+import { getPrintTroubles, type PrintFeatured } from '@/portfolio/print';
 import { cn } from '@/utils/utils';
 
 import ExampleScreen from './ExampleScreen';
@@ -16,7 +16,7 @@ interface PrintCaseProps {
 	index: number;
 }
 
-/** "문제"·"해결" 본문. 이력서 원문의 강조 문구는 굵게 그린다. */
+/** "문제"·"해결"·"결과" 본문. 이력서 원문의 강조 문구는 굵게 그린다. */
 const StageText = ({ text, highlights }: { text: string; highlights: string[] }) => (
 	<>
 		{splitParagraphs(text).map(paragraph => (
@@ -25,59 +25,41 @@ const StageText = ({ text, highlights }: { text: string; highlights: string[] })
 	</>
 );
 
-const REASON_CELL_CLASS = 'border-t-[0.5pt] border-print-rule py-[2mm] pl-0 pr-[2mm] text-left align-top';
-const REASON_HEAD_CLASS = cn(
-	REASON_CELL_CLASS,
-	'border-b-[0.75pt] border-t-0 border-b-print-ink font-bold text-print-ink-3',
-);
-
-const circled = (index: number) => String.fromCodePoint(0x2460 + index);
-
-/** 사례 한 건 = 정확히 2쪽. A쪽: 머리·한 줄 성과·문제·해결·방식과 이유, B쪽: 구현 중 풀었던 문제·도식·예시 화면·결과·확인 범위. */
+/**
+ * 사례 한 건. 새 쪽에서 시작해 내용만큼 이어진다(쪽 수를 고정하지 않는다).
+ * 순서: 머리·한 줄 요약 → 문제 → 해결 → 구현 포인트(도식) → 예시 화면·결과. 블록마다 쪽 사이에서 잘리지 않게 한다.
+ */
 const PrintCase = ({ item, entry, index }: PrintCaseProps) => {
 	const number = String(index + 1).padStart(2, '0');
 	const problem = item.stages.find(stage => stage.id === 'problem');
 	const solution = item.stages.find(stage => stage.id === 'contribution');
 	const result = item.stages.find(stage => stage.id === 'result');
-	const decisions = getPrintDecisionRows(item.slug);
 	const troubles = getPrintTroubles(item.slug);
-	const resultSentences = result ? getPrintResultSentences(result.text, entry.evidence) : [];
 	const titleId = `print-case-${item.slug}`;
 	const example = getExampleScreen(item.slug);
 
 	return (
 		<article data-print-case={item.slug} aria-labelledby={titleId}>
-			<PrintSheet data-print-page="case-a">
+			<PrintSheet data-print-page="case" className="print:min-h-0">
 				<header className="flex items-baseline gap-[3mm] border-t-[2pt] border-print-ink pt-[3mm]">
-					<span className="text-[28pt] font-bold leading-none tabular-nums text-print-num" aria-hidden="true">
+					<span className="text-[20pt] font-bold leading-none tabular-nums text-print-num" aria-hidden="true">
 						{number}
 					</span>
-					<span className="rounded-[1mm] border-[0.75pt] border-print-ink px-[2mm] py-[0.3mm] text-[9pt] font-bold text-print-ink">
-						{item.organization}
-					</span>
 					<span className="text-[9.5pt] text-print-ink-3">
+						<span className="font-bold text-print-ink">{item.organization}</span>
+						{' · '}
 						{[item.service, item.period].filter(Boolean).join(' · ')}
 					</span>
 				</header>
-				<h2 id={titleId} className="mt-[4mm] max-w-[160mm] text-[18pt] font-bold leading-[1.4] text-print-ink">
+				<h2 id={titleId} className="mt-[2mm] max-w-[160mm] text-[16pt] font-bold leading-[1.4] text-print-ink">
 					{item.title}
 				</h2>
 
-				<div
+				<p
 					data-print-oneline
-					className="mt-[8mm] break-inside-avoid border-l-[3pt] border-print-ink bg-print-fill px-[5mm] py-[4mm]">
-					<p className="text-[11pt] font-semibold text-print-ink">{entry.oneLine}</p>
-					{entry.evidence && (
-						<p className="mt-[2mm] text-[9.5pt]" data-print-evidence>
-							<span
-								data-print-tag
-								className="mr-[2mm] border-[0.75pt] border-print-ink px-[1.5mm] text-[8pt] font-bold text-print-ink">
-								{entry.evidence.tag}
-							</span>
-							{entry.evidence.text}
-						</p>
-					)}
-				</div>
+					className="mt-[4mm] max-w-[160mm] break-inside-avoid border-l-[3pt] border-print-ink pl-[4mm] text-[10pt] font-semibold text-print-ink">
+					{entry.oneLine}
+				</p>
 
 				{problem && (
 					<PrintBlock id={`${titleId}-problem`} title="문제" className="break-inside-avoid">
@@ -91,68 +73,18 @@ const PrintCase = ({ item, entry, index }: PrintCaseProps) => {
 					</PrintBlock>
 				)}
 
-				{decisions.length > 0 && (
-					<PrintBlock id={`${titleId}-reason`} title="어떻게 정했나" subhead className="break-inside-avoid">
-						<table
-							className="w-full break-inside-avoid border-collapse text-[9pt] leading-[1.5] [&_strong]:!text-print-ink"
-							data-print-reasons>
-							<thead>
-								<tr>
-									<th scope="col" className={REASON_HEAD_CLASS}>
-										정할 것
-									</th>
-									<th scope="col" className={REASON_HEAD_CLASS}>
-										방식과 이유
-									</th>
-								</tr>
-							</thead>
-							<tbody>
-								{decisions.map(row => (
-									<tr key={row.question}>
-										<th scope="row" className={cn(REASON_CELL_CLASS, 'w-[48mm] font-bold text-print-ink')}>
-											{row.question}
-										</th>
-										<td className={cn(REASON_CELL_CLASS, '[&_p+p]:mt-[1mm]')}>
-											{row.chosen.map(option => (
-												<p key={option.name}>
-													<span className="font-bold">{option.label}: </span>
-													<strong>{option.name}</strong> {option.reason}
-												</p>
-											))}
-											{row.alternatives.map(option => (
-												<p key={option.name} className="text-print-ink-3">
-													{option.label}: {option.name}
-												</p>
-											))}
-										</td>
-									</tr>
-								))}
-							</tbody>
-						</table>
-					</PrintBlock>
-				)}
-			</PrintSheet>
-
-			<PrintSheet data-print-page="case-b" aria-label={`${item.title} (계속)`}>
-				<p className="border-b-[0.5pt] border-print-rule text-[8pt] text-print-ink-3">
-					{number} {item.title} (계속)
-				</p>
-
 				{troubles.length > 0 && (
-					<PrintBlock id={`${titleId}-troubles`} title="구현 중 풀었던 문제">
-						<ol>
+					<PrintBlock id={`${titleId}-troubles`} title="구현 포인트">
+						<ul>
 							{troubles.map((trouble, order) => (
 								<li
 									key={trouble.problem}
 									className={cn(
 										'break-inside-avoid [&>p]:max-w-[160mm]',
-										order > 0 && 'mt-[9mm] border-t-[0.5pt] border-print-rule pt-[8mm]',
+										order > 0 && 'mt-[3mm] border-t-[0.5pt] border-print-rule pt-[3mm]',
 									)}
 									data-testid="trouble">
-									<h4 className="mb-[2mm] text-[11pt] font-bold text-print-ink">
-										<span aria-hidden="true">{circled(order)} </span>
-										{trouble.problem}
-									</h4>
+									<h4 className="mb-[1mm] text-[10pt] font-bold text-print-ink">{trouble.problem}</h4>
 									{trouble.diagram ? (
 										<PrintDiagram diagram={trouble.diagram} />
 									) : (
@@ -160,26 +92,22 @@ const PrintCase = ({ item, entry, index }: PrintCaseProps) => {
 									)}
 								</li>
 							))}
-						</ol>
+						</ul>
 					</PrintBlock>
 				)}
 
-				{/* 도식 아래 여백에 가상의 예시 화면. 설명줄을 옆에 두고 글자를 줄여 높이 약 40mm 안에 둔다(12쪽 유지). */}
-				{example && <ExampleScreen example={example} variant="print" className="mt-[7mm] break-inside-avoid" />}
-
-				<div className="mt-[11mm] break-inside-avoid">
-					{resultSentences.length > 0 && (
-						<PrintBlock id={`${titleId}-result`} title="결과" className="mt-0">
-							<p>{resultSentences.join(' ')}</p>
+				{/* 구현 포인트 아래에 가상의 예시 화면(왼쪽)과 결과(오른쪽)를 나란히 둬 높이를 아낀다. 읽는 순서는 예시 → 결과. */}
+				<div
+					className={cn(
+						'mt-[4mm] break-inside-avoid',
+						example && 'grid grid-cols-[105mm_minmax(0,1fr)] items-start gap-[6mm]',
+					)}>
+					{example && <ExampleScreen example={example} variant="print" className="break-inside-avoid" />}
+					{result && (
+						<PrintBlock id={`${titleId}-result`} title="결과" className="mt-0 break-inside-avoid">
+							<StageText text={result.text} highlights={result.highlights} />
 						</PrintBlock>
 					)}
-					<PrintBlock
-						id={`${titleId}-limit`}
-						title="확인 범위와 한계"
-						subhead
-						className="mt-[8mm] border-t-[0.5pt] border-print-rule pt-[6mm]">
-						<p>{entry.limit}</p>
-					</PrintBlock>
 				</div>
 			</PrintSheet>
 		</article>

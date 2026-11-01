@@ -31,7 +31,7 @@ export interface ExampleTheme {
 	skeleton: string;
 	/** 좌우 두 칸 배치. 웹은 좁은 화면에서 한 칸으로 쌓는다. */
 	split: string;
-	/** figure 배치. 인쇄는 설명줄을 그림 오른쪽에 두어 높이를 줄인다. */
+	/** figure 배치. 인쇄는 설명줄을 그림 아래 두 줄로 두고, 폭은 놓이는 자리(PrintCase 의 칸)가 정한다. */
 	figure: string;
 	figcaption: string;
 	badge: string;
@@ -81,8 +81,8 @@ export const EXAMPLE_THEMES: Record<ExampleVariant, ExampleTheme> = {
 		errorBox: 'border-[0.75pt] border-dashed border-print-ink-2 bg-white',
 		skeleton: 'bg-print-rule',
 		split: 'grid grid-cols-2 gap-[0.75em]',
-		figure: 'grid grid-cols-[minmax(0,1fr)_44mm] items-start gap-[4mm]',
-		figcaption: 'text-[7.5pt] leading-[1.45] text-print-ink-3 [&>span+span]:mt-[1.5mm]',
+		figure: '',
+		figcaption: 'mt-[1.5mm] text-[7.5pt] leading-[1.45] text-print-ink-3',
 		badge: 'border-[0.75pt] border-print-ink text-print-ink',
 	},
 };

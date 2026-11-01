@@ -4,16 +4,12 @@
  * 가짜 주소는 예약 도메인(example.test) 아래만 쓴다.
  */
 
-/** 모든 예시 화면에 항상 보이는 표기. 앞의 라벨은 배지로, 뒤 문장은 이어서 그린다. */
-export const EXAMPLE_LABEL = '예시 화면';
-export const EXAMPLE_DISCLAIMER = '개념을 보여 주기 위해 새로 만든 가상의 화면이며 실제 서비스 화면이 아닙니다';
-export const EXAMPLE_NOTICE = `${EXAMPLE_LABEL} · ${EXAMPLE_DISCLAIMER}`;
-
-/**
- * 사례가 실제 화면에 있었다고 말하지 않는 요소(상태 배너·결과 패널·위치 표시 등)를 설명용으로 그린 예시의 caption 끝에 붙인다.
- * 그 요소가 실제 화면 구성이라는 사실 주장으로 읽히지 않게 한다.
- */
-export const EXAMPLE_ILLUSTRATIVE_NOTE = '강조 표시와 안내 문구는 설명을 위한 것입니다.';
+/** 브라우저 틀 윗줄의 배지. */
+export const EXAMPLE_LABEL = '예시';
+/** 모든 예시 화면의 설명줄 맨 앞에 항상 붙는 표기. */
+export const EXAMPLE_NOTICE = '가상 화면 · 실제 서비스 화면이 아닙니다';
+/** alt·caption 길이 상한(글자 수). caption 은 PDF 에서 두 줄 안에 들어가야 한다. */
+export const EXAMPLE_TEXT_LIMITS = { alt: 60, caption: 45 } as const;
 
 /** 가짜 주소·이메일이 써야 하는 예약 도메인. */
 export const EXAMPLE_DOMAIN = 'example.test';
@@ -141,9 +137,9 @@ interface ExampleBase {
 	slug: string;
 	/** 가상 서비스 화면 이름 */
 	title: string;
-	/** 보조기기용 한두 문장 설명 */
+	/** 보조기기용 한 줄 설명(EXAMPLE_TEXT_LIMITS.alt 이내) */
 	alt: string;
-	/** 이 화면이 무엇을 보여 주는지 한 줄 */
+	/** 이 화면이 무엇을 보여 주는지 한 문장(EXAMPLE_TEXT_LIMITS.caption 이내) */
 	caption: string;
 }
 
@@ -165,8 +161,8 @@ export const EXAMPLE_SCREENS: readonly ExampleScreen[] = [
 		slug: 'wellomarket-checkout',
 		kind: 'order-summary',
 		title: '샘플마켓 주문 결제',
-		alt: '가상의 쇼핑몰 주문 요약 화면입니다. 상품 금액·배송비·쿠폰·포인트 아래에 화면 합계(표시용)와 서버가 확정한 결제 금액이 나란히 있고, 결제 버튼은 서버가 확정한 금액을 씁니다.',
-		caption: '화면 합계는 표시에만 쓰고, 결제사에는 서버가 확정한 결제 금액 하나만 보냅니다.',
+		alt: '가상 결제 화면: 화면 합계와 서버 확정 금액을 나눠 표시',
+		caption: '결제사에는 서버가 확정한 금액만 보냅니다.',
 		data: {
 			address: 'shop.example.test/checkout',
 			lines: [
@@ -185,8 +181,8 @@ export const EXAMPLE_SCREENS: readonly ExampleScreen[] = [
 		slug: 'wello-responsive-search',
 		kind: 'search-url',
 		title: '예시 통합검색',
-		alt: '가상의 통합검색 화면입니다. 주소 줄의 q=예시, sort=latest 값과 화면의 검색어·정렬 조건이 같게 강조돼 있고, 아래에 필터 칩과 검색 결과 목록이 있습니다.',
-		caption: '주소의 검색어·정렬 값과 화면의 검색 조건이 같아, 링크를 공유하거나 새로고침해도 같은 조건으로 봅니다.',
+		alt: '가상 통합검색 화면: 주소의 검색어·정렬 값과 화면 조건이 같음',
+		caption: '주소에 검색 조건이 남아 새로고침해도 같은 결과가 나옵니다.',
 		data: {
 			address: 'search.example.test/search?q=예시&sort=latest',
 			marks: ['q=예시', 'sort=latest'],
@@ -204,8 +200,8 @@ export const EXAMPLE_SCREENS: readonly ExampleScreen[] = [
 		slug: 'admin-session-refresh',
 		kind: 'admin-refresh',
 		title: '데모 어드민 목록',
-		alt: '가상의 관리 화면 목록입니다. 위쪽에 로그인 정보를 갱신하는 중이라는 상태 표시가 있고, 다시 로그인하지 않아도 목록 요청이 이어진다는 안내가 붙어 있습니다.',
-		caption: `로그인 증명값이 만료되면 갱신한 뒤 요청을 다시 보내, 다시 로그인하지 않고 작업을 이어 갑니다. ${EXAMPLE_ILLUSTRATIVE_NOTE}`,
+		alt: '가상 관리 화면: 토큰 갱신 중 표시와 이어지는 목록 요청',
+		caption: '토큰이 만료되면 갱신한 뒤 요청을 다시 보냅니다.',
 		data: {
 			address: 'admin.example.test/items',
 			status: '로그인 정보를 갱신하는 중…',
@@ -221,8 +217,8 @@ export const EXAMPLE_SCREENS: readonly ExampleScreen[] = [
 		slug: 'donation-duplicate-guard',
 		kind: 'confirm-modal',
 		title: '예시 기부 재확인',
-		alt: '가상의 기부 화면 위에 확인 창이 떠 있습니다. "최근 기부 이력이 있습니다"라는 안내와 기관·금액·일시가 있고, 계속 기부하기와 그만두기 중 하나를 고르게 합니다.',
-		caption: '외부 납부를 다녀온 뒤 최신 이력을 다시 확인하고, 완료 이력이 있으면 계속할지 사용자가 고릅니다.',
+		alt: '가상 기부 화면: 최근 기부 이력이 있다는 확인 창',
+		caption: '완료 이력이 있으면 계속할지 사용자가 고릅니다.',
 		data: {
 			address: 'give.example.test/donate',
 			heading: '최근 기부 이력이 있습니다',
@@ -240,8 +236,8 @@ export const EXAMPLE_SCREENS: readonly ExampleScreen[] = [
 		slug: 'avatar-studio-performance',
 		kind: 'editor-loading',
 		title: '캐릭터 편집기 예시',
-		alt: '가상의 3D 캐릭터 편집 화면입니다. 왼쪽에 파츠 목록이 있고, 오른쪽 3D 영역은 회색 로딩 자리로 따로 표시됩니다.',
-		caption: '3D 뷰에 Suspense 경계를 두고, 편집 목록과 3D 표시를 나눈 구성을 보여 줍니다.',
+		alt: '가상 캐릭터 편집 화면: 파츠 목록과 따로 로딩되는 3D 영역',
+		caption: '3D 뷰에만 Suspense 경계를 두고 편집 목록과 나눴습니다.',
 		data: {
 			address: 'editor.example.test/character',
 			parts: [{ label: '머리', selected: true }, { label: '상의' }, { label: '하의' }, { label: '신발' }],
@@ -253,8 +249,8 @@ export const EXAMPLE_SCREENS: readonly ExampleScreen[] = [
 		slug: 'wellobiz-chakra-zod',
 		kind: 'form-errors',
 		title: '예시 입력 폼',
-		alt: '가상의 입력 폼입니다. 이메일 칸 바로 아래에 형식 오류가, 담당자 목록 안 두 번째 항목 칸 바로 아래에 이름 누락 오류가 점선 테두리와 함께 표시됩니다.',
-		caption: '배열 안 항목까지 포함해, 검증 오류를 그 오류가 난 입력 칸 바로 아래에 표시합니다.',
+		alt: '가상 입력 폼: 이메일 칸과 목록 안 항목 칸 아래에 오류 표시',
+		caption: '배열 안 항목도 오류가 난 칸 바로 아래에 표시합니다.',
 		data: {
 			address: 'form.example.test/settings',
 			fields: [
@@ -275,8 +271,8 @@ export const EXAMPLE_SCREENS: readonly ExampleScreen[] = [
 		slug: 'mydata-integration',
 		kind: 'stepper-results',
 		title: '예시 데이터 연결',
-		alt: '가상의 데이터 연결 화면입니다. 위에는 본인인증·동의·전송요구·전자서명 4단계 중 현재 단계가 강조돼 있고, 아래에는 일괄 철회 결과로 성공한 기관과 실패한 기관이 나뉘어 실패한 기관만 다시 시도하라는 안내가 있습니다.',
-		caption: `외부 인증을 다녀와도 이어지는 진행 단계와, 일괄 철회에서 실패한 기관만 따로 알리는 결과를 보여 줍니다. ${EXAMPLE_ILLUSTRATIVE_NOTE}`,
+		alt: '가상 데이터 연결 화면: 진행 단계와 일괄 철회 결과',
+		caption: '일괄 철회에서 실패한 기관만 따로 알립니다.',
 		data: {
 			address: 'connect.example.test/flow?step=2',
 			marks: ['step=2'],
@@ -295,8 +291,8 @@ export const EXAMPLE_SCREENS: readonly ExampleScreen[] = [
 		slug: 'ai-chatbot-cms',
 		kind: 'chat-anchor',
 		title: '예시 상담 챗봇',
-		alt: '가상의 챗봇 화면입니다. 위쪽에 이전 대화 10개가 새로 붙었지만 읽던 메시지는 같은 자리에 표시돼 있고, 옆에는 고객사별 제목·설명·이미지 자리가 있는 링크 미리보기 카드가 있습니다.',
-		caption: `위에 이전 대화가 붙어도 읽던 메시지는 같은 자리에 있고, 링크 미리보기에는 고객사별 제목·설명이 담깁니다. ${EXAMPLE_ILLUSTRATIVE_NOTE}`,
+		alt: '가상 챗봇 화면: 이전 대화가 붙어도 읽던 메시지는 제자리',
+		caption: '이전 대화를 불러와도 읽던 메시지가 제자리에 있습니다.',
 		data: {
 			address: 'chat.example.test/sample-co',
 			marks: ['sample-co'],
@@ -316,9 +312,8 @@ export const EXAMPLE_SCREENS: readonly ExampleScreen[] = [
 		slug: 'swing-frontend',
 		kind: 'attachment-form',
 		title: '예시 계약 수정',
-		alt: '가상의 계약 수정 폼입니다. 관리번호 칸 바로 아래에 이미 사용 중인 관리번호라는 오류가 있고, 첨부 파일 목록에는 기존 파일 1개가 유지된 채 새 파일 1개가 추가돼 있습니다.',
-		caption:
-			'계약을 수정할 때 기존 첨부 파일을 유지한 채 새 파일을 더하고, 관리번호 중복은 그 입력 칸 아래에 알립니다.',
+		alt: '가상 계약 수정 폼: 기존 파일 유지와 관리번호 중복 오류',
+		caption: '기존 첨부 파일을 유지한 채 새 파일을 더해 보냅니다.',
 		data: {
 			address: 'contract.example.test/contracts/edit',
 			field: { label: '관리번호', value: 'DEMO-0001', error: '이미 사용 중인 관리번호입니다' },

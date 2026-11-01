@@ -5,7 +5,6 @@ import {
 	getPrintCareers,
 	getPrintFeatured,
 	getPrintOthers,
-	getPrintPages,
 	getPrintSkills,
 	getTotalCareerDuration,
 	PRINT_IDENTITY_CLAIM,
@@ -18,15 +17,16 @@ import { PrintLabel, PrintSheet } from './PrintParts';
 
 const TOC_ITEM_CLASS = 'flex gap-[2mm] break-inside-avoid border-t-[0.5pt] border-print-rule py-[1.5mm]';
 const TOC_NUM_CLASS = 'w-[8mm] flex-none text-[11pt] font-bold tabular-nums text-print-accent';
-const TOC_PAGE_CLASS = 'text-[10.5pt] font-bold tabular-nums text-print-ink';
 
 const joinNames = (names: string[], separator: string) => names.join(separator);
 
-/** 표지: 한 쪽에 정체성·경력·연락처·기술 스택·대표 숫자 2개·대표 사례 목차를 담는다. 꼬리말은 찍지 않는다. */
+/**
+ * 표지: 한 쪽에 정체성·경력·연락처·기술 스택·대표 숫자 2개·대표 사례 목차를 담는다. 꼬리말은 찍지 않는다.
+ * 사례 쪽 수는 내용만큼 흐르므로 목차에는 쪽 번호를 싣지 않고 번호·제목만 둔다.
+ */
 const PrintCover = () => {
 	const careers = getPrintCareers();
 	const featured = getPrintFeatured();
-	const pages = getPrintPages();
 	const organizations = careers.map(career => career.organization);
 
 	return (
@@ -71,22 +71,13 @@ const PrintCover = () => {
 
 			<section aria-labelledby="print-skills" className="mt-[7mm]">
 				<PrintLabel id="print-skills">기술 스택</PrintLabel>
-				<ul className="flex flex-wrap gap-[1.5mm]">
-					{getPrintSkills().map(skill => (
-						<li
-							key={skill}
-							className="rounded-[1mm] border-[0.75pt] border-print-ink-3 bg-print-fill px-[2.5mm] py-[0.5mm] text-[9pt] font-bold text-print-ink">
-							{skill}
-						</li>
-					))}
-				</ul>
+				<p className="mt-[1mm] text-[10pt] text-print-ink">{getPrintSkills().join(' · ')}</p>
 			</section>
 
 			<ul className="mt-[6mm] grid grid-cols-2 gap-[5mm]" aria-label="대표 숫자">
 				{PORTFOLIO_KEY_RESULTS.map(result => (
 					<li key={result.value} className="border-[1pt] border-print-ink px-[5mm] py-[4mm]">
-						<p className="text-[9pt] font-bold text-print-accent">{result.tag}</p>
-						<p className="mt-[1mm] text-[26pt] font-bold text-print-ink">{result.value}</p>
+						<p className="text-[26pt] font-bold text-print-ink">{result.value}</p>
 						<p className="mt-[1mm] text-[9pt]">{result.label}</p>
 					</li>
 				))}
@@ -95,47 +86,28 @@ const PrintCover = () => {
 			<section aria-labelledby="print-toc" className="mt-[5mm]">
 				<PrintLabel id="print-toc">대표 사례</PrintLabel>
 				<ol>
-					{featured.map(({ item, tocPhrase }, index) => (
+					{featured.map(({ item }, index) => (
 						<li key={item.slug} data-toc-item className={TOC_ITEM_CLASS}>
 							<span className={TOC_NUM_CLASS}>{index + 1}</span>
 							<span className="min-w-0 flex-1">
-								<span className="flex items-baseline">
-									<span className="text-[10.5pt] font-bold text-print-ink">{item.title}</span>
-									<span
-										className="mx-[2mm] min-w-[6mm] flex-1 border-b-[1pt] border-dotted border-print-ink-3"
-										aria-hidden="true"
-									/>
-									<span data-toc-page className={TOC_PAGE_CLASS}>
-										{pages.caseStarts[index]}
-									</span>
-								</span>
+								<span className="block text-[10.5pt] font-bold text-print-ink">{item.title}</span>
 								<span className="block text-[9pt] text-print-ink-3">
-									{tocPhrase} · {item.organization} · {item.period}
+									{item.organization} · {item.period}
 								</span>
 							</span>
 						</li>
 					))}
 					<li data-toc-item data-toc-others className={TOC_ITEM_CLASS}>
 						<span className={TOC_NUM_CLASS} aria-hidden="true" />
-						<span className="min-w-0 flex-1">
-							<span className="flex items-baseline">
-								<span className="text-[10.5pt] font-bold text-print-ink">그 밖의 작업 {getPrintOthers().length}건</span>
-								<span
-									className="mx-[2mm] min-w-[6mm] flex-1 border-b-[1pt] border-dotted border-print-ink-3"
-									aria-hidden="true"
-								/>
-								<span data-toc-page className={TOC_PAGE_CLASS}>
-									{pages.others}
-								</span>
-							</span>
+						<span className="min-w-0 flex-1 text-[10.5pt] font-bold text-print-ink">
+							그 밖의 작업 {getPrintOthers().length}건
 						</span>
 					</li>
 				</ol>
 			</section>
 
 			<p className="mt-auto text-[8.5pt] text-print-ink-3">
-				수치는 측정·관측·전언으로 출처를 구분해 표기했습니다. FCP는 Lighthouse로 측정했습니다. 사례{' '}
-				{featured.length + getPrintOthers().length}개 전문: <a href={PRINT_PORTFOLIO_URL}>{PRINT_PORTFOLIO_URL}</a>
+				사례 {featured.length + getPrintOthers().length}개 전문: <a href={PRINT_PORTFOLIO_URL}>{PRINT_PORTFOLIO_URL}</a>
 			</p>
 		</PrintSheet>
 	);

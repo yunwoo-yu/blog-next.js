@@ -219,11 +219,27 @@ describe('CaseStudy', () => {
 			}
 		}
 		expect(decisions.textContent).not.toMatch(/선택한 방법|검토했지만 고르지 않은 방법/);
+		expect(within(troubles).getByRole('heading', { name: '구현 포인트' })).toBeInTheDocument();
+		expect(troubles.textContent).not.toContain('구현 중 풀었던 문제');
 		expect(items.length).toBe(withStory.troubles.length);
 		withStory.troubles.forEach((trouble, index) => {
 			expect(items[index].querySelector('h4')!.textContent).toContain(trouble.problem);
 			expect(items[index].textContent).toContain(trouble.fix.split(/\n{2,}/)[0]);
 		});
+	});
+
+	it('대안이 있는 판단이 없는 사례는 "어떻게 정했나" 섹션을 그리지 않는다', () => {
+		const without = STORIES.filter(story => story.decisions.length === 0);
+
+		expect(without.length).toBeGreaterThan(0);
+		for (const story of without) {
+			const each = PORTFOLIO_CASES.find(c => c.slug === story.slug)!;
+			const { container, unmount } = render(<CaseStudy item={each} />);
+
+			expect(container.querySelector('#decisions'), story.slug).toBeNull();
+			expect(container.textContent, story.slug).not.toContain('어떻게 정했나');
+			unmount();
+		}
 	});
 
 	it('사례 상세에 "공개 화면" 섹션과 서비스 스크린샷이 없다', () => {

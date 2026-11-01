@@ -15,11 +15,14 @@ export const PrintLabel = ({ id, children }: { id: string; children: ReactNode }
 );
 
 interface PrintSheetProps extends ComponentPropsWithoutRef<'section'> {
-	/** 화면에서 쪽 구분선과 종이 높이를 보이고, 인쇄에서는 이 쪽을 새 쪽에서 시작한다(표지는 false). */
+	/** 인쇄에서 이 묶음을 새 쪽에서 시작한다(표지는 false). */
 	breakBefore?: boolean;
 }
 
-/** 인쇄 한 쪽. 화면에서는 점선으로 쪽을 나눠 미리 보여 주고, 인쇄에서는 여백 없이 새 쪽에서 시작한다. */
+/**
+ * 인쇄 묶음(표지·사례·마지막 쪽). 화면에서는 점선으로 나눠 미리 보여 주고, 인쇄에서는 여백 없이 새 쪽에서 시작한다.
+ * 최소 높이는 표지처럼 한 쪽을 채워야 하는 묶음만 쓰고, 내용만큼 흐르는 묶음은 print:min-h-0 으로 끈다.
+ */
 export const PrintSheet = ({ breakBefore = true, className, ...props }: PrintSheetProps) => (
 	<section
 		className={cn(
@@ -34,16 +37,14 @@ export const PrintSheet = ({ breakBefore = true, className, ...props }: PrintShe
 interface PrintBlockProps {
 	id: string;
 	title: string;
-	/** 11pt 소제목(선택 이유·한계). 기본은 13pt. */
-	subhead?: boolean;
 	className?: string;
 	children: ReactNode;
 }
 
-/** 제목 + 본문 구역. 본문 문단은 160mm 폭으로 줄여 읽기 좋은 줄 길이를 지키고, 문단 사이는 2.5mm 띄운다. */
-export const PrintBlock = ({ id, title, subhead, className, children }: PrintBlockProps) => (
-	<section aria-labelledby={id} className={cn('mt-[11mm] [&>p+p]:mt-[2.5mm] [&>p]:max-w-[160mm]', className)}>
-		<h3 id={id} className={cn('text-print-ink font-bold', subhead ? 'mb-[2mm] text-[11pt]' : 'mb-[2.5mm] text-[13pt]')}>
+/** 제목 + 본문 구역. 본문 문단은 160mm 폭으로 줄여 읽기 좋은 줄 길이를 지키고, 문단 사이는 1.5mm 띄운다. */
+export const PrintBlock = ({ id, title, className, children }: PrintBlockProps) => (
+	<section aria-labelledby={id} className={cn('mt-[5mm] [&>p+p]:mt-[1.5mm] [&>p]:max-w-[160mm]', className)}>
+		<h3 id={id} className="mb-[1.5mm] text-[11.5pt] font-bold text-print-ink">
 			{title}
 		</h3>
 		{children}

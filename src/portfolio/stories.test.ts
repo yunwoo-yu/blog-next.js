@@ -18,6 +18,22 @@ describe('사례 스토리 데이터', () => {
 		}
 	});
 
+	it('판단은 실제로 검토한 대안(초안이 아닌 rejected)이 있는 것만 둔다', () => {
+		for (const story of STORIES) {
+			for (const decision of story.decisions) {
+				expect(
+					decision.options.some(option => option.verdict === 'rejected' && option.basis !== 'draft'),
+					`${story.slug}: ${decision.question}`,
+				).toBe(true);
+			}
+		}
+		expect(STORIES.filter(story => story.decisions.length > 0).map(story => story.slug)).toEqual([
+			'wellomarket-checkout',
+			'wellobiz-chakra-zod',
+			'ai-chatbot-cms',
+		]);
+	});
+
 	it('확인 전 문장([확인 필요])은 draft 로만 표시한다', () => {
 		for (const story of STORIES) {
 			for (const decision of story.decisions) {

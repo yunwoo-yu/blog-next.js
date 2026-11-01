@@ -5,8 +5,8 @@ import { PORTFOLIO_CASES } from './cases';
 import { EXAMPLE_SCREENS } from './examples';
 import { EXHIBITS } from './exhibits';
 import { PORTFOLIO_KEY_RESULTS } from './overview';
-import { PRINT_FEATURED, PRINT_GLOSSARY, PRINT_OTHERS } from './print';
-import { STORIES } from './stories';
+import { PRINT_FEATURED, PRINT_IDENTITY_CLAIM, PRINT_OTHERS, splitSentences } from './print';
+import { getVisibleStory, STORIES } from './stories';
 
 /** 화면에 나가는 문장만 모은다(stories 의 checks 는 화면에 나오지 않는 질문이라 제외). */
 const publicTexts = () => [
@@ -16,9 +16,9 @@ const publicTexts = () => [
 			group.projects.flatMap(project => [project.title, ...project.details.map(detail => detail.title)]),
 		),
 	),
-	...PRINT_FEATURED.flatMap(entry => [entry.oneLine, entry.limit]),
+	PRINT_IDENTITY_CLAIM,
+	...PRINT_FEATURED.map(entry => entry.oneLine),
 	...PRINT_OTHERS.map(entry => entry.line),
-	...PRINT_GLOSSARY.map(entry => entry.description),
 	...PORTFOLIO_KEY_RESULTS.map(entry => entry.label),
 	...PORTFOLIO_CASES.flatMap(item => [item.title, item.summary, ...item.keywords]),
 	...STORIES.flatMap(story => [
@@ -104,29 +104,41 @@ describe('포트폴리오 본문 규칙', () => {
 			'인수한 WebGL 아바타 서비스의 3D 뷰에 Suspense 경계를 두고 CDN 자산 경로를 환경 변수 상수로 정리했습니다. 첫 콘텐츠 표시(FCP)는 3초 이상에서 400~600ms로 줄었습니다(Lighthouse 측정).',
 		);
 		expect(avatar.summary.length).toBeLessThanOrEqual(130);
-		expect(PRINT_GLOSSARY.find(entry => entry.term === 'Suspense')?.description).toBe(
-			'화면 일부의 로딩을 나눠 다루는 React 기능',
-		);
 		for (const text of publicTexts()) {
 			expect(text, text).not.toMatch(/로딩 경계|3D 뷰의 로딩을|Suspense[^.]*로 (개선|단축)/);
 		}
 	});
 
-	it('FCP는 확인된 Lighthouse 측정으로 쓰고 Suspense·CDN과의 인과는 제한한다', () => {
+	it('FCP는 Lighthouse 측정으로 밝히고, Suspense·CDN 과 FCP 를 인과로 잇는 문장이 없다', () => {
 		const avatar = STORIES.find(story => story.slug === 'avatar-studio-performance')!;
+		const item = PORTFOLIO_CASES.find(entry => entry.slug === avatar.slug)!;
+		const texts = [...publicTexts(), ...PORTFOLIO_CASES.flatMap(entry => entry.stages.map(stage => stage.text))];
+		const causal = /단축|줄였|줄었|줄여|개선|빨라|덕분|때문/;
 
 		expect(avatar.checks.join(' ')).toContain('Lighthouse 로 사용자가 측정(확인됨)');
-		expect(avatar.checks.join(' ')).not.toContain('측정 원자료를 찾지 못했습니다');
-		expect(avatar.decisions[0].options[0].reason).toContain('인과는 확인하지 못했습니다');
-		expect(avatar.troubles[0].diagram?.steps.map(step => step.label).join(' ')).toContain('효과 미확인');
-		expect(avatar.decisions[0].options.find(option => option.name.includes('CDN'))?.reason).toContain(
-			'인과는 확인하지 못했습니다',
-		);
-		for (const text of publicTexts()) {
+		expect(item.stages.find(stage => stage.id === 'result')!.text).toContain('(Lighthouse 측정)');
+		// 검사기가 실제로 잡는지 먼저 확인한다(빈 검사로 통과하지 않게).
+		expect(causal.test('Suspense 경계를 두어 FCP를 줄였습니다.')).toBe(true);
+		for (const text of texts) {
+			for (const sentence of splitSentences(text)) {
+				if (/Suspense|CDN/.test(sentence)) expect(sentence, sentence).not.toMatch(causal);
+			}
 			expect(text, text).not.toMatch(
 				/FCP[^.]*이력서 기재|(?:FCP|400~600ms)[^.]*(?:원자료|(?:측정(?:값| 결과)?|수치)[^.]*(?:확인 못|확인하지 못))/,
 			);
 		}
+	});
+
+	it('공개 문구에 방어·해명 문장(확인하지 못·단정할 수 없·완전한 보장·수치 없음)을 쓰지 않는다', () => {
+		const texts = [
+			...publicTexts(),
+			...PORTFOLIO_CASES.flatMap(entry => entry.stages.map(stage => stage.text)),
+			...EXAMPLE_SCREENS.map(example => JSON.stringify(example)),
+		];
+		const defensive =
+			/확인하지 못|확인 못|단정할 수 없|완전한 보장|효과 미확인|수치는 없습니다|잰 (?:값|수치)은 없|측정하지 않았|별도 집계 데이터는 없|A\/B 테스트가 아닙니다|설명을 위한 것입니다/;
+
+		for (const text of texts) expect(text, text).not.toMatch(defensive);
 	});
 
 	it('마이데이터는 구현 사실만 쓰고 심사·운영 성과나 성과 수치를 주장하지 않는다', () => {
@@ -156,32 +168,117 @@ describe('포트폴리오 본문 규칙', () => {
 		for (const text of publicTexts()) expect(text, text).not.toContain('반려');
 	});
 
-	it('통합 챗봇 용어 풀이는 상세 화면의 첫 등장에 한 번씩만 둔다', () => {
-		const item = PORTFOLIO_CASES.find(item => item.slug === 'ai-chatbot-cms')!;
-		const story = STORIES.find(story => story.slug === item.slug)!;
-		const text = [
-			item.summary,
-			item.stages[0].text,
-			item.stages[1].text,
-			JSON.stringify(story.decisions),
-			JSON.stringify(story.troubles),
-			item.stages[2].text,
-		].join(' ');
-
-		for (const term of [
-			'메타데이터',
-			'Open Graph',
-			'CMS',
-			'CSR',
-			'SSR',
+	it('일반 개발 용어에는 괄호 풀이를 달지 않는다(도메인 용어만 첫 등장에서 풀이)', () => {
+		const GENERAL_TERMS = [
+			'PG',
+			'API',
+			'체크아웃 API',
+			'토큰',
+			'쿠키',
+			'401',
+			'409',
+			'Promise',
+			'effect',
+			'push',
+			'replace',
+			'WebGL',
+			'렌더링',
+			'CDN',
+			'환경 변수 상수',
+			'Suspense',
+			'FCP',
 			'스트림',
 			'폴링',
-			'벡터 스토어',
+			'OG',
+			'Open Graph',
+			'CSR',
+			'SSR',
 			'App Router',
 			'generateMetadata',
-		]) {
-			expect(text.indexOf(`${term}(`), term).toBe(text.indexOf(term));
-			expect(text.split(`${term}(`).length - 1, term).toBe(1);
+			'웹뷰',
+			'납부 식별값',
+			'메시',
+			'텍스처',
+			'resolver',
+			'looseObject',
+			'CMS',
+			'URL',
+			'SDK',
+			'세션 스토리지',
+			'토스트',
+			'인터셉터',
+			'메타데이터',
+			'MVP',
+			'Vite',
+			'S3',
+			'UI',
+			'Zod',
+			'zod',
+			'yup',
+			'Chakra UI',
+			'Swiper',
+			'Embla Carousel',
+			'Pointer Events',
+			'React Hook Form',
+			'GA4',
+			'Lighthouse',
+			'Tailwind',
+			'CS',
+			'라우터',
+			'필터',
+			'폼',
+			'Unity WebGL',
+			'보일러플레이트',
+			'presigned URL',
+		];
+		const pattern = new RegExp(`(?:${GENERAL_TERMS.join('|')})\\(`);
+		// 포트폴리오 화면·PDF 에 나가는 문구만 본다. 이력서(/resume) 요약은 따로 관리하므로 이 규칙 밖이다.
+		const texts = [
+			PRINT_IDENTITY_CLAIM,
+			...PRINT_FEATURED.map(entry => entry.oneLine),
+			...PRINT_OTHERS.map(entry => entry.line),
+			...PORTFOLIO_KEY_RESULTS.map(entry => entry.label),
+			...PORTFOLIO_CASES.flatMap(item => [item.summary, ...item.stages.map(stage => stage.text)]),
+			...STORIES.flatMap(story => [
+				...story.decisions.flatMap(decision => [
+					decision.question,
+					...decision.options.flatMap(option => [option.name, option.reason]),
+				]),
+				...story.troubles.flatMap(trouble => [
+					trouble.problem,
+					trouble.fix,
+					...(trouble.diagram?.steps.map(step => step.label) ?? []),
+				]),
+			]),
+			...EXHIBITS.map(exhibit => exhibit.callouts.outcome),
+			...EXAMPLE_SCREENS.flatMap(example => [example.alt, example.caption]),
+		];
+
+		// 검사기가 실제로 잡는지 먼저 확인한다.
+		expect(pattern.test('토큰(로그인 증명값)')).toBe(true);
+		expect(pattern.test('줄었습니다(Lighthouse 측정)')).toBe(false);
+		for (const text of texts) expect(text, text).not.toMatch(pattern);
+	});
+
+	it('한 사례 안에서 같은 문장이 두 번 나오지 않는다(본문·구현 포인트·판단·결과 요약)', () => {
+		for (const item of PORTFOLIO_CASES) {
+			const { decisions, troubles } = getVisibleStory(STORIES.find(story => story.slug === item.slug));
+			const exhibit = EXHIBITS.find(entry => entry.slug === item.slug)!;
+			const result = item.stages.find(stage => stage.id === 'result')!.text;
+			const texts = [
+				...item.stages.map(stage => stage.text),
+				...troubles.flatMap(trouble => [trouble.problem, trouble.fix]),
+				...decisions.flatMap(decision => decision.options.map(option => option.reason)),
+				// 결과 요약은 결과 본문에 이미 있으면 화면에 한 번만 나온다(CaseStudy).
+				...(result.includes(exhibit.callouts.outcome) ? [] : [exhibit.callouts.outcome]),
+			];
+			const sentences = texts.flatMap(text => text.split(/\n{2,}/).flatMap(splitSentences));
+			const seen = new Set<string>();
+
+			for (const sentence of sentences) {
+				expect(seen.has(sentence), `${item.slug}: ${sentence}`).toBe(false);
+				seen.add(sentence);
+			}
 		}
 	});
 

@@ -5,7 +5,18 @@ import type { SequenceDiagram } from '@/portfolio/stories';
 export type DiagramStep = SequenceDiagram['steps'][number];
 export type Tone = NonNullable<DiagramStep['tone']>;
 
+/** 보조기기용 순서 목록에서 단계 뒤에 붙이는 이름. 보이는 도식에는 칩 대신 선 모양·색과 범례를 쓴다. */
 export const TONE_LABEL: Record<Tone, string> = { normal: '', problem: '문제', fix: '해결' };
+
+/** 도식 아래 범례 한 줄의 항목. 화면·인쇄 모두 문제는 빨간 점선, 해결은 파란 실선이다. */
+const LEGEND: Partial<Record<Tone, string>> = { problem: '점선 빨강: 문제 흐름', fix: '실선 파랑: 해결 흐름' };
+
+/** 도식에 실제로 나오는 종류만 범례에 싣는다. 없으면 빈 문자열. */
+export const getLegend = (diagram: Pick<SequenceDiagram, 'steps'>) =>
+	(['problem', 'fix'] as const)
+		.filter(tone => diagram.steps.some(step => getTone(step) === tone))
+		.map(tone => LEGEND[tone])
+		.join(' · ');
 
 export const getTone = (step: DiagramStep): Tone => step.tone ?? 'normal';
 

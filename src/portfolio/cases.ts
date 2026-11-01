@@ -75,7 +75,7 @@ const CASE_SOURCES: PortfolioCaseSource[] = [
 		slug: 'donation-duplicate-guard',
 		title: '외부 납부 환경의 중복 기부 재확인',
 		summary:
-			'외부 납부 화면을 다녀온 뒤 서버에서 최신 납부 내역을 다시 확인하고, 완료 이력이 있으면 사용자가 계속 기부할지 고르게 했습니다. 중복 기부 관련 CS(고객 상담) 재문의가 약 70% 감소했다고 CS 담당자가 전했습니다.',
+			'외부 납부 화면을 다녀온 뒤 서버에서 최신 납부 내역을 다시 확인하고, 완료 이력이 있으면 사용자가 계속 기부할지 고르게 했습니다. 중복 기부 관련 CS 재문의가 약 70% 줄었습니다(CS 담당자 전언).',
 		keywords: ['정산', '납부 식별값', '웹뷰', 'CS 재문의'],
 		resumeRef: { organization: ORGANIZATIONS.WELLO, service: 'Wello', project: '외부 납부 환경의 중복 기부 재확인' },
 	},
@@ -107,7 +107,7 @@ const CASE_SOURCES: PortfolioCaseSource[] = [
 		slug: 'admin-session-refresh',
 		title: 'Next.js·Vue 통합 어드민 토큰 자동 갱신',
 		summary:
-			'로그인 증명값이 만료되면 자동으로 갱신해 요청을 다시 보내도록 관리 화면을 고쳤습니다. 웰로·웰로비즈의 로그인 저장값도 접속 주소별로 나눠 서로 덮어쓰지 않게 했습니다.',
+			'토큰이 만료되면 자동으로 갱신해 요청을 다시 보내도록 어드민을 고쳤습니다. 웰로·웰로비즈 어드민의 쿠키도 접속 도메인별로 나눠 서로 덮어쓰지 않게 했습니다.',
 		keywords: ['401', '갱신', '쿠키', '도메인별로 분리'],
 		resumeRef: {
 			organization: ORGANIZATIONS.WELLO,
@@ -119,7 +119,7 @@ const CASE_SOURCES: PortfolioCaseSource[] = [
 		slug: 'ai-chatbot-cms',
 		title: 'AI 챗봇 사용자 서비스·운영 CMS 구축',
 		summary:
-			'답변을 순서대로 보여 주고 이전 대화를 불러와도 읽던 위치를 유지했습니다. 고객사 코드로 설정을 조회해 서버에서 메타데이터(페이지 제목·설명 등의 정보)·Open Graph(OG, 링크 공유 미리보기 정보)를 만들고, CMS(콘텐츠 관리 화면)에서 운영자가 값을 바꾸면 프론트엔드 재배포 없이 반영되게 했습니다.',
+			'답변을 순서대로 보여 주고 이전 대화를 불러와도 읽던 위치를 유지했습니다. 고객사 코드로 설정을 조회해 서버에서 메타데이터·Open Graph를 만들고, CMS에서 운영자가 값을 바꾸면 프론트엔드 재배포 없이 반영되게 했습니다.',
 		keywords: ['OpenAI Assistants', '스크롤 위치', 'CMS', '벡터 스토어'],
 		resumeRef: {
 			organization: ORGANIZATIONS.SALIN,
@@ -131,7 +131,7 @@ const CASE_SOURCES: PortfolioCaseSource[] = [
 		slug: 'swing-frontend',
 		title: `Swing ${SWING_PROJECT_TITLE}`,
 		summary:
-			'사용자 웹 프론트엔드를 단독 개발하고 관리자 CMS(콘텐츠 관리 화면) 프론트엔드도 개발했습니다. 계약 수정 때 첨부파일이 사라지던 문제를 고치고, 웹 로그인을 3D 가상 오피스 진입에 연결했습니다. Unity 개발은 담당하지 않았습니다.',
+			'사용자 웹 프론트엔드를 단독 개발하고 관리자 CMS 프론트엔드도 개발했습니다. 계약 수정 때 첨부파일이 사라지던 문제를 고치고, 웹 로그인을 3D 가상 오피스 진입에 연결했습니다. Unity 개발은 담당하지 않았습니다.',
 		keywords: ['Webpack 5', 'Vite', 'S3'],
 		resumeRef: {
 			organization: ORGANIZATIONS.SALIN,
@@ -143,7 +143,7 @@ const CASE_SOURCES: PortfolioCaseSource[] = [
 		slug: 'avatar-studio-performance',
 		title: '아바타 스튜디오 성능 개선',
 		summary:
-			'3D 아바타 서비스의 3D 뷰에 Suspense 경계를 두고 편집 기능과 3D 표시를 분리했습니다. CDN 자산 경로는 환경 변수 상수로 정리했습니다. 첫 콘텐츠 표시(FCP)는 3초 이상에서 400~600ms로 줄었습니다(Lighthouse 측정).',
+			'3D 아바타 서비스의 3D 뷰에 Suspense 경계를 두고 편집 기능과 3D 표시를 분리했습니다. CDN 자산 경로는 환경 변수 상수로 정리했습니다. FCP는 3초 이상에서 400~600ms로 줄었습니다(Lighthouse 측정).',
 		keywords: ['WebGL', 'Suspense', 'CDN', 'Lighthouse', 'FCP'],
 		resumeRef: { organization: ORGANIZATIONS.SALIN, service: 'Localo', project: '아바타 스튜디오 성능 개선' },
 	},
