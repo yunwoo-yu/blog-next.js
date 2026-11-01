@@ -211,7 +211,7 @@ const CORE_EXHIBITS: Exhibit[] = [
 			decision:
 				'3D 뷰에 Suspense 경계를 두고 편집 기능과 3D 표시를 분리했습니다. CDN 자산 경로는 환경 변수 상수로 정리했습니다.',
 			outcome:
-				'첫 콘텐츠 표시(FCP)는 3초 이상에서 Lighthouse 기준 400~600ms로 줄었습니다(이력서 기재). 3D 편집 조작 가능 시점과는 다릅니다.',
+				'첫 콘텐츠 표시(FCP)는 3초 이상에서 Lighthouse 기준 400~600ms로 줄었습니다. 3D 편집 조작 가능 시점과는 다릅니다.',
 		},
 		screens: {},
 	},
@@ -226,7 +226,6 @@ export const EXHIBIT_ORDER = [
 	'donation-duplicate-guard',
 	'mydata-integration',
 	'ai-chatbot-cms',
-	'ai-chatbot-ssr',
 	'swing-frontend',
 	'avatar-studio-performance',
 ] as const;

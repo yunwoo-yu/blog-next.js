@@ -1,16 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
-import {
-	Bot,
-	Boxes,
-	CreditCard,
-	Gauge,
-	Globe,
-	HeartHandshake,
-	KeyRound,
-	Layers,
-	Search,
-	ShieldCheck,
-} from 'lucide-react';
+import { Bot, Boxes, CreditCard, Gauge, HeartHandshake, KeyRound, Layers, Search, ShieldCheck } from 'lucide-react';
 
 /** 공개 화면이 없는 사례에 쓰는 생성형 표지. 실제 화면처럼 보이지 않도록 아이콘과 색 면만 쓴다. */
 export interface CaseCoverStyle {
@@ -34,7 +23,6 @@ export const CASE_COVERS: Record<string, CaseCoverStyle> = {
 	'wellobiz-chakra-zod': { icon: Layers, tone: VIOLET },
 	'admin-session-refresh': { icon: KeyRound, tone: AMBER },
 	'ai-chatbot-cms': { icon: Bot, tone: VIOLET },
-	'ai-chatbot-ssr': { icon: Globe, tone: BLUE },
 	'swing-frontend': { icon: Boxes, tone: MINT },
 	'avatar-studio-performance': { icon: Gauge, tone: AMBER },
 };

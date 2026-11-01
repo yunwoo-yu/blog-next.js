@@ -41,6 +41,8 @@ describe('/portfolio/[slug]', () => {
 	it('모든 사례를 정적 경로로 만들고 그 밖의 slug 는 생성하지 않는다', () => {
 		expect(generateStaticParams()).toEqual(PORTFOLIO_CASES.map(item => ({ slug: item.slug })));
 		expect(dynamicParams).toBe(false);
+		expect(generateStaticParams()).toHaveLength(9);
+		expect(generateStaticParams()).not.toContainEqual({ slug: 'ai-chatbot-ssr' });
 	});
 
 	it('기존 아바타 사례 URL 도 [slug] 가 같은 canonical 로 맡고 별도 route 를 두지 않는다', async () => {
@@ -92,6 +94,8 @@ describe('sitemap / robots', () => {
 		expect(urls).toContain('https://ycow-dev.com/portfolio');
 		for (const item of PORTFOLIO_CASES) expect(urls).toContain(`https://ycow-dev.com/portfolio/${item.slug}`);
 		expect(urls.some(url => url.includes('/resume'))).toBe(false);
+		expect(urls).not.toContain('https://ycow-dev.com/portfolio/ai-chatbot-ssr');
+		expect(urls.filter(url => url.startsWith('https://ycow-dev.com/portfolio/'))).toHaveLength(9);
 	});
 
 	it('robots 는 /resume 과 /portfolio 를 막지 않아 크롤러가 /resume 의 noindex 를 읽게 한다', () => {

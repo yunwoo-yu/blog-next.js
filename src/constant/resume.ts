@@ -273,7 +273,7 @@ const PROJECTS: ServiceProject[] = [
 				caseSlug: 'mydata-integration',
 				date: '2025.12 ~ 2026.01',
 				summary:
-					'의료·통신·신용 마이데이터(KHIS·KOSCOM·NICE) 본인인증부터 전송요구·전자서명까지 연동 플로우와 재동의·철회·전송 이력 연결 관리 화면 개발, 일괄 철회는 일부 실패해도 실패한 항목만 안내(기관 심사 반려)',
+					'의료·통신·신용 마이데이터(KHIS·KOSCOM·NICE) 본인인증부터 전송요구·전자서명까지 연동 플로우와 재동의·철회·전송 이력 연결 관리 화면 개발, 일괄 철회는 일부 실패해도 실패한 항목만 안내',
 				highlights: ['마이데이터(KHIS·KOSCOM·NICE)'],
 			},
 			{
@@ -360,22 +360,14 @@ const PROJECTS: ServiceProject[] = [
 				caseSlug: 'ai-chatbot-cms',
 				date: '2025.01 ~ 2025.08',
 				summary:
-					'OpenAI Assistants 기반 AI 챗봇의 스트림 응답과 이전 대화 로딩 시 읽던 위치 유지, 운영 CMS의 OG 편집·미리보기 채팅·유튜브 요약 지식 파일 등록·방문/대화 통계 화면 개발',
-				highlights: ['읽던 위치 유지', '유튜브 요약 지식 파일 등록'],
+					'OpenAI Assistants 챗봇의 스트림 응답·읽던 위치 유지와 지식 파일 관리 CMS 개발. 고객사 코드로 설정을 조회해 서버에서 메타데이터·Open Graph를 생성하고, 운영자가 CMS에서 값을 바꾸면 프론트엔드 재배포 없이 반영',
+				highlights: ['읽던 위치 유지', '프론트엔드 재배포 없이 반영'],
 				links: [
 					{
 						title: '역방향 무한스크롤을 구현하는 2가지 방법',
 						url: REVERSE_INFINITE_SCROLL_POST_URL,
 					},
 				],
-			},
-			{
-				title: 'AI 챗봇 고객사별 메타데이터·Open Graph 서버 렌더링 구축',
-				caseSlug: 'ai-chatbot-ssr',
-				date: '2025.01 ~ 2025.08',
-				summary:
-					'Next.js 15 App Router 챗봇에서 고객사 코드로 설정을 조회해 메타데이터·Open Graph를 서버에서 생성하고 CMS에서 OG를 편집·미리보기, 값 변경과 신규 고객사 반영에 프론트엔드 배포가 필요 없음',
-				highlights: ['프론트엔드 배포가 필요 없음'],
 			},
 		],
 	},
@@ -408,7 +400,7 @@ const PROJECTS: ServiceProject[] = [
 				caseSlug: 'avatar-studio-performance',
 				date: '2023.10 ~ 2023.12',
 				summary:
-					'인수한 WebGL 아바타 서비스의 3D 뷰에 Suspense 경계를 두고 CDN 자산 경로를 환경 변수 상수로 정리했습니다. 첫 콘텐츠 표시(FCP)는 3초 이상에서 400~600ms로 줄었습니다(이력서 기재).',
+					'인수한 WebGL 아바타 서비스의 3D 뷰에 Suspense 경계를 두고 CDN 자산 경로를 환경 변수 상수로 정리했습니다. 첫 콘텐츠 표시(FCP)는 3초 이상에서 400~600ms로 줄었습니다(Lighthouse 측정).',
 				highlights: ['400~600ms로 줄었습니다'],
 			},
 		],

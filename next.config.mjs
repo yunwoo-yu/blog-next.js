@@ -7,6 +7,15 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 /** @type {import('next').NextConfig} */
 const nextConfig = {
 	pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
+	async redirects() {
+		return [
+			{
+				source: '/portfolio/ai-chatbot-ssr',
+				destination: '/portfolio/ai-chatbot-cms',
+				statusCode: 308,
+			},
+		];
+	},
 	images: {
 		formats: ['image/avif', 'image/webp'], // default: ['image/webp']
 	},

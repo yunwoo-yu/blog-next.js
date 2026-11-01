@@ -89,6 +89,9 @@ describe('/portfolio/print', () => {
 		for (const skill of getPrintSkills()) expect(cover.textContent).toContain(skill);
 		expect(cover.textContent).toContain(`${RESUME.projects.length}개 서비스`);
 		expect(cover.textContent).toContain(PRINT_IDENTITY_CLAIM);
+		expect(cover.textContent).toMatch(/사례 9개\s*전문/);
+		expect(cover.textContent).toContain('FCP는 Lighthouse로 측정했습니다.');
+		expect(cover.textContent).not.toContain('기재');
 	});
 
 	it('표지의 숫자 카드는 테두리형 2개이고 값은 사례의 출처 있는 수치와 일치한다', () => {
@@ -232,6 +235,7 @@ describe('/portfolio/print', () => {
 					.getAllByRole('columnheader')
 					.map(el => el.textContent),
 			).toEqual(['회사', '기간', '작업', '핵심']);
+			expect(rows).toHaveLength(4);
 			expect(rows.map(row => row.dataset.otherItem)).toEqual(getPrintOthers().map(entry => entry.item.slug));
 			for (const [index, { item, line }] of getPrintOthers().entries()) {
 				expect(rows[index].textContent).toContain(item.organization);

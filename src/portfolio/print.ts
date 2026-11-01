@@ -21,8 +21,8 @@ export const PRINT_ROLE = '프론트엔드 개발자';
 /** 표지 소개글의 둘째 문장. */
 export const PRINT_IDENTITY_CLAIM = '결제·검색·인증에서 상태 불일치를 줄이는 프론트엔드 흐름을 구현했습니다.';
 
-/** 수치의 출처 구분. 측정: 도구로 잰 값, 관측: 운영 중 직접 본 값, 전언: 다른 사람이 전한 값, 기재: 이력서에 적힌 값. */
-export const EVIDENCE_TAGS = ['측정', '관측', '전언', '기재'] as const;
+/** 수치의 출처 구분. 측정: 도구로 잰 값, 관측: 운영 중 직접 본 값, 전언: 다른 사람이 전한 값. */
+export const EVIDENCE_TAGS = ['측정', '관측', '전언'] as const;
 export type EvidenceTag = (typeof EVIDENCE_TAGS)[number];
 
 export interface PrintFeatured {
@@ -82,7 +82,7 @@ export const PRINT_FEATURED: readonly PrintFeatured[] = [
 		slug: 'avatar-studio-performance',
 		oneLine:
 			'3D 뷰에 Suspense 경계를 두고 편집 상태와 3D 표시를 분리했습니다. CDN 자산 경로는 환경 변수 상수로 정리했습니다.',
-		evidence: { tag: '기재', text: 'FCP 3초 이상 → 400~600ms · 이력서 기재' },
+		evidence: { tag: '측정', text: 'FCP 3초 이상 → 400~600ms · Lighthouse' },
 		limit: 'FCP는 첫 콘텐츠가 그려진 시점이며, 3D 편집 화면이 조작 가능해지는 시점과는 구분됩니다.',
 		tocPhrase: '첫 콘텐츠 표시(FCP) 개선',
 	},
@@ -101,12 +101,8 @@ export const PRINT_GLOSSARY = [
 /** 그 밖의 작업. 표 한 줄씩 이 순서로 나온다. */
 export const PRINT_OTHERS: readonly PrintOther[] = [
 	{
-		slug: 'ai-chatbot-ssr',
-		line: '고객사별 페이지·링크 미리보기 정보를 서버에서 만들고 관리 화면에서 고치게 해, 재배포 없이 변경·신규 고객사 반영이 가능하게 했습니다.',
-	},
-	{
 		slug: 'ai-chatbot-cms',
-		line: '답변을 조각으로 받아 보여 주고 이전 대화를 불러와도 읽던 위치를 유지했으며, 지식 파일·링크 미리보기·통계 관리 화면을 개발했습니다.',
+		line: '스트림 답변·스크롤 보정과 지식 파일 관리 화면을 만들고, 고객사별 메타데이터를 서버에서 생성해 CMS의 OG 편집값을 재배포 없이 반영했습니다.',
 	},
 	{
 		slug: 'wellobiz-chakra-zod',
@@ -118,7 +114,7 @@ export const PRINT_OTHERS: readonly PrintOther[] = [
 	},
 	{
 		slug: 'mydata-integration',
-		line: '인증·전자서명부터 재동의·철회·이력 화면까지 구현했습니다. 기관 심사 반려로 운영 성과는 없습니다.',
+		line: '인증·전자서명부터 재동의·철회·이력 화면을 구현하고, 외부 인증 후 단계 복원과 일부 실패 시 실패한 기관만 안내하도록 만들었습니다.',
 	},
 ];
 

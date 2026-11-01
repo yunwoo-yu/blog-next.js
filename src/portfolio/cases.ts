@@ -119,24 +119,12 @@ const CASE_SOURCES: PortfolioCaseSource[] = [
 		slug: 'ai-chatbot-cms',
 		title: 'AI 챗봇 사용자 서비스·운영 CMS 구축',
 		summary:
-			'답변이 만들어지는 동안 글자를 순서대로 보여 주고, 이전 대화를 불러와도 읽던 위치를 유지했습니다. 운영 CMS(콘텐츠 관리 화면)에서는 지식 파일과 링크 미리보기 정보를 고칠 수 있게 했습니다.',
+			'답변을 순서대로 보여 주고 이전 대화를 불러와도 읽던 위치를 유지했습니다. 고객사 코드로 설정을 조회해 서버에서 메타데이터(페이지 제목·설명 등의 정보)·Open Graph(OG, 링크 공유 미리보기 정보)를 만들고, CMS(콘텐츠 관리 화면)에서 운영자가 값을 바꾸면 프론트엔드 재배포 없이 반영되게 했습니다.',
 		keywords: ['OpenAI Assistants', '스크롤 위치', 'CMS', '벡터 스토어'],
 		resumeRef: {
 			organization: ORGANIZATIONS.SALIN,
 			service: 'AI Talker',
 			project: 'AI 챗봇 사용자 서비스·운영 CMS 구축',
-		},
-	},
-	{
-		slug: 'ai-chatbot-ssr',
-		title: 'AI 챗봇 고객사별 메타데이터·Open Graph 서버 렌더링 구축',
-		summary:
-			'고객사 설정을 찾아 서버에서 페이지 제목·설명·링크 공유 이미지를 넣고, 운영자가 관리 화면에서 고칠 수 있게 했습니다. 프론트엔드를 다시 배포하지 않고 값을 바꾸거나 신규 고객사에 적용할 수 있습니다.',
-		keywords: ['Next.js 15', 'Open Graph', 'generateMetadata', 'App Router'],
-		resumeRef: {
-			organization: ORGANIZATIONS.SALIN,
-			service: 'AI Talker',
-			project: 'AI 챗봇 고객사별 메타데이터·Open Graph 서버 렌더링 구축',
 		},
 	},
 	{
@@ -155,7 +143,7 @@ const CASE_SOURCES: PortfolioCaseSource[] = [
 		slug: 'avatar-studio-performance',
 		title: '아바타 스튜디오 성능 개선',
 		summary:
-			'3D 아바타 서비스의 3D 뷰에 Suspense 경계를 두고 편집 기능과 3D 표시를 분리했습니다. CDN 자산 경로는 환경 변수 상수로 정리했습니다. 첫 콘텐츠 표시(FCP)는 3초 이상에서 400~600ms로 줄었습니다(이력서 기재).',
+			'3D 아바타 서비스의 3D 뷰에 Suspense 경계를 두고 편집 기능과 3D 표시를 분리했습니다. CDN 자산 경로는 환경 변수 상수로 정리했습니다. 첫 콘텐츠 표시(FCP)는 3초 이상에서 400~600ms로 줄었습니다(Lighthouse 측정).',
 		keywords: ['WebGL', 'Suspense', 'CDN', 'Lighthouse', 'FCP'],
 		resumeRef: { organization: ORGANIZATIONS.SALIN, service: 'Localo', project: '아바타 스튜디오 성능 개선' },
 	},

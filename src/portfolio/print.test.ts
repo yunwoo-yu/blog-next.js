@@ -32,7 +32,7 @@ describe('인쇄 문구 데이터', () => {
 		const slugs = PORTFOLIO_CASES.map(item => item.slug);
 
 		expect(PRINT_FEATURED).toHaveLength(5);
-		expect(PRINT_OTHERS).toHaveLength(5);
+		expect(PRINT_OTHERS).toHaveLength(4);
 		expect(new Set([...PRINT_FEATURED_SLUGS, ...PRINT_OTHERS.map(entry => entry.slug)])).toEqual(new Set(slugs));
 		expect(getPrintFeatured().map(entry => entry.item.slug)).toEqual([...PRINT_FEATURED_SLUGS]);
 		expect(getPrintOthers().map(entry => entry.item.slug)).toEqual(PRINT_OTHERS.map(entry => entry.slug));
@@ -126,6 +126,28 @@ describe('인쇄 문구 데이터', () => {
 		expect(donationCase?.summary).toContain('약 70%');
 		expect(donationCase?.summary).toContain('CS 담당자');
 		expect(donation?.limit).toContain('사용자가 선택');
+	});
+
+	it('아바타 수치의 출처는 Lighthouse 측정이다', () => {
+		expect(PRINT_FEATURED.find(entry => entry.slug === 'avatar-studio-performance')?.evidence).toEqual({
+			tag: '측정',
+			text: 'FCP 3초 이상 → 400~600ms · Lighthouse',
+		});
+		expect(EVIDENCE_TAGS).toEqual(['측정', '관측', '전언']);
+	});
+
+	it('그 밖의 작업은 합친 챗봇부터 네 행이고 마이데이터는 구현만 기술한다', () => {
+		expect(PRINT_OTHERS.map(entry => entry.slug)).toEqual([
+			'ai-chatbot-cms',
+			'wellobiz-chakra-zod',
+			'swing-frontend',
+			'mydata-integration',
+		]);
+		expect(PRINT_OTHERS[0].line).toContain('서버에서 생성');
+		expect(PRINT_OTHERS[0].line).toContain('CMS의 OG 편집값을 재배포 없이 반영');
+		expect(PRINT_OTHERS[3].line).not.toMatch(/반려|성과|운영|\d/);
+		expect(PRINT_OTHERS[3].line).toContain('단계 복원');
+		expect(PRINT_OTHERS[3].line).toContain('실패한 기관만 안내');
 	});
 
 	it('사례 헤더용 문구에 담당·팀 구성 서술이 없다', () => {

@@ -57,8 +57,32 @@ describe('사례 스토리 데이터', () => {
 		const labels = (slug: string) => getStory(slug)!.decisions[0].options.map(({ label }) => label);
 
 		expect(labels('wellomarket-checkout')).toEqual(['지금 접근', '처음 접근']);
-		expect(labels('ai-chatbot-ssr')).toEqual(['이 방법', '다른 방법']);
+		expect(labels('ai-chatbot-cms')).toEqual(['이 방법', '다른 방법']);
 		expect(labels('wellobiz-chakra-zod').slice(0, 2)).toEqual(['바꾼 방식', '기존 방식']);
+	});
+
+	it('통합 챗봇은 메타데이터·스크롤 도식과 답변 처리를 남기고 타인 작업 정정을 보존한다', () => {
+		const story = getStory('ai-chatbot-cms')!;
+
+		expect(getStory('ai-chatbot-ssr')).toBeUndefined();
+		expect(story.decisions).toHaveLength(2);
+		expect(story.troubles).toHaveLength(3);
+		const diagrams = story.troubles.flatMap(trouble => (trouble.diagram ? [trouble.diagram] : []));
+		expect(diagrams).toHaveLength(2);
+		expect(diagrams[0].actors).toEqual(['링크 미리보기', 'Next.js 서버', '고객사 설정']);
+		expect(diagrams[0].steps.map(step => step.label)).toEqual([
+			'(CSR) JS를 실행하기 전 HTML에는 고객사별 메타가 없음',
+			'고객사 코드가 첫 칸인 주소로 요청',
+			'서버에서 코드로 고객사와 메타 설정 조회',
+			'제목·설명·OG 값',
+			'head에 title과 og 태그를 채운 HTML 응답',
+		]);
+		expect(diagrams[1].steps.at(-1)?.label).toContain('스크롤 위치 보정');
+		expect(story.troubles[0].fix).toContain('CMS에서 OG 문구·이미지를 편집');
+		expect(story.troubles[2].fix).toContain('스트림');
+		expect(story.troubles[2].fix).toContain('폴링');
+		expect(story.checks.join(' ')).toContain('[code]/layout.tsx의 generateMetadata와 메타 조회 함수');
+		expect(story.checks.join(' ')).toContain('sitemap·robots와 Next.js 초기 세팅은 다른 팀원의 작업');
 	});
 
 	it('없는 slug 는 undefined 를 돌려준다', () => {

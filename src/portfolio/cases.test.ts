@@ -40,6 +40,39 @@ describe('포트폴리오 케이스 데이터', () => {
 		expect(actual).toEqual(expected);
 	});
 
+	it('챗봇은 같은 기간의 한 사례로 합쳐지고 이웃 프로젝트 순서가 이어진다', () => {
+		expect(PORTFOLIO_CASES).toHaveLength(9);
+		expect(getPortfolioCase('ai-chatbot-ssr')).toBeUndefined();
+		const chatbot = getPortfolioCase('ai-chatbot-cms')!;
+
+		expect(chatbot.period).toBe('2025.01 ~ 2025.08');
+		expect(getAdjacentCases(chatbot.slug).prev?.slug).toBe('mydata-integration');
+		expect(getAdjacentCases(chatbot.slug).next?.slug).toBe('swing-frontend');
+		expect(getAdjacentCases('mydata-integration').next).toBe(chatbot);
+		expect(getAdjacentCases('swing-frontend').prev).toBe(chatbot);
+		for (const fact of [
+			'스트림',
+			'폴링',
+			'스크롤 위치를 보정',
+			'벡터 스토어',
+			'generateMetadata',
+			'메타 조회 함수',
+			'고객사 코드',
+			'한국어·일본어',
+			'프론트엔드 재배포 없이 반영',
+		]) {
+			expect(projectText(chatbot.slug), fact).toContain(fact);
+		}
+	});
+
+	it('마이데이터 결과는 단계 복원과 실패한 항목 안내로 기술한다', () => {
+		const result = getPortfolioCase('mydata-integration')!.stages[2].text;
+
+		expect(result).toContain('단계와 입력값을 복원');
+		expect(result).toContain('실패한 항목만 안내');
+		expect(result).not.toMatch(/반려|성과|운영|\d/);
+	});
+
 	it('slug 는 URL 에 안전하고 중복되지 않는다', () => {
 		const slugs = PORTFOLIO_CASES.map(item => item.slug);
 

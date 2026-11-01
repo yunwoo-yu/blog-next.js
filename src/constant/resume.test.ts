@@ -237,3 +237,29 @@ describe('이력서 프로젝트 데이터', () => {
 		}
 	});
 });
+
+describe('AI Talker 통합 항목', () => {
+	it('한 항목에 채팅·CMS·서버 메타데이터를 담고 요약·강조 상한을 지킨다', () => {
+		const project = RESUME.projects.find(project => project.service === 'AI Talker')!;
+
+		expect(project.items).toHaveLength(1);
+		const [item] = project.items;
+		expect(item.caseSlug).toBe('ai-chatbot-cms');
+		expect(item.date).toBe('2025.01 ~ 2025.08');
+		expect(item.summary.length).toBeLessThanOrEqual(200);
+		for (const fact of [
+			'스트림',
+			'읽던 위치 유지',
+			'지식 파일',
+			'고객사 코드',
+			'서버에서 메타데이터·Open Graph',
+			'CMS에서 값을 바꾸면 프론트엔드 재배포 없이 반영',
+		]) {
+			expect(item.summary, fact).toContain(fact);
+		}
+		expect(item.summary).not.toMatch(/→|\d/);
+		expect(item.highlights.length).toBeGreaterThanOrEqual(1);
+		expect(item.highlights.length).toBeLessThanOrEqual(2);
+		for (const highlight of item.highlights) expect(item.summary).toContain(highlight);
+	});
+});

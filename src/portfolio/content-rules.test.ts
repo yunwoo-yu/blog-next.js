@@ -4,7 +4,7 @@ import { CAREER_DETAIL } from './career-detail';
 import { PORTFOLIO_CASES } from './cases';
 import { EXHIBITS } from './exhibits';
 import { PORTFOLIO_KEY_RESULTS } from './overview';
-import { PRINT_FEATURED, PRINT_GLOSSARY } from './print';
+import { PRINT_FEATURED, PRINT_GLOSSARY, PRINT_OTHERS } from './print';
 import { STORIES } from './stories';
 
 /** 화면에 나가는 문장만 모은다(stories 의 checks 는 화면에 나오지 않는 질문이라 제외). */
@@ -16,6 +16,7 @@ const publicTexts = () => [
 		),
 	),
 	...PRINT_FEATURED.flatMap(entry => [entry.oneLine, entry.limit]),
+	...PRINT_OTHERS.map(entry => entry.line),
 	...PRINT_GLOSSARY.map(entry => entry.description),
 	...PORTFOLIO_KEY_RESULTS.map(entry => entry.label),
 	...PORTFOLIO_CASES.flatMap(item => [item.title, item.summary, ...item.keywords]),
@@ -86,7 +87,7 @@ describe('포트폴리오 본문 규칙', () => {
 			.find(item => item.caseSlug === 'avatar-studio-performance')!;
 
 		expect(avatar.summary).toBe(
-			'인수한 WebGL 아바타 서비스의 3D 뷰에 Suspense 경계를 두고 CDN 자산 경로를 환경 변수 상수로 정리했습니다. 첫 콘텐츠 표시(FCP)는 3초 이상에서 400~600ms로 줄었습니다(이력서 기재).',
+			'인수한 WebGL 아바타 서비스의 3D 뷰에 Suspense 경계를 두고 CDN 자산 경로를 환경 변수 상수로 정리했습니다. 첫 콘텐츠 표시(FCP)는 3초 이상에서 400~600ms로 줄었습니다(Lighthouse 측정).',
 		);
 		expect(avatar.summary.length).toBeLessThanOrEqual(130);
 		expect(PRINT_GLOSSARY.find(entry => entry.term === 'Suspense')?.description).toBe(
@@ -94,6 +95,79 @@ describe('포트폴리오 본문 규칙', () => {
 		);
 		for (const text of publicTexts()) {
 			expect(text, text).not.toMatch(/로딩 경계|3D 뷰의 로딩을|Suspense[^.]*로 (개선|단축)/);
+		}
+	});
+
+	it('FCP는 확인된 Lighthouse 측정으로 쓰고 Suspense·CDN과의 인과는 제한한다', () => {
+		const avatar = STORIES.find(story => story.slug === 'avatar-studio-performance')!;
+
+		expect(avatar.checks.join(' ')).toContain('Lighthouse 로 사용자가 측정(확인됨)');
+		expect(avatar.checks.join(' ')).not.toContain('측정 원자료를 찾지 못했습니다');
+		expect(avatar.decisions[0].options[0].reason).toContain('인과는 확인하지 못했습니다');
+		expect(avatar.troubles[0].diagram?.steps.map(step => step.label).join(' ')).toContain('효과 미확인');
+		expect(avatar.decisions[0].options.find(option => option.name.includes('CDN'))?.reason).toContain(
+			'인과는 확인하지 못했습니다',
+		);
+		for (const text of publicTexts()) {
+			expect(text, text).not.toMatch(
+				/FCP[^.]*이력서 기재|(?:FCP|400~600ms)[^.]*(?:원자료|(?:측정(?:값| 결과)?|수치)[^.]*(?:확인 못|확인하지 못))/,
+			);
+		}
+	});
+
+	it('마이데이터는 구현 사실만 쓰고 심사·운영 성과나 성과 수치를 주장하지 않는다', () => {
+		const item = PORTFOLIO_CASES.find(item => item.slug === 'mydata-integration')!;
+		const resume = RESUME.projects.flatMap(project => project.items).find(entry => entry.caseSlug === item.slug);
+		const exhibit = EXHIBITS.find(exhibit => exhibit.slug === item.slug)!;
+		const story = STORIES.find(story => story.slug === item.slug)!;
+		const print = PRINT_OTHERS.find(entry => entry.slug === item.slug)!;
+		const texts = [
+			resume!.summary,
+			item.summary,
+			...item.stages.map(stage => stage.text),
+			JSON.stringify(exhibit),
+			JSON.stringify(story.decisions),
+			JSON.stringify(story.troubles),
+			print.line,
+		];
+
+		for (const text of texts) {
+			expect(text, text).not.toMatch(/반려|심사|성과|운영|출시|달성|증가|감소|개선|\d[\d.,~]*\s*(?:%|건|ms|초)/);
+		}
+		for (const text of [item.stages[2].text, exhibit.callouts.outcome, print.line]) {
+			expect(text).toContain('복원');
+			expect(text).toMatch(/실패한 (항목|기관)만 안내/);
+		}
+		expect(story.checks.join(' ')).not.toContain('반려');
+		for (const text of publicTexts()) expect(text, text).not.toContain('반려');
+	});
+
+	it('통합 챗봇 용어 풀이는 상세 화면의 첫 등장에 한 번씩만 둔다', () => {
+		const item = PORTFOLIO_CASES.find(item => item.slug === 'ai-chatbot-cms')!;
+		const story = STORIES.find(story => story.slug === item.slug)!;
+		const text = [
+			item.summary,
+			item.stages[0].text,
+			item.stages[1].text,
+			JSON.stringify(story.decisions),
+			JSON.stringify(story.troubles),
+			item.stages[2].text,
+		].join(' ');
+
+		for (const term of [
+			'메타데이터',
+			'Open Graph',
+			'CMS',
+			'CSR',
+			'SSR',
+			'스트림',
+			'폴링',
+			'벡터 스토어',
+			'App Router',
+			'generateMetadata',
+		]) {
+			expect(text.indexOf(`${term}(`), term).toBe(text.indexOf(term));
+			expect(text.split(`${term}(`).length - 1, term).toBe(1);
 		}
 	});
 
