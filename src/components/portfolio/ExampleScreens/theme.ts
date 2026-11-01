@@ -1,6 +1,7 @@
 /**
- * 예시 화면의 색·선 클래스. 웹은 pf-*, 인쇄(PDF)는 print-* 토큰을 쓴다.
- * 색은 회색 계열과 강조색 하나(pf-blue / print-accent)만 쓰고, 오류·실패는 점선·아이콘·글자 라벨로 구분해
+ * 예시 화면의 색·선 클래스. 회색은 웹 pf-gray-*, 인쇄(PDF) print-* 토큰을 쓴다.
+ * 강조색은 두 변형 모두 중립적인 print-accent 하나만 쓴다(포트폴리오 UI 의 pf-blue 는 실제 서비스 팔레트와 값이 같아 예시 화면에 쓰지 않는다).
+ * 오류·실패는 점선·아이콘·글자 라벨로 구분해
  * 흑백 인쇄에서도 의미가 남게 한다. 크기는 루트 글자 크기(root)에 맞춘 em 값이라 본문 조각은 두 변형이 같다.
  */
 
@@ -49,10 +50,10 @@ export const EXAMPLE_THEMES: Record<ExampleVariant, ExampleTheme> = {
 		text: 'text-pf-gray-800',
 		strong: 'text-pf-gray-900',
 		muted: 'text-pf-gray-700',
-		accentText: 'text-pf-blue-700',
-		accentFill: 'bg-pf-blue-50',
-		accentLine: 'border-2 border-pf-blue',
-		accentSolid: 'bg-pf-blue-700 text-white',
+		accentText: 'text-print-accent',
+		accentFill: 'bg-print-accent/[0.06]',
+		accentLine: 'border-2 border-print-accent',
+		accentSolid: 'bg-print-accent text-white',
 		errorBox: 'border border-dashed border-pf-gray-700 bg-white',
 		skeleton: 'bg-pf-gray-200',
 		split: 'grid gap-[0.75em] sm:grid-cols-2',
@@ -71,7 +72,8 @@ export const EXAMPLE_THEMES: Record<ExampleVariant, ExampleTheme> = {
 		rule: 'border-print-rule',
 		text: 'text-print-ink-2',
 		strong: 'text-print-ink',
-		muted: 'text-print-ink-3',
+		// print-fill(면) 위 6.5pt 글자라 ink-3(4.39:1) 대신 ink-2(9.37:1)를 쓴다.
+		muted: 'text-print-ink-2',
 		accentText: 'text-print-accent',
 		accentFill: 'bg-print-fill',
 		accentLine: 'border-[1pt] border-print-accent',

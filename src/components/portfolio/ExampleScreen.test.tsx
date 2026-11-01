@@ -2,11 +2,30 @@
 
 import { render, screen, within } from '@testing-library/react';
 
-import { EXAMPLE_FORBIDDEN_TERMS, EXAMPLE_NOTICE, EXAMPLE_SCREENS } from '@/portfolio/examples';
+import {
+	EXAMPLE_FORBIDDEN_TERMS,
+	EXAMPLE_NOTICE,
+	EXAMPLE_SCREENS,
+	type ExampleScreen as ExampleScreenData,
+} from '@/portfolio/examples';
 
 import ExampleScreen from './ExampleScreen';
 
 const VARIANTS = ['web', 'print'] as const;
+
+/** 예시 데이터에서 화면에 오류 문구로 나가야 하는 값들. */
+const errorMessagesOf = (example: ExampleScreenData): string[] => {
+	switch (example.kind) {
+		case 'form-errors':
+			return [...example.data.fields, ...example.data.group.items].flatMap(field => field.error ?? []);
+		case 'attachment-form':
+			return example.data.field.error ? [example.data.field.error] : [];
+		case 'stepper-results':
+			return [example.data.failNotice];
+		default:
+			return [];
+	}
+};
 
 describe('ExampleScreen', () => {
 	for (const variant of VARIANTS) {
@@ -43,34 +62,67 @@ describe('ExampleScreen', () => {
 		}
 	});
 
-	it('렌더 결과(컴포넌트가 붙이는 라벨 포함)에도 실제 서비스·회사 이름이 없다', () => {
-		for (const example of EXAMPLE_SCREENS) {
-			const { container, unmount } = render(<ExampleScreen example={example} variant="print" />);
-			const text = container.textContent ?? '';
-			const label = container.querySelector('[role="img"]')?.getAttribute('aria-label') ?? '';
+	it('렌더 결과(글자·aria-label·data-* 를 포함한 모든 속성값)에 실제 서비스·회사 이름이 없다', () => {
+		for (const variant of VARIANTS) {
+			for (const example of EXAMPLE_SCREENS) {
+				const { container, unmount } = render(<ExampleScreen example={example} variant={variant} />);
+				// data-example-screen 의 slug 는 주소(URL)와 같은 공개 식별자라 그 속성값 하나만 비우고 검사한다.
+				const slugAttribute = `data-example-screen="${example.slug}"`;
+				const html = container.innerHTML;
 
-			for (const term of EXAMPLE_FORBIDDEN_TERMS) {
-				const pattern = new RegExp(term, /[A-Za-z]/.test(term) ? 'i' : '');
+				expect(html.split(slugAttribute).length - 1, example.slug).toBe(1);
 
-				expect(text, `${example.slug}: ${term}`).not.toMatch(pattern);
-				expect(label, `${example.slug}: ${term}`).not.toMatch(pattern);
+				const checked = html.replace(slugAttribute, 'data-example-screen=""');
+
+				for (const term of EXAMPLE_FORBIDDEN_TERMS) {
+					const pattern = new RegExp(term, /[A-Za-z]/.test(term) ? 'i' : '');
+
+					expect(checked, `${variant} ${example.slug}: ${term}`).not.toMatch(pattern);
+				}
+				unmount();
 			}
-			unmount();
 		}
 	});
 
-	it('오류·실패는 색 말고도 점선 테두리와 "오류"·"실패" 글자로 구분한다', () => {
-		const withErrors = EXAMPLE_SCREENS.filter(example =>
-			['form-errors', 'attachment-form', 'stepper-results'].includes(example.kind),
-		);
+	it('금지어 검사는 slug 속성 밖의 속성값에 든 이름을 잡는다(빈 검사로 통과하지 않게)', () => {
+		const example = EXAMPLE_SCREENS.find(item => item.slug.includes('wello'))!;
+		const { container, unmount } = render(<ExampleScreen example={example} className="wello-test" />);
+		const checked = container.innerHTML.replace(`data-example-screen="${example.slug}"`, 'data-example-screen=""');
 
-		expect(withErrors).toHaveLength(3);
-		for (const example of withErrors) {
-			const { container, unmount } = render(<ExampleScreen example={example} />);
+		expect(checked).toMatch(/wello/i);
+		unmount();
+	});
 
-			expect(container.querySelector('.border-dashed'), example.slug).not.toBeNull();
-			expect(screen.getAllByText('오류').length, example.slug).toBeGreaterThan(0);
-			unmount();
+	it('오류·실패는 색 말고도 아이콘과 "오류"·"실패" 글자 라벨로 구분한다', () => {
+		for (const variant of VARIANTS) {
+			const withErrors = EXAMPLE_SCREENS.filter(example =>
+				['form-errors', 'attachment-form', 'stepper-results'].includes(example.kind),
+			);
+
+			expect(withErrors).toHaveLength(3);
+			for (const example of withErrors) {
+				const messages = errorMessagesOf(example);
+				const { unmount } = render(<ExampleScreen example={example} variant={variant} />);
+
+				expect(messages.length, example.slug).toBeGreaterThan(0);
+				for (const message of messages) {
+					const element = screen.getByText(message);
+
+					// 문구 바로 앞에 "오류" 라벨이 붙고, 같은 줄에 아이콘이 있다.
+					expect(element.textContent, `${variant} ${example.slug}`).toBe(`오류${message}`);
+					expect(element.closest('p')?.querySelector('svg'), `${variant} ${example.slug}`).not.toBeNull();
+				}
+				if (example.kind === 'stepper-results') {
+					for (const result of example.data.results) {
+						const row = screen.getByText(result.label).closest('li') as HTMLElement;
+						const label = result.ok ? '성공' : '실패';
+
+						expect(row.textContent, `${variant} ${result.label}`).toBe(`${result.label}${label}`);
+						expect(row.querySelector('svg'), `${variant} ${result.label}`).not.toBeNull();
+					}
+				}
+				unmount();
+			}
 		}
 	});
 });

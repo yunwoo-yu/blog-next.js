@@ -2,6 +2,7 @@ import { PORTFOLIO_CASES } from './cases';
 import {
 	EXAMPLE_DOMAIN,
 	EXAMPLE_FORBIDDEN_TERMS,
+	EXAMPLE_ILLUSTRATIVE_NOTE,
 	EXAMPLE_NOTICE,
 	EXAMPLE_SCREENS,
 	type ExampleScreen,
@@ -46,6 +47,19 @@ describe('예시 화면 데이터', () => {
 			expect(example.alt.trim().length, example.slug).toBeGreaterThan(20);
 			expect(example.caption.trim(), example.slug).not.toBe('');
 			expect(example.caption, example.slug).not.toContain('\n');
+		}
+	});
+
+	it('사례가 실제 화면에 있었다고 말하지 않는 설명용 요소를 그린 예시는 caption 에 그 사실을 적는다', () => {
+		expect(EXAMPLE_ILLUSTRATIVE_NOTE).toBe('강조 표시와 안내 문구는 설명을 위한 것입니다.');
+		for (const slug of ['admin-session-refresh', 'mydata-integration', 'ai-chatbot-cms'])
+			expect(getExampleScreen(slug)?.caption.endsWith(` ${EXAMPLE_ILLUSTRATIVE_NOTE}`), slug).toBe(true);
+	});
+
+	it('특정 서비스 어투(~어요)를 흉내 내지 않고 "~입니다"·명사형으로 쓴다', () => {
+		for (const example of EXAMPLE_SCREENS) {
+			for (const text of collectTexts(example))
+				expect(text, `${example.slug}: ${text}`).not.toMatch(/[어아해]요(?=[\s.?!"]|$)/);
 		}
 	});
 

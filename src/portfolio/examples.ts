@@ -9,6 +9,12 @@ export const EXAMPLE_LABEL = '예시 화면';
 export const EXAMPLE_DISCLAIMER = '개념을 보여 주기 위해 새로 만든 가상의 화면이며 실제 서비스 화면이 아닙니다';
 export const EXAMPLE_NOTICE = `${EXAMPLE_LABEL} · ${EXAMPLE_DISCLAIMER}`;
 
+/**
+ * 사례가 실제 화면에 있었다고 말하지 않는 요소(상태 배너·결과 패널·위치 표시 등)를 설명용으로 그린 예시의 caption 끝에 붙인다.
+ * 그 요소가 실제 화면 구성이라는 사실 주장으로 읽히지 않게 한다.
+ */
+export const EXAMPLE_ILLUSTRATIVE_NOTE = '강조 표시와 안내 문구는 설명을 위한 것입니다.';
+
 /** 가짜 주소·이메일이 써야 하는 예약 도메인. */
 export const EXAMPLE_DOMAIN = 'example.test';
 
@@ -154,8 +160,6 @@ export type ExampleScreen = ExampleBase &
 		| { kind: 'attachment-form'; data: AttachmentFormData }
 	);
 
-export type ExampleKind = ExampleScreen['kind'];
-
 export const EXAMPLE_SCREENS: readonly ExampleScreen[] = [
 	{
 		slug: 'wellomarket-checkout',
@@ -201,7 +205,7 @@ export const EXAMPLE_SCREENS: readonly ExampleScreen[] = [
 		kind: 'admin-refresh',
 		title: '데모 어드민 목록',
 		alt: '가상의 관리 화면 목록입니다. 위쪽에 로그인 정보를 갱신하는 중이라는 상태 표시가 있고, 다시 로그인하지 않아도 목록 요청이 이어진다는 안내가 붙어 있습니다.',
-		caption: '로그인 증명값이 만료되면 갱신한 뒤 요청을 다시 보내, 다시 로그인하지 않고 작업을 이어 갑니다.',
+		caption: `로그인 증명값이 만료되면 갱신한 뒤 요청을 다시 보내, 다시 로그인하지 않고 작업을 이어 갑니다. ${EXAMPLE_ILLUSTRATIVE_NOTE}`,
 		data: {
 			address: 'admin.example.test/items',
 			status: '로그인 정보를 갱신하는 중…',
@@ -217,11 +221,11 @@ export const EXAMPLE_SCREENS: readonly ExampleScreen[] = [
 		slug: 'donation-duplicate-guard',
 		kind: 'confirm-modal',
 		title: '예시 기부 재확인',
-		alt: '가상의 기부 화면 위에 확인 창이 떠 있습니다. "최근 기부 이력이 있어요"라는 안내와 기관·금액·일시가 있고, 계속 기부하기와 그만두기 중 하나를 고르게 합니다.',
+		alt: '가상의 기부 화면 위에 확인 창이 떠 있습니다. "최근 기부 이력이 있습니다"라는 안내와 기관·금액·일시가 있고, 계속 기부하기와 그만두기 중 하나를 고르게 합니다.',
 		caption: '외부 납부를 다녀온 뒤 최신 이력을 다시 확인하고, 완료 이력이 있으면 계속할지 사용자가 고릅니다.',
 		data: {
 			address: 'give.example.test/donate',
-			heading: '최근 기부 이력이 있어요',
+			heading: '최근 기부 이력이 있습니다',
 			rows: [
 				{ label: '기관', value: '예시 기관' },
 				{ label: '금액', value: '10,000원' },
@@ -272,7 +276,7 @@ export const EXAMPLE_SCREENS: readonly ExampleScreen[] = [
 		kind: 'stepper-results',
 		title: '예시 데이터 연결',
 		alt: '가상의 데이터 연결 화면입니다. 위에는 본인인증·동의·전송요구·전자서명 4단계 중 현재 단계가 강조돼 있고, 아래에는 일괄 철회 결과로 성공한 기관과 실패한 기관이 나뉘어 실패한 기관만 다시 시도하라는 안내가 있습니다.',
-		caption: '외부 인증을 다녀와도 이어지는 진행 단계와, 일괄 철회에서 실패한 기관만 따로 알리는 결과를 보여 줍니다.',
+		caption: `외부 인증을 다녀와도 이어지는 진행 단계와, 일괄 철회에서 실패한 기관만 따로 알리는 결과를 보여 줍니다. ${EXAMPLE_ILLUSTRATIVE_NOTE}`,
 		data: {
 			address: 'connect.example.test/flow?step=2',
 			marks: ['step=2'],
@@ -284,7 +288,7 @@ export const EXAMPLE_SCREENS: readonly ExampleScreen[] = [
 				{ label: '예시 기관 B', ok: false },
 				{ label: '예시 기관 C', ok: true },
 			],
-			failNotice: '예시 기관 B만 철회하지 못했어요. 이 기관만 다시 시도해 주세요',
+			failNotice: '예시 기관 B만 철회하지 못했습니다. 이 기관만 다시 시도해 주세요',
 		},
 	},
 	{
@@ -292,11 +296,11 @@ export const EXAMPLE_SCREENS: readonly ExampleScreen[] = [
 		kind: 'chat-anchor',
 		title: '예시 상담 챗봇',
 		alt: '가상의 챗봇 화면입니다. 위쪽에 이전 대화 10개가 새로 붙었지만 읽던 메시지는 같은 자리에 표시돼 있고, 옆에는 고객사별 제목·설명·이미지 자리가 있는 링크 미리보기 카드가 있습니다.',
-		caption: '위에 이전 대화가 붙어도 읽던 메시지는 같은 자리에 있고, 링크 미리보기에는 고객사별 제목·설명이 담깁니다.',
+		caption: `위에 이전 대화가 붙어도 읽던 메시지는 같은 자리에 있고, 링크 미리보기에는 고객사별 제목·설명이 담깁니다. ${EXAMPLE_ILLUSTRATIVE_NOTE}`,
 		data: {
 			address: 'chat.example.test/sample-co',
 			marks: ['sample-co'],
-			loadedNotice: '이전 대화 10개를 불러왔어요',
+			loadedNotice: '이전 대화 10개를 불러왔습니다',
 			older: ['이전 질문 예시', '이전 답변 예시'],
 			anchor: { text: '읽던 메시지 예시', label: '읽던 위치 그대로' },
 			preview: {

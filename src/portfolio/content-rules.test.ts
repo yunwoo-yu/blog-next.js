@@ -2,6 +2,7 @@ import RESUME from '@/constant/resume';
 
 import { CAREER_DETAIL } from './career-detail';
 import { PORTFOLIO_CASES } from './cases';
+import { EXAMPLE_SCREENS } from './examples';
 import { EXHIBITS } from './exhibits';
 import { PORTFOLIO_KEY_RESULTS } from './overview';
 import { PRINT_FEATURED, PRINT_GLOSSARY, PRINT_OTHERS } from './print';
@@ -79,6 +80,19 @@ describe('포트폴리오 본문 규칙', () => {
 		for (const text of publicTexts()) {
 			for (const pattern of banned) expect(text, `${pattern}`).not.toMatch(pattern);
 		}
+	});
+
+	it('통합 챗봇에서 본인 몫이 작거나 근거 없는 영역(프롬프트·모델 설정·비용 통계·광고 정책)을 공개 문구에 쓰지 않는다', () => {
+		const story = STORIES.find(story => story.slug === 'ai-chatbot-cms')!;
+		// 화면에 나가는 모든 글: 공통 공개 문구 + 사례 단계 본문 + 예시 화면(데이터·alt·caption).
+		const texts = [
+			...publicTexts(),
+			...PORTFOLIO_CASES.flatMap(item => item.stages.map(stage => stage.text)),
+			...EXAMPLE_SCREENS.map(example => JSON.stringify(example)),
+		];
+
+		expect(story.checks.join(' ')).toMatch(/프롬프트·모델 설정·비용 통계·광고 정책은 본인 몫이 작거나 근거가 없어/);
+		for (const text of texts) expect(text, text).not.toMatch(/프롬프트 설정|모델 설정|비용 통계|광고 정책/);
 	});
 
 	it('Suspense 는 경계를 둔 사실로만 서술하고 FCP 수치와 인과를 붙이지 않는다', () => {
